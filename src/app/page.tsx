@@ -12,25 +12,22 @@ export default function Home() {
   const { scrollY } = useScroll()
   const heroOpacity = useTransform(scrollY, [0, 300], [1, 0])
   const heroScale = useTransform(scrollY, [0, 300], [1, 0.8])
-
   const linkCards = [
     {
       title: "Enroll Now →",
-      href: "/admin/dashboard",
+      href: "",
     },
     {
       title: "Our Socials →",
       href: "https://www.instagram.com/msnazhighschool/",
     },
   ];
-
   const videos = [
     "https://res.cloudinary.com/dvvbxrs55/video/upload/f_auto,q_auto,w_auto/v1729269611/clip1_awtegx",
     "https://res.cloudinary.com/dvvbxrs55/video/upload/f_auto,q_auto,w_auto/v1729269805/clip4_stlpus",
-    "https://res.cloudinary.com/dvvbxrs55/video/upload/f_auto,q_auto,w_auto/v1729269773/clip3_cshxdl",
+    "https://res.cloudinary.com/dvvbxrs55/video/upload/f_auto,q_auto,w_auto/v1729269611/clip1_awtegx",
     "https://res.cloudinary.com/dvvbxrs55/video/upload/f_auto,q_auto,w_auto/v1729267740/clip5_szbx9z",
   ];
-
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentVideoIndex((prevIndex) => (prevIndex + 1) % videos.length)
@@ -47,7 +44,7 @@ export default function Home() {
       >
         <video
           key={currentVideoIndex}
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-20 left-0 w-full h-full object-cover"
           autoPlay
           muted
           loop
@@ -89,7 +86,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <Link href={'/about'}>
+              <Link href={''}>
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-300">
                   Learn More <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
