@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { CldImage } from 'next-cloudinary'
-import { Button } from "~/components/ui/button"
+import { Button } from '~/components/ui/button'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '~/components/ui/dropdown-menu'
 import { User } from 'lucide-react'
@@ -10,13 +11,12 @@ import { User } from 'lucide-react'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [isAuthenticated] = useState(false)
+  const pathname = usePathname() // Use usePathname to get the current route
 
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 20
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled)
-      }
+      setScrolled(isScrolled)
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
@@ -24,7 +24,9 @@ export default function Header() {
     return () => {
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [scrolled])
+  }, [])
+
+  const isDashboard = pathname === '/dashboard'
 
   return (
     <header
@@ -34,7 +36,8 @@ export default function Header() {
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-full">
-        <Link href="/landing" className="flex items-center">
+        {/* Logo Section */}
+        <Link href="/" className="flex items-center">
           <CldImage
             src="Official_LOGO_grn_ic9ldd"
             alt="Logo"
@@ -44,6 +47,7 @@ export default function Header() {
           />
         </Link>
 
+        {/* Navigation Links */}
         <nav className="hidden md:block">
           <ul className="flex space-x-4 text-black font-bold">
             <li>
@@ -57,13 +61,14 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="">
+              <Link href="/contact">
                 <Button variant="ghost">Contact</Button>
               </Link>
             </li>
           </ul>
         </nav>
 
+        {/* Action Buttons */}
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <DropdownMenu>
@@ -81,34 +86,25 @@ export default function Header() {
                 className="rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-transform duration-300 ease-in-out"
               >
                 <DropdownMenuItem className="hover:bg-purple-100 focus:bg-purple-200">
-                  <Link href="">Profile</Link>
+                  <Link href="/profile">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="hover:bg-purple-100 focus:bg-purple-200">
-                  <Link href="">Settings</Link>
+                  <Link href="/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="hover:bg-purple-100 focus:bg-purple-200">
-                  <Link href="">Logout</Link>
+                  <Link href="/logout">Logout</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+          ) : isDashboard ? (
+            <Link href="">
+              <Button variant="outline">Profile</Button>
+            </Link>
           ) : (
             <Link href="/signup">
-              <Button variant="default">Join Now</Button>
+              <Button variant="outline">Join Now</Button>
             </Link>
           )}
-
-          <button
-            className="block md:hidden text-black hover:text-green-600 transition-colors duration-300 ease-in-out"
-            aria-label="Toggle Navigation"
-          >
-            <svg
-              className="w-6 h-6 fill-current"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" />
-            </svg>
-          </button>
         </div>
       </div>
     </header>
