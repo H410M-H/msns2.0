@@ -15,7 +15,7 @@ export default function Home() {
   const linkCards = [
     {
       title: "Enroll Now →",
-      href: "",
+      href: "/dashboard",
     },
     {
       title: "Our Socials →",
@@ -39,7 +39,7 @@ export default function Home() {
     <div className="min-h-screen bg-emerald-100 font-serif">
       {/* Hero Section */}
       <motion.section
-        className="relative h-[70vh] overflow-hidden"
+        className="relative h-[80vh] overflow-hidden"
         style={{ opacity: heroOpacity, scale: heroScale }}
       >
         <video
@@ -86,7 +86,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              <Link href={''}>
+              <Link href={'/about'}>
                 <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-300">
                   Learn More <ChevronRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -97,7 +97,7 @@ export default function Home() {
       </motion.section>
 
       {/* Quick Links Section */}
-      <section className="py-16 px-4 md:px-8">
+      <section className="py-12 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
           <motion.h2
             className="text-3xl font-bold mb-8 text-center"
