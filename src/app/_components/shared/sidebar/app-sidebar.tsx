@@ -53,13 +53,13 @@ const data = {
   navMain: [
     {
       title: "Academics",
-      url: "/dashboard",
+      url: "/(pages)",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
           title: "Session",
-          url: "/dashboard/academics",
+          url: "/academics",
         },
         {
           title: "Starred",
