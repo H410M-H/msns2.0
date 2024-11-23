@@ -7,9 +7,9 @@ import {
   Bot,
   Command,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
+  School,
   Settings2,
   SquareTerminal,
 } from "lucide-react"
@@ -29,37 +29,37 @@ import { TeamSwitcher } from "./team-switcher"
 // This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
+    name: "msns",
+    email: "admin@msns.edu.pk",
+    avatar: "favicon.ico",
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
+      name: "Admin",
+      logo: School,
       plan: "Enterprise",
     },
     {
-      name: "Acme Corp.",
+      name: "Faculty",
       logo: AudioWaveform,
       plan: "Startup",
     },
     {
-      name: "Evil Corp.",
+      name: "Student",
       logo: Command,
       plan: "Free",
     },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: "Academics",
+      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Session",
+          url: "/dashboard/academics",
         },
         {
           title: "Starred",
