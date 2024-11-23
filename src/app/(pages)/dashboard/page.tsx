@@ -6,11 +6,11 @@ import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
 export default function DashboardPage() {
   const breadcrumbs = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/academics", label: "Academics" }
+    { href: "/acadamics", label: "Academics" }
   ];
 
   return (
-    <SidebarInset>
+    <SidebarInset className="flex-1 w-full">
       <PageHeader breadcrumbs={breadcrumbs} />
       <ScrollArea className="flex flex-1 flex-col gap-4 pt-0">
         <AdminCards />
@@ -18,4 +18,3 @@ export default function DashboardPage() {
     </SidebarInset>
   )
 }
-

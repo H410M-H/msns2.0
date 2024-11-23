@@ -1,9 +1,21 @@
+import { SidebarInset } from "~/components/ui/sidebar"
+import { ScrollArea } from "~/components/ui/scroll-area"
+import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 import { AcademicCards } from "~/app/_components/cards/AcademicCard";
 import { SessionCards } from "~/app/_components/cards/SessionCard";
-import { Separator } from "~/components/ui/separator";
 
 export default function AcademicsPage() {
+
+    const breadcrumbs = [
+    { href: "/dashboard", label: "Dashboard" },
+    { href: "/acadamics", label: "Academics" }
+  ];
+
   return (
+    <SidebarInset className="flex-1 w-full">
+      <PageHeader breadcrumbs={breadcrumbs} />
+      <ScrollArea className="flex flex-1 flex-col gap-4 pt-0">
     <main className="min-h-screen sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-4 xl:grid-cols-4 bg-yellow-100/50">
       <div className="relative overflow-hidden pt-20">
         <Separator className="bg-green-900" />
@@ -25,5 +37,7 @@ export default function AcademicsPage() {
         </div>
         <Separator className="bg-green-900 my-4" />
     </main>
-  );
+      </ScrollArea>
+    </SidebarInset>
+  )
 }

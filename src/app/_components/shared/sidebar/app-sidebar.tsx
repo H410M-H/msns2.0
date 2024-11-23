@@ -52,40 +52,40 @@ const data = {
   ],
   navMain: [
     {
-      title: "Academics",
+      title: "Dashboard",
       url: "/(pages)",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "Session",
-          url: "/academics",
+          title: "Greetings",
+          url: "/dashboard",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "security",
+          url: "/dashboard",
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/dashboard",
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
+      title: "Academics",
+      url: "/academics",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
+          title: "Session",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Classes",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Students",
           url: "#",
         },
       ],

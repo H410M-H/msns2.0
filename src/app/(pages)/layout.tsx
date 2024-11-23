@@ -8,7 +8,7 @@ export default function DashboardLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex pt-20">
+      <div className="flex pt-20 w-full">
         <AppSidebar />
         <div className="flex-1">
           {children}
