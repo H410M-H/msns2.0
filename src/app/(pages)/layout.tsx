@@ -1,19 +1,18 @@
-import { SidebarProvider } from "~/components/ui/sidebar"
-import { AppSidebar } from "../_components/shared/sidebar/app-sidebar"
+import { AppSidebar } from "../_components/shared/sidebar/app-sidebar";
 
 export default function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider>
-      <div className="flex pt-20 w-full">
-        <AppSidebar />
-        <div className="flex-1">
-          {children}
-        </div>
-      </div>
-    </SidebarProvider>
-  )
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <AppSidebar />
+      {/* Main Content */}
+      <main className="flex-1 bg-white p-6 pt-24 md:p-10 md:pt-28">
+        {children}
+      </main>
+    </div>
+  );
 }

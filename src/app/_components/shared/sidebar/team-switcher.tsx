@@ -67,13 +67,16 @@ export function TeamSwitcher({
             </DropdownMenuLabel>
             {teams.map((team, index) => (
               <DropdownMenuItem
-                key={team.id}
+                key={team.id} // ✅ This is fine for the DropdownMenuItem.
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2"
-                asChild
               >
-                <Link href={`/teams/${team.id}`}>
-                  <div className="flex size-6 items-center justify-center rounded-sm border">
+                {/* Ensure Link and other children are stable */}
+                <Link href={`/teams/${team.id}`} key={`link-${team.id}`}>
+                  <div
+                    className="flex size-6 items-center justify-center rounded-sm border"
+                    key={`logo-${team.id}`}
+                  >
                     <team.logo className="size-4 shrink-0" />
                   </div>
                   {team.name}
@@ -98,4 +101,3 @@ export function TeamSwitcher({
     </SidebarMenu>
   );
 }
-

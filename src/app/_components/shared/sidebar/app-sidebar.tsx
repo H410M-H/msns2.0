@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
@@ -12,7 +12,7 @@ import {
   School,
   Settings2,
   SquareTerminal,
-} from "lucide-react"
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -20,11 +20,11 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "~/components/ui/sidebar"
-import { NavMain } from "./nav-main"
-import { NavProjects } from "./nav-projects"
-import { NavUser } from "./nav-user"
-import { TeamSwitcher } from "./team-switcher"
+} from "~/components/ui/sidebar";
+import { NavMain } from "./nav-main";
+import { NavProjects } from "./nav-projects";
+import { NavUser } from "./nav-user";
+import { TeamSwitcher } from "./team-switcher";
 
 // This is sample data.
 const data = {
@@ -35,16 +35,19 @@ const data = {
   },
   teams: [
     {
+      id: "1", // Add the missing id
       name: "Admin",
       logo: School,
       plan: "Enterprise",
     },
     {
+      id: "2", // Add the missing id
       name: "Faculty",
       logo: AudioWaveform,
       plan: "Startup",
     },
     {
+      id: "3", // Add the missing id
       name: "Student",
       logo: Command,
       plan: "Free",
@@ -57,18 +60,9 @@ const data = {
       icon: SquareTerminal,
       isActive: true,
       items: [
-        {
-          title: "Greetings",
-          url: "/dashboard",
-        },
-        {
-          title: "security",
-          url: "/dashboard",
-        },
-        {
-          title: "Settings",
-          url: "/dashboard",
-        },
+        { title: "Greetings", url: "/dashboard" },
+        { title: "Security", url: "/dashboard" },
+        { title: "Settings", url: "/dashboard" },
       ],
     },
     {
@@ -76,18 +70,9 @@ const data = {
       url: "/academics",
       icon: Bot,
       items: [
-        {
-          title: "Session",
-          url: "#",
-        },
-        {
-          title: "Classes",
-          url: "#",
-        },
-        {
-          title: "Students",
-          url: "#",
-        },
+        { title: "Session", url: "#" },
+        { title: "Classes", url: "#" },
+        { title: "Students", url: "#" },
       ],
     },
     {
@@ -95,22 +80,10 @@ const data = {
       url: "#",
       icon: BookOpen,
       items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
+        { title: "Introduction", url: "#" },
+        { title: "Get Started", url: "#" },
+        { title: "Tutorials", url: "#" },
+        { title: "Changelog", url: "#" },
       ],
     },
     {
@@ -118,43 +91,19 @@ const data = {
       url: "#",
       icon: Settings2,
       items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
+        { title: "General", url: "#" },
+        { title: "Team", url: "#" },
+        { title: "Billing", url: "#" },
+        { title: "Limits", url: "#" },
       ],
     },
   ],
   projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
+    { name: "Design Engineering", url: "#", icon: Frame },
+    { name: "Sales & Marketing", url: "#", icon: PieChart },
+    { name: "Travel", url: "#", icon: Map },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -171,5 +120,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

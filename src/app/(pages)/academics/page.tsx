@@ -8,8 +8,8 @@ import { SessionCards } from "~/app/_components/cards/SessionCard";
 export default function AcademicsPage() {
 
     const breadcrumbs = [
-    { href: "/dashboard", label: "Dashboard" },
-    { href: "/acadamics", label: "Academics" }
+      { href: "/acadamics", label: "Academics" },
+      { href: "/dashboard", label: "Dashboard" }
   ];
 
   return (
