@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { CldImage } from "next-cloudinary"
-import { UsersIcon, NotebookPenIcon, BarChartIcon, Settings, type LucideIcon } from "lucide-react"
+import { NotebookPenIcon, BarChartIcon, Settings, type LucideIcon } from "lucide-react"
 
 // Since we're only using Lucide icons now, we can simplify the type
 type IconType = LucideIcon
@@ -19,22 +19,13 @@ interface Services {
 
 const services: Services[] = [
   {
-    title: "Faculty",
-    description: "Manage Faculty preferences and administrative tasks efficiently",
-    icon: UsersIcon,
-    iconColor: "text-blue-500",
-    gradientFrom: "from-blue-400",
-    gradientTo: "to-blue-700",
-    href: "/admin/alumni",
-  },
-  {
     title: "Academics",
     description: "Create and manage new classes or courses for the school",
     icon: NotebookPenIcon,
     iconColor: "text-green-500",
     gradientFrom: "from-green-400",
     gradientTo: "to-green-700",
-    href: "/admin/academics",
+    href: "/academics",
   },
   {
     title: "Revenue & Finance",
@@ -48,7 +39,7 @@ const services: Services[] = [
   {
     title: "Settings",
     description: "Customize Settings & Preferences for optimal system performance",
-    icon: Settings,  // Changed from GearIcon to Settings
+    icon: Settings,
     iconColor: "text-purple-500",
     gradientFrom: "from-purple-400",
     gradientTo: "to-purple-700",
@@ -58,7 +49,7 @@ const services: Services[] = [
 
 export default function AdminCards() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-12 rounded-md">
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-6 rounded-md">
       {/* Background Image */}
       <CldImage
         width="1920"
@@ -70,7 +61,7 @@ export default function AdminCards() {
       />
   
       {/* Cards Grid */}
-      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
         {services.map((service, index) => {
           const Icon = service.icon
           return (
@@ -90,7 +81,7 @@ export default function AdminCards() {
               />
   
               {/* Card Content */}
-              <div className="relative z-10 px-8 py-10 bg-yellow-100 backdrop-blur-lg shadow-xl 
+              <div className="relative z-10 px-10 py-10 bg-yellow-100 backdrop-blur-lg shadow-xl 
                 rounded-3xl transition-transform duration-500 ease-in-out 
                 group-hover:scale-105 group-hover:rotate-1">
                 <div className="flex flex-col items-center text-center">
@@ -99,7 +90,7 @@ export default function AdminCards() {
                     group-hover:text-green-700 transition-colors duration-300">
                     {service.title}
                   </h3>
-                  <p className="mt-3 text-gray-700 group-hover:text-green-600 
+                  <p className="mt-6 text-gray-700 group-hover:text-green-600 
                     transition-colors duration-300">
                     {service.description}
                   </p>

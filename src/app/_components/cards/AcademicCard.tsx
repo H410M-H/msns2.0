@@ -1,39 +1,83 @@
-  import { CircleFadingPlusIcon, PlusCircleIcon } from "lucide-react";
+  import { type LucideIcon, NotebookPenIcon } from "lucide-react";
   import Link from "next/link";
   
-  export const AcademicCards = () => {
-    const services = [
+    type IconType = LucideIcon
+
+    interface Services {
+      title: string
+      description: string
+      icon: IconType
+      href: string
+      iconColor: string
+      gradientFrom: string
+      gradientTo: string
+    }
+    
+    const services: Services[] = [
       {
         title: "User Management",
-        description:
-          "Easily enroll new students and manage their financial records.",
-        icon: <PlusCircleIcon className="mb-4 h-12 w-12 text-blue-500" />,
-        href: "",
+        description: "Create and manage new classes or courses for the school",
+        icon: NotebookPenIcon,
+        iconColor: "text-green-500",
+        gradientFrom: "from-green-400",
+        gradientTo: "to-green-700",
+        href: "/userReg",
       },
       {
-        title: "Events & Activities",
-        description: "Customize payment plans and automate recurring payments.",
-        icon: <CircleFadingPlusIcon className="mb-4 h-12 w-12 text-red-500" />,
+        title: "Name your card",
+        description: "Create and manage new classes or courses for the school",
+        icon: NotebookPenIcon,
+        iconColor: "text-orange-500",
+        gradientFrom: "from-orange-400",
+        gradientTo: "to-orange-700",
         href: "",
       },
     ];
-  
-    return (
-      <section className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">
-        {services.map((service, index) => (
-          <Link
-            href={service.href}
-            key={index}
-            className="transform rounded-lg bg-yellow-100 p-6 shadow-md transition duration-300 ease-in-out hover:scale-105 hover:cursor-pointer"
-          >
-            <div className="flex flex-col items-center text-center">
-              {service.icon}
-              <h3 className="mb-2 text-xl font-semibold">{service.title}</h3>
-              <p className="text-gray-600">{service.description}</p>
-            </div>
-          </Link>
-        ))}
-      </section>
-    );
+
+    export default function AcademicCards () {
+      return (
+        <div className="relative min-h-screen flex items-center justify-center px-4 py-6 rounded-md">     
+          {/* Cards Grid */}
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
+            {services.map((service, index) => {
+              const Icon = service.icon
+              return (
+                <Link
+                  href={service.href}
+                  key={index}
+                  className="relative group gap-6 p-4 transform transition-all duration-500 
+                    ease-in-out hover:scale-105 hover:z-20"
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
+                  {/* Background Card Decoration */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-r ${service.gradientFrom} ${service.gradientTo} 
+                      shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl opacity-80 
+                      transition-transform duration-700 ease-in-out group-hover:rotate-0 
+                      group-hover:skew-y-0 group-hover:scale-105`}
+                  />
+      
+                  {/* Card Content */}
+                  <div className="relative z-10 px-10 py-10 bg-yellow-100 backdrop-blur-lg shadow-xl 
+                    rounded-3xl transition-transform duration-500 ease-in-out 
+                    group-hover:scale-105 group-hover:rotate-1">
+                    <div className="flex flex-col items-center text-center">
+                      <Icon className={`h-12 w-12 ${service.iconColor}`} />
+                      <h3 className="text-2xl font-semibold text-gray-900 
+                        group-hover:text-green-700 transition-colors duration-300">
+                        {service.title}
+                      </h3>
+                      <p className="mt-6 text-gray-700 group-hover:text-green-600 
+                        transition-colors duration-300">
+                        {service.description}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+      )
   };
   
