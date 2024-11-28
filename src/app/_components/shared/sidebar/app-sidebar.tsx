@@ -56,13 +56,13 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/(pages)",
+      url: "/dashboard",
       icon: SquareTerminal,
       isActive: true,
       items: [
         { title: "Greetings", url: "/dashboard" },
-        { title: "Security", url: "/dashboard" },
-        { title: "Settings", url: "/dashboard" },
+        { title: "Analytics", url: "/dashboard" },
+        { title: "Profile", url: "/dashboard" },
       ],
     },
     {
@@ -77,7 +77,7 @@ const data = {
     },
     {
       title: "Documentation",
-      url: "#",
+      url: "/about",
       icon: BookOpen,
       items: [
         { title: "Introduction", url: "#" },
@@ -122,3 +122,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     </Sidebar>
   );
 }
+
+
