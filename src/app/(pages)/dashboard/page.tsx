@@ -10,7 +10,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <SidebarInset className="flex-1 w-full">
+    <SidebarInset className="w-full">
       <PageHeader breadcrumbs={breadcrumbs} />
       <ScrollArea className="flex flex-1 flex-col gap-4 pt-0">
         <AdminCards />

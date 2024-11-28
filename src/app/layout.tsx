@@ -17,16 +17,11 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={GeistSans.variable}>
-      <body className="flex min-h-screen flex-col bg-gray-50">
+      <body className="flex min-h-screen flex-col">
         <TRPCReactProvider>
           <SidebarProvider>
-            {/* Header */}
             <Header />
-            {/* Main Content */}
-            <main className="flex flex-1 w-full flex-col">
-              {children}
-            </main>
-            {/* Footer */}
+            <main className="flex-1">{children}</main>
           </SidebarProvider>
         </TRPCReactProvider>
         <Footer />
@@ -34,3 +29,4 @@ export default function RootLayout({
     </html>
   );
 }
+

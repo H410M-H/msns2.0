@@ -59,7 +59,7 @@ const SignupPage = () => {
                   Back to Login
                 </button>
               </Link>
-              <Link href="/admin/dashboard">
+              <Link href="/dashboard">
                 <button className="bg-blue-500 text-white rounded-md px-4 py-2 font-semibold hover:bg-blue-600 transition duration-300 transform hover:scale-105">
                   Admin Login
                 </button>

@@ -39,12 +39,12 @@ export default function Home() {
     <div className="min-h-screen bg-emerald-100 font-serif">
       {/* Hero Section */}
       <motion.section
-        className="relative h-[80vh] overflow-hidden"
+        className="relative h-[85vh] overflow-hidden"
         style={{ opacity: heroOpacity, scale: heroScale }}
       >
         <video
           key={currentVideoIndex}
-          className="absolute top-20 left-0 w-full h-full object-cover"
+          className="absolute top-16 left-0 w-full h-full object-cover"
           autoPlay
           muted
           loop
@@ -56,7 +56,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="text-center text-green-100">
             <motion.h1
-              className="font-serif text-white text-5xl md:text-7xl font-bold mb-4"
+              className="font-serif text-white text-5xl md:text-7xl font-bold mb-10"
               initial={{ opacity: 0, y: 20, scale: 0.5 }}
               animate={{
                 opacity: [0, 1],
@@ -97,10 +97,10 @@ export default function Home() {
       </motion.section>
 
       {/* Quick Links Section */}
-      <section className="py-12 px-4 md:px-8">
+      <section className="py-4 px-4 md:px-8">
         <div className="max-w-6xl mx-auto">
           <motion.h2
-            className="text-3xl font-bold mb-8 text-center"
+            className="text-3xl font-bold mb-4 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

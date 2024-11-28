@@ -11,7 +11,7 @@ import { User } from 'lucide-react'
 export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const [isAuthenticated] = useState(false)
-  const pathname = usePathname() // Use usePathname to get the current route
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,7 +32,7 @@ export default function Header() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${scrolled
         ? 'bg-transparent backdrop-blur-md py-2'
-        : 'bg-green-100/40 py-4'
+        : 'bg-green-100/40 py-2'
       }`}
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-full">
@@ -61,7 +61,7 @@ export default function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/contact">
+              <Link href="">
                 <Button variant="ghost">Contact</Button>
               </Link>
             </li>
