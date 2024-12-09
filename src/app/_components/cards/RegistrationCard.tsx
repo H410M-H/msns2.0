@@ -8,28 +8,28 @@ export const RegistrationCards = () => {
       description:
         "Easily enroll new students and manage their financial records.",
       icon: <UserPlusIcon className="w-12 h-12 mb-4 text-green-500" />,
-      href: "/registration/student/create",
+      href: "/userReg/student/create",
     },
     {
       title: "Active Students",
       description:
         "Easily enroll new students and manage their financial records.",
       icon: <UserPlusIcon className="w-12 h-12 mb-4 text-green-500" />,
-      href: "/registration/student/view",
+      href: "/userReg/student/view",
     },
     {
     title: "Employee Registration",
     description:
       "Easily enroll new Employees and manage their financial records.",
     icon: <UserPlusIcon className="w-12 h-12 mb-4 text-green-500" />,
-    href: "/registration/faculty/create",
+    href: "/userReg/faculty/create",
   },
   {
     title: "Active Employees",
     description:
       "Easily enroll new Employees and manage their financial records.",
     icon: <GraduationCap className="w-12 h-12 mb-4 text-green-500" />,
-    href: "/registration/faculty/view",
+    href: "/userReg/faculty/view",
   },
   ];
 

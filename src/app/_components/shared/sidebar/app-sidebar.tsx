@@ -70,9 +70,9 @@ const data = {
       url: "/academics",
       icon: Bot,
       items: [
-        { title: "Session", url: "/academics/annualSession" },
+        { title: "Session", url: "/academics/sessionalDetails" },
         { title: "Classes", url: "/academics/classwiseDetail" },
-        { title: "Students", url: "#" },
+        { title: "Students", url: "/userReg/faculty/view" },
       ],
     },
     {
@@ -80,10 +80,10 @@ const data = {
       url: "/userReg",
       icon: BookOpen,
       items: [
-        { title: "Faculty", url: "/userReg/faculty/view" },
-        { title: "Students", url: "/userReg/student/view" },
-        { title: "Tutorials", url: "#" },
-        { title: "Changelog", url: "#" },
+        { title: "Faculty", url: "/userReg/faculty/create" },
+        { title: "Students", url: "/userReg/student/create" },
+        // { title: "Tutorials", url: "#" },
+        // { title: "Changelog", url: "#" },
       ],
     },
     {

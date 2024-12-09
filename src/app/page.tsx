@@ -45,11 +45,10 @@ export default function Home() {
         <video
           key={currentVideoIndex}
           className="absolute top-16 left-0 w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-        >
+          autoPlay={true}
+          muted={true}
+          loop={true}
+          playsInline={true}>
           <source src={videos[currentVideoIndex]} type="video/mp4" />
           Your browser does not support the video tag.
         </video>
@@ -120,7 +119,7 @@ export default function Home() {
                 <Link href={card.href}>
                   <Card className="bg-green-800 text-white hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardHeader>
-                      <CardTitle>{card.title}</CardTitle> 
+                      <CardTitle>{card.title}</CardTitle>
                     </CardHeader>
                   </Card>
                 </Link>

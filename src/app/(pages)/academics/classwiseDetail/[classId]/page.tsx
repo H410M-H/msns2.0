@@ -1,4 +1,4 @@
-import { StudentAllotmentTable } from "~/app/_components/shared/tables/StudentAlotment";
+import { StudentAllotmentTable } from "~/app/_components/tables/StudentAlotment";
 import { Separator } from "~/components/ui/separator";
 
 export default function ClassStudentPage({

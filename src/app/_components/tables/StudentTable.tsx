@@ -171,7 +171,7 @@ export const StudentTable = () => {
                   )} />
           <CSVUploadDialog />
           <Button type="button" asChild>
-            <Link href={'/registration/student/create'}>Create</Link>
+            <Link href={'/userReg/student/create'}>Create</Link>
           </Button>
         </div>
       </div>

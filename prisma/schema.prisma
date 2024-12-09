@@ -9,13 +9,12 @@ datasource db {
 
 model classes {
   classId      String         @id @default(uuid())
-  className    String         @default("none")
+  grade    String         @default("none")
   section      String         @default("ROSE")
   category     ClassCategory  @default(Montessori)
   fee          Float          @default(0)
   StudentClass StudentClass[]
-
-  @@index([className])
+  @@index([grade])
 }
 
 model students {

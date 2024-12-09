@@ -1,7 +1,7 @@
 
 type ClassProps = {
   classId: string
-  className: string
+  grade: string
   section: string
   category: "Montessori" | "Primary" | "Middle" | "SSC-I" | "SSC-II"
   fee: number

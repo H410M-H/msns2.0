@@ -1,8 +1,7 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import getServerSession, { type NextAuthConfig } from "next-auth"
 import {
-  getServerSession,
   type DefaultSession,
-  type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
 import { db } from "~/server/db";
@@ -23,7 +22,7 @@ declare module "next-auth" {
   // }
 }
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthConfig = {
   callbacks: {
     session: ({ session, user }) => ({
       ...session,

@@ -50,9 +50,9 @@ const columns: ColumnDef<ClassProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "className",
-    header: "Class",
-    cell: ({ row }) => <div>{row.getValue("className")}</div>,
+    accessorKey: "grade",
+    header: "Grade",
+    cell: ({ row }) => <div>{row.getValue("grade")}</div>,
   },
   {
     accessorKey: "section",
@@ -87,8 +87,17 @@ export const ClassTable = () => {
   const classesData = api.class.getClasses.useQuery();
 
   useMemo(() => {
-    if (classesData.data) setData(classesData.data as ClassProps[]); // Force-casting to the correct type
+    if (classesData.data) {
+      setData(
+        classesData.data.map((item) => ({
+          ...item,
+          grade: item.className, // Map className to grade if appropriate.
+        })) as ClassProps[]
+      );
+    }
   }, [classesData.data]);
+  
+
 
   const table = useReactTable({
     data,
@@ -119,10 +128,10 @@ export const ClassTable = () => {
           <Input
             placeholder="Search name"
             value={
-              (table.getColumn("className")?.getFilterValue() as string) ?? ""
+              (table.getColumn("grade")?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("className")?.setFilterValue(event.target.value)
+              table.getColumn("grade")?.setFilterValue(event.target.value)
             }
             className="max-w-sm border-blue-500"
           />
@@ -158,7 +167,7 @@ export const ClassTable = () => {
                     aria-label="Select row"
                   />
                   <h3 className="text-lg font-semibold text-gray-800">
-                    {row.original.className}
+                    {row.original.grade}
                   </h3>
                 </div>
                 <span className="rounded-md bg-blue-500 px-2 py-1 text-xs text-white">

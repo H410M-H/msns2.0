@@ -1,13 +1,13 @@
 {
   "compilerOptions": {
     /* Base Options: */
+    "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "target": "es2022",
     "allowJs": true,
     "resolveJsonModule": true,
     "moduleDetection": "force",
-    "forceConsistentCasingInFileNames": true,
     "isolatedModules": true,
 
     /* Strictness */

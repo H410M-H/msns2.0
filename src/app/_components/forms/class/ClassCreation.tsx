@@ -25,7 +25,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 const formSchema = z.object({
-  className: z.string({ required_error: "Field is required" }),
+  grade: z.string({ required_error: "Field is required" }),
   section: z.enum(["ROSE", "TULIP"], {
     required_error: "Section is required",
   }),
@@ -71,10 +71,10 @@ export const ClassCreationDialog = () => {
           >
             <FormField
               control={form.control}
-              name="className"
+              name="grade"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Class name</FormLabel>
+                  <FormLabel>Class Grade</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Write Class/Grade"

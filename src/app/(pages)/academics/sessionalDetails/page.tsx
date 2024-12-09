@@ -1,3 +1,6 @@
+"use client"
+
+import { SessionDialog } from "~/app/_components/dialogs/SessionDetailDialog";
 import { SessionTable } from "~/app/_components/tables/SessionTable";
 import { Separator } from "~/components/ui/separator";
 
@@ -16,6 +19,7 @@ export default function sessionalDetail() {
         </div>
       </div>
       <Separator className="bg-green-900" />
+      <SessionDialog />
       <SessionTable />
       <Separator className="bg-green-900" />
     </main>
