@@ -12,7 +12,6 @@ import {
 import { useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
 import Link from "next/link";
 import { DotsHorizontalIcon } from "@radix-ui/react-icons";
@@ -141,7 +140,7 @@ export const SessionTable = () => {
           >
             {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
           </Button>
-          <Input
+          {/* <Input
             placeholder="Search name"
             value={
               (table.getColumn("className")?.getFilterValue() as string) ?? ""
@@ -150,7 +149,7 @@ export const SessionTable = () => {
               table.getColumn("className")?.setFilterValue(event.target.value)
             }
             className="max-w-sm border-blue-500"
-          />
+          /> */}
         </div>
         <div className="flex items-center gap-2">
           <SessionCreationDialog />

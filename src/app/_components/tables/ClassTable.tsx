@@ -91,7 +91,8 @@ export const ClassTable = () => {
       setData(
         classesData.data.map((item) => ({
           ...item,
-          grade: item.className, // Map className to grade if appropriate.
+          grade: item.grade,
+          fee: item.fee, // Map className to grade if appropriate.
         })) as ClassProps[]
       );
     }
@@ -177,7 +178,7 @@ export const ClassTable = () => {
               <p className={`text-sm ${categoryColors[row.original.category] ?? "text-gray-800"}`}>
                 {row.original.category}
               </p>
-              <p className="text-sm text-gray-600">Fee: ${row.original.fee.toFixed(2)}</p>
+              <p className="text-sm text-gray-600">Fee:{row.original.fee.toFixed(2)}/-PKR</p>
               <div className="mt-2 flex justify-between gap-2">
                 <Button
                   variant="outline"
@@ -185,7 +186,7 @@ export const ClassTable = () => {
                   className="bg-green-500 text-white hover:bg-green-600"
                   asChild
                 >
-                  <Link href={`/admin/academics/classwiseDetail/${row.original.classId}`}>View Details</Link>
+                  <Link href={`/academics/classwiseDetail/${row.original.classId}`}>View Details</Link>
                 </Button>
                 <div className="flex gap-2">
                   <Button

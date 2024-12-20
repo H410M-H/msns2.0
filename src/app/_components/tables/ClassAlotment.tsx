@@ -29,7 +29,7 @@ type ClassStudentProps = {
     // Add other properties as needed...
   };
   class: {
-    className: string;
+    grade: string;
     fee: number;
     // Add other properties as needed...
   };
@@ -73,9 +73,9 @@ const columns: ColumnDef<ClassStudentProps>[] = [
     cell: ({ row }) => <div>{row.getValue("student.fatherName")}</div>,
   },
   {
-    accessorKey: "class.className",
+    accessorKey: "class.grade",
     header: "Class",
-    cell: ({ row }) => <div>{row.getValue("class.className")}</div>,
+    cell: ({ row }) => <div>{row.getValue("class.grade")}</div>,
   },
   {
     accessorKey: "session.sessionName",
@@ -105,7 +105,7 @@ export const ClassAlotmentTable = ({ classId }: { classId: string }) => {
           guardianName: item.student.guardianName ?? "", // Ensure guardianName is a string
         },
       }));
-      setData(transformedData as ClassStudentProps[]);
+      setData(transformedData as unknown as ClassStudentProps[]);
     }
   }, [students.data]);
 
@@ -178,7 +178,7 @@ export const ClassAlotmentTable = ({ classId }: { classId: string }) => {
                   </h3>
                 </div>
                 <span className="rounded-md bg-blue-500 px-2 py-1 text-xs text-white">
-                  {row.original.class.className}
+                  {row.original.class.grade}
                 </span>
               </div>
               <p className="text-sm text-gray-600">Father: {row.original.student.fatherName}</p>

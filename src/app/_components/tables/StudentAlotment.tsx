@@ -19,14 +19,19 @@ import { ChevronDown, ChevronUp } from "lucide-react"
 import { StudentAllotmentDialog } from "../forms/class/StudentAlotment"
 
 type StudentAllotmentProps = {
+  registrationNumber: string
   studentId: string
   studentName: string
   fatherName: string
-  className: string
+  grade: string
   sessionName: string
 }
 
 const columns: ColumnDef<StudentAllotmentProps>[] = [
+  {
+    accessorKey: "registrationNumber",
+    header: "Reg #",
+  },
   {
     accessorKey: "studentName",
     header: ({ column }) => {
@@ -50,7 +55,7 @@ const columns: ColumnDef<StudentAllotmentProps>[] = [
     header: "Father Name",
   },
   {
-    accessorKey: "className",
+    accessorKey: "grade",
     header: "Class",
   },
   {
@@ -84,10 +89,11 @@ export function StudentAllotmentTable({ classId }: { classId: string }) {
   useEffect(() => {
     if (studentsInClass.data) {
       const transformedData: StudentAllotmentProps[] = studentsInClass.data.map((item) => ({
+        registrationNumber: item.student.registrationNumber,
         studentId: item.student.studentId,
         studentName: item.student.studentName,
         fatherName: item.student.fatherName,
-        className: item.class.className,
+        grade: item.class.grade,
         sessionName: item.session.sessionName,
       }))
       setData(transformedData)
