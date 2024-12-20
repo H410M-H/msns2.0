@@ -19,12 +19,12 @@ export default function RootLayout({
     <html lang="en" className={GeistSans.variable}>
       <body className="flex min-h-screen flex-col">
         <TRPCReactProvider>
-          <SidebarProvider>
             <Header />
+            <SidebarProvider>
             <main className="flex-1">{children}</main>
           </SidebarProvider>
-        </TRPCReactProvider>
         <Footer />
+        </TRPCReactProvider>
       </body>
     </html>
   );
