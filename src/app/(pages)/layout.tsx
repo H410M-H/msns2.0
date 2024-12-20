@@ -5,11 +5,14 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+
   return (
     <div className="flex min-h-screen">
       <AppSidebar />
-      <main className="flex-1 pt-16">{children}</main>
+      <div className="flex-1 flex flex-col">
+        <main className="flex-1 pt-16 px-4">{children}</main>
+      </div>
     </div>
   );
 }
-
