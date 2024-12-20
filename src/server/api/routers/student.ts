@@ -18,7 +18,6 @@ const studentSchema = z.object({
   currentAddress: z.string(),
   permanentAddress: z.string(),
   medicalProblem: z.string().optional(),
-  registrationDate: z.string(), // Add this field
 })
 
 export const StudentRouter = createTRPCRouter({
@@ -99,7 +98,7 @@ export const StudentRouter = createTRPCRouter({
           ...input,
           registrationNumber: newRegNumber,
           admissionNumber: newAdmissionNumber,
-          dateOfBirth: new Date(input.dateOfBirth).toISOString(),
+          dateOfBirth: new Date(input.dateOfBirth).toLocaleDateString(),
         }
       })
       return newStudent

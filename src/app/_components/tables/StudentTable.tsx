@@ -86,7 +86,10 @@ const columns: ColumnDef<StudentProps>[] = [
   {
     accessorKey: "dateOfBirth",
     header: "Date of Birth",
-    cell: ({ row }) => <div>{row.getValue("dateOfBirth")}</div>,
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dateOfBirth"));
+      return <div>{date.toLocaleDateString()}</div>;
+    },
   },
   // {
   //   accessorKey: "studentCNIC",
@@ -98,11 +101,11 @@ const columns: ColumnDef<StudentProps>[] = [
   //   header: "Father CNIC",
   //   cell: ({ row }) => <div>{row.getValue("fatherCNIC")}</div>,
   // },
-  {
-    accessorKey: "fatherMobile",
-    header: "Mobile No",
-    cell: ({ row }) => <div>{row.getValue("fatherMobile")}</div>,
-  },
+  // {
+  //   accessorKey: "fatherMobile",
+  //   header: "Mobile No",
+  //   cell: ({ row }) => <div>{row.getValue("fatherMobile")}</div>,
+  // },
   {
     id: "actions",
     header: "Actions",

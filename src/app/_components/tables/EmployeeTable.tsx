@@ -178,7 +178,7 @@ export const EmployeeTable = () => {
             (row) => row.original.employeeId
           )} />
           <Button type="button" asChild>
-            <Link href={'/registration/faculty/create'}>Create</Link>
+            <Link href={'userReg/faculty/create'}>Create</Link>
           </Button>
         </div>
       </div>

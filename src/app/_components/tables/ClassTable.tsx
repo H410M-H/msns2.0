@@ -92,7 +92,7 @@ export const ClassTable = () => {
         classesData.data.map((item) => ({
           ...item,
           grade: item.grade,
-          fee: item.fee, // Map className to grade if appropriate.
+          fee: item.fee,
         })) as ClassProps[]
       );
     }
@@ -195,13 +195,6 @@ export const ClassTable = () => {
                     className="bg-yellow-500 text-white hover:bg-yellow-600"
                   >
                     Edit
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    className="bg-red-500 text-white hover:bg-red-600"
-                  >
-                    Delete
                   </Button>
                 </div>
               </div>
