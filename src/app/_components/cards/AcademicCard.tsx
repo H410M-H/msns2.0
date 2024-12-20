@@ -1,4 +1,7 @@
-  import { type LucideIcon, NotebookPenIcon } from "lucide-react";
+"use client"
+
+import { CalendarCog, type LucideIcon, NotebookPenIcon } from "lucide-react";
+import { CldImage } from "next-cloudinary";
   import Link from "next/link";
   
     type IconType = LucideIcon
@@ -15,7 +18,25 @@
     
     const services: Services[] = [
       {
+        title: "Session Management",
+        description: "Easily enroll new students and manage their financial records.",
+        icon: CalendarCog,
+        href: "/academics/sessionalDetails",
+        iconColor: "text-yellow-500",
+        gradientFrom: "from-yellow-400",
+        gradientTo: "to-yellow-700",
+      },
+      {
         title: "User Management",
+        description: "Create and manage new classes or courses for the school",
+        icon: NotebookPenIcon,
+        iconColor: "text-blue-500",
+        gradientFrom: "from-blue-400",
+        gradientTo: "to-blue-700",
+        href: "/userReg",
+      },
+      {
+        title: "Fee Management",
         description: "Create and manage new classes or courses for the school",
         icon: NotebookPenIcon,
         iconColor: "text-green-500",
@@ -23,20 +44,21 @@
         gradientTo: "to-green-700",
         href: "/userReg",
       },
-      {
-        title: "Name your card",
-        description: "Create and manage new classes or courses for the school",
-        icon: NotebookPenIcon,
-        iconColor: "text-orange-500",
-        gradientFrom: "from-orange-400",
-        gradientTo: "to-orange-700",
-        href: "",
-      },
     ];
 
     export default function AcademicCards () {
       return (
-        <div className="relative min-h-screen flex items-center justify-center px-4 py-6 rounded-md">     
+        <div className="relative min-h-screen flex items-center justify-center px-4 py-6 rounded-md">
+          {/* Background Image */}
+          <CldImage
+            width="1920"
+            height="1080"
+            src="FrontView1_alaabu"
+            sizes="100vw"
+            alt="School view background"
+            className="absolute inset-0 object-cover w-full h-full"
+          />
+      
           {/* Cards Grid */}
           <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
             {services.map((service, index) => {

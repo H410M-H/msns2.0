@@ -18,6 +18,7 @@ const studentSchema = z.object({
   currentAddress: z.string(),
   permanentAddress: z.string(),
   medicalProblem: z.string().optional(),
+  registrationDate: z.string(), // Add this field
 })
 
 export const StudentRouter = createTRPCRouter({
@@ -55,6 +56,7 @@ export const StudentRouter = createTRPCRouter({
   .input(studentSchema)
   .mutation(async ({ ctx, input }) => {
     try {
+      // Generate registration number
       const currentYear = new Date().getFullYear().toString().slice(-2)
       const latestStudent = await ctx.db.students.findFirst({
         where: {
@@ -73,11 +75,30 @@ export const StudentRouter = createTRPCRouter({
       } else {
         newRegNumber = `MSNS${currentYear}0001`
       }
+
+      // Generate admission number
+      const latestAdmission = await ctx.db.students.findFirst({
+        where: {
+          admissionNumber: {
+          },
+        },
+        orderBy: {
+          admissionNumber: 'desc',
+        },
+      })
+      let newAdmissionNumber
+      if (latestAdmission) {
+        const latestNumber = parseInt(latestAdmission.admissionNumber.slice(-5))
+        newAdmissionNumber = `${currentYear}${(latestNumber + 1).toString().padStart(5, '0')}`
+      } else {
+        newAdmissionNumber = `${currentYear}00001`
+      }
+
       const newStudent = await ctx.db.students.create({
         data: {
           ...input,
           registrationNumber: newRegNumber,
-          admissionNumber: newRegNumber, // Assuming admission number is the same as registration number
+          admissionNumber: newAdmissionNumber,
           dateOfBirth: new Date(input.dateOfBirth).toISOString(),
         }
       })
@@ -113,3 +134,4 @@ export const StudentRouter = createTRPCRouter({
       }
     }),
 })
+

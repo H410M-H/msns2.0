@@ -50,4 +50,36 @@ export const AlotmentRouter = createTRPCRouter({
         throw new Error("Unable to fetch students for the class.");
       }
     }),
+
+  deleteFromClass: publicProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+        classId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        // Remove the student from the studentClass table
+        await ctx.db.studentClass.deleteMany({
+          where: {
+            studentId: input.studentId,
+            classId: input.classId,
+          },
+        });
+
+        // Update the student's isAssign status if needed
+        await ctx.db.students.update({
+          where: { studentId: input.studentId },
+          data: {
+            isAssign: false,
+          },
+        });
+
+        return { success: true, message: "Student removed from class successfully." };
+      } catch (error) {
+        console.error("Error removing student from class:", error);
+        throw new Error("Unable to remove student from class.");
+      }
+    }),
 });

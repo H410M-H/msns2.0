@@ -17,7 +17,6 @@ import { toast } from '~/hooks/use-toast'
 const studentSchema = z.object({
   studentMobile: z.string().min(10, "Invalid mobile number"),
   fatherMobile: z.string().min(10, "Invalid mobile number"),
-  admissionNumber: z.string().min(1, "Admission Number is required"),
   studentName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must not exceed 100 characters"),
   gender: z.enum(['MALE', 'FEMALE', 'CUSTOM']),
   dateOfBirth: z.string().min(1, "Date of Birth is required"),
@@ -137,7 +136,6 @@ export default function StudentCreationDialog() {
                           transition={{ duration: 0.3 }}
                           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-4 bg-secondary/10 rounded-b-lg"
                         >
-                          {renderFormField("admissionNumber", "Admission Number")}
                           {renderFormField("registrationDate", "Registration Date", "date")}
                           {renderFormField("discount", "Discount", "number")}
                           {renderFormField("discountbypercent", "Discount by Percent", "number")}

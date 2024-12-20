@@ -4,7 +4,6 @@ import { ScrollArea } from "~/components/ui/scroll-area"
 
 export default function DashboardPage() {
   const breadcrumbs = [
-    { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard", current: true },
   ];
   return (

@@ -23,6 +23,7 @@ import { StudentDeletionDialog } from "../forms/student/StudentDeletion";
 type StudentProps = {
   studentId: string;
   registrationNumber: string;
+  admissionNumber: string;
   studentName: string;
   fatherName: string;
   gender: 'MALE' | 'FEMALE' | 'CUSTOM';
@@ -63,6 +64,11 @@ const columns: ColumnDef<StudentProps>[] = [
     cell: ({ row }) => <div className="capitalize">{row.getValue("registrationNumber")}</div>,
   },
   {
+    accessorKey: "admissionNumber",
+    header: "Adm #",
+    cell: ({ row }) => <div className="capitalize">{row.getValue("admissionNumber")}</div>,
+  },
+  {
     accessorKey: "studentName",
     header: "Student Name",
     cell: ({ row }) => <div className="capitalize">{row.getValue("studentName")}</div>,
@@ -82,16 +88,16 @@ const columns: ColumnDef<StudentProps>[] = [
     header: "Date of Birth",
     cell: ({ row }) => <div>{row.getValue("dateOfBirth")}</div>,
   },
-  {
-    accessorKey: "studentCNIC",
-    header: "Student B-Form #",
-    cell: ({ row }) => <div>{row.getValue("studentCNIC")}</div>,
-  },
-  {
-    accessorKey: "fatherCNIC",
-    header: "Father CNIC",
-    cell: ({ row }) => <div>{row.getValue("fatherCNIC")}</div>,
-  },
+  // {
+  //   accessorKey: "studentCNIC",
+  //   header: "Student B-Form #",
+  //   cell: ({ row }) => <div>{row.getValue("studentCNIC")}</div>,
+  // },
+  // {
+  //   accessorKey: "fatherCNIC",
+  //   header: "Father CNIC",
+  //   cell: ({ row }) => <div>{row.getValue("fatherCNIC")}</div>,
+  // },
   {
     accessorKey: "fatherMobile",
     header: "Mobile No",
@@ -166,9 +172,12 @@ export const StudentTable = () => {
           <Button variant={'outline'} type="button" onClick={() => studentsData.refetch()}>
             Refresh
           </Button>
-          <StudentDeletionDialog studentIds={table.getSelectedRowModel().rows.map(
-                    (row) => row.original.studentId
-                  )} />
+          <StudentDeletionDialog
+  studentIds={table
+    .getSelectedRowModel()
+    .rows.map((row) => row.original.studentId)
+    .filter((id): id is string => !!id)}
+/>
           <CSVUploadDialog />
           <Button type="button" asChild>
             <Link href={'/userReg/student/create'}>Create</Link>

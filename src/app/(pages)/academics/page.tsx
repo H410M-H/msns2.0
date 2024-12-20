@@ -4,7 +4,6 @@ import AcademicCards from "~/app/_components/cards/AcademicCard";
 
 export default function AcademicsPage() {
   const breadcrumbs = [
-    { href: "/", label: "Home" },
     { href: "/dashboard", label: "Dashboard"},
     { href: "/academics", label: "Academics", current: true },
   ];

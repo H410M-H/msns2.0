@@ -1,6 +1,6 @@
 'use client'
 
-import { Boxes, CalendarCog, FileStackIcon, UserPlusIcon, type LucideIcon } from "lucide-react"
+import { Boxes,  FileStackIcon, UserPlusIcon, type LucideIcon } from "lucide-react"
 import Link from "next/link"
 
 interface Service {
@@ -14,15 +14,6 @@ interface Service {
 }
 
 const services: Service[] = [
-  {
-    title: "Session Management",
-    description: "Easily enroll new students and manage their financial records.",
-    icon: CalendarCog,
-    href: "/academics/sessionalDetails",
-    iconColor: "text-green-500",
-    gradientFrom: "from-green-400",
-    gradientTo: "to-green-700",
-  },
   {
     title: "Classes Allottment",
     description: "Easily enroll new Employees and manage their financial records.",

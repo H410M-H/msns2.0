@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "~/components/ui/button"
 import { Input } from "~/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
+import { Checkbox } from "~/components/ui/checkbox"
 import { api } from "~/trpc/react"
 import {
   type ColumnDef,
@@ -15,8 +16,9 @@ import {
   getFilteredRowModel,
   type SortingState,
 } from "@tanstack/react-table"
-import { ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronDown, ChevronUp } from 'lucide-react'
 import { StudentAllotmentDialog } from "../forms/class/StudentAlotment"
+import { StudentDeletionDialog } from "../forms/student/StudentDeletion"
 
 type StudentAllotmentProps = {
   registrationNumber: string
@@ -27,64 +29,19 @@ type StudentAllotmentProps = {
   sessionName: string
 }
 
-const columns: ColumnDef<StudentAllotmentProps>[] = [
-  {
-    accessorKey: "registrationNumber",
-    header: "Reg #",
-  },
-  {
-    accessorKey: "studentName",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Student Name
-          {column.getIsSorted() === "asc" ? (
-            <ChevronUp className="ml-2 h-4 w-4" />
-          ) : (
-            <ChevronDown className="ml-2 h-4 w-4" />
-          )}
-        </Button>
-      )
-    },
-  },
-  {
-    accessorKey: "fatherName",
-    header: "Father Name",
-  },
-  {
-    accessorKey: "grade",
-    header: "Class",
-  },
-  {
-    accessorKey: "sessionName",
-    header: "Session",
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      <Button
-        variant="destructive"
-        size="sm"
-        onClick={() => {
-          // Implement remove functionality here
-          console.log("Remove student", row.original.studentId)
-        }}
-      >
-        Remove
-      </Button>
-    ),
-  },
-]
-
 export function StudentAllotmentTable({ classId }: { classId: string }) {
   const [sorting, setSorting] = useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState<StudentAllotmentProps[]>([])
   const [globalFilter, setGlobalFilter] = useState("")
 
   const studentsInClass = api.alotment.getStudentsInClass.useQuery({ classId })
+  const removeStudent = api.alotment.deleteFromClass.useMutation({
+    onSuccess: async () => {
+      await studentsInClass.refetch()
+      setRowSelection({})
+    },
+  })
 
   useEffect(() => {
     if (studentsInClass.data) {
@@ -100,6 +57,78 @@ export function StudentAllotmentTable({ classId }: { classId: string }) {
     }
   }, [studentsInClass.data])
 
+  const columns: ColumnDef<StudentAllotmentProps>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+    },
+    {
+      accessorKey: "registrationNumber",
+      header: "Reg #",
+    },
+    {
+      accessorKey: "studentName",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Student Name
+            {column.getIsSorted() === "asc" ? (
+              <ChevronUp className="ml-2 h-4 w-4" />
+            ) : (
+              <ChevronDown className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        )
+      },
+    },
+    {
+      accessorKey: "fatherName",
+      header: "Father Name",
+    },
+    {
+      accessorKey: "grade",
+      header: "Class",
+    },
+    {
+      accessorKey: "sessionName",
+      header: "Session",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => {
+            removeStudent.mutate({
+              studentId: row.original.studentId,
+              classId: classId
+            })
+          }}
+          disabled={removeStudent.isPending}
+        >
+          {removeStudent.isPending ? "Removing..." : "Remove"}
+        </Button>
+      ),
+    },
+  ]
+
   const table = useReactTable({
     data,
     columns,
@@ -108,23 +137,30 @@ export function StudentAllotmentTable({ classId }: { classId: string }) {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       globalFilter,
+      rowSelection,
     },
     onGlobalFilterChange: setGlobalFilter,
   })
 
+  const selectedStudentIds = table.getSelectedRowModel().rows.map(row => row.original.studentId)
+
   return (
-    <div className="space-y-4">
+    <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
-        <Input
-          placeholder="Search students..."
-          value={globalFilter ?? ""}
-          onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="max-w-sm"
-        />
+        <div className="flex items-center gap-4">
         <StudentAllotmentDialog classId={classId} />
+          <Input
+            placeholder="Search students..."
+            value={globalFilter ?? ""}
+            onChange={(event) => setGlobalFilter(String(event.target.value))}
+            className="max-w-sm"
+          />
+          <StudentDeletionDialog studentIds={selectedStudentIds} />
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -174,24 +210,31 @@ export function StudentAllotmentTable({ classId }: { classId: string }) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between py-4">
+        <div className="text-sm text-gray-500">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div className="space-x-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   )
 }
+
