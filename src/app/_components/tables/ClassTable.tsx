@@ -79,7 +79,10 @@ const columns: ColumnDef<ClassProps>[] = [
   },
 ];
 
-export const ClassTable = () => {
+type ComponentProps = {
+  sessionId:string
+}
+export const ClassTable = ({sessionId}:ComponentProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState<ClassProps[]>([]);
@@ -186,7 +189,7 @@ export const ClassTable = () => {
                   className="bg-green-500 text-white hover:bg-green-600"
                   asChild
                 >
-                  <Link href={`/academics/classwiseDetail/${row.original.classId}`}>View Details</Link>
+                  <Link href={`/academics/classwiseDetail?classId${row.original.classId}&sessionId=${sessionId}`}>View Details</Link>
                 </Button>
                 <div className="flex gap-2">
                   <Button

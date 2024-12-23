@@ -195,7 +195,7 @@ export const SessionTable = () => {
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className="bg-white">
-                  <SessionDialog />
+                  <SessionDialog sessionId={row.original.sessionId}/>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
