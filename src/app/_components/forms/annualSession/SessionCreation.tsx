@@ -55,7 +55,6 @@ export const SessionCreationDialog = () => {
       sessionName: values.sessionName ?? "none",
       sessionFrom: dayjs(values.sessionFrom).format('YYYY-MM-DD'),
       sessionTo: dayjs(values.sessionTo).format('YYYY-MM-DD'),
-      sessionId: ""
     });
   };
 

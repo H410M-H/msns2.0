@@ -29,13 +29,13 @@ type StudentAllotmentProps = {
   sessionName: string
 }
 
-export function StudentAllotmentTable({ classId }: { classId: string }) {
+export function StudentAllotmentTable({ classId, sessionId }: { classId: string, sessionId: string }) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [rowSelection, setRowSelection] = useState({})
   const [data, setData] = useState<StudentAllotmentProps[]>([])
   const [globalFilter, setGlobalFilter] = useState("")
 
-  const studentsInClass = api.alotment.getStudentsInClass.useQuery({ classId })
+  const studentsInClass = api.alotment.getStudentsByClassAndSession.useQuery({ classId, sessionId })
   const removeStudent = api.alotment.deleteFromClass.useMutation({
     onSuccess: async () => {
       await studentsInClass.refetch()

@@ -171,7 +171,7 @@ export const ClassTable = () => {
                     {row.original.grade}
                   </h3>
                 </div>
-                <span className="rounded-md bg-blue-500 px-2 py-1 text-xs text-white">
+                <span className="rounded-md bg-pink-500 px-2 py-1 text-xs text-white">
                   {row.original.section}
                 </span>
               </div>

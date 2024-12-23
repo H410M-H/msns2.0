@@ -7,7 +7,7 @@ import { api } from "~/trpc/react";
 
 type ClassProps = {
   classId: string;
-  className: string;
+  grade: string;
   section?: string; // Updated to optional
   category: string;
   fee: number;
@@ -32,7 +32,7 @@ export const ClassesCard = () => {
           className="shadow-lg transition-shadow hover:shadow-xl"
         >
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">{classItem.className}</CardTitle>
+            <CardTitle className="text-xl font-semibold">{classItem.grade}</CardTitle>
           </CardHeader>
           <CardContent>
             <p>Section: {classItem.section ?? "Not Available"}</p> {/* Fallback value */}

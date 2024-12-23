@@ -20,7 +20,7 @@ export default function ClassStudentPage({
         </div>
       </div>
       <Separator className="bg-green-900" />
-      <StudentAllotmentTable classId={params.classId} />
+      <StudentAllotmentTable classId={params.classId} sessionId={params.sessionId} />
       <Separator className="bg-green-900" />
     </main>
   );

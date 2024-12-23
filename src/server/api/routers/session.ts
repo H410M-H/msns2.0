@@ -50,7 +50,6 @@ export const SessionRouter = createTRPCRouter({
     createSession: publicProcedure
     .input(
         z.object({
-          sessionId: z.string(),
           sessionName: z.string(),
           sessionFrom: z.string({
             required_error: "Session From date is required",

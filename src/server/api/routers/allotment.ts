@@ -51,6 +51,25 @@ export const AlotmentRouter = createTRPCRouter({
       }
     }),
 
+    getStudentsByClassAndSession: publicProcedure
+    .input(z.object({ classId: z.string(), sessionId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      try {
+        const data = await ctx.db.studentClass.findMany({
+          where: { classId: input.classId, sessionId: input.sessionId },
+          include: {
+            class: true,
+            student: true,
+            session: true,
+          },
+        });
+        return data;
+      } catch (error) {
+        console.error("Error fetching students in class:", error);
+        throw new Error("Unable to fetch students for the class.");
+      }
+    }),
+
   deleteFromClass: publicProcedure
     .input(
       z.object({
