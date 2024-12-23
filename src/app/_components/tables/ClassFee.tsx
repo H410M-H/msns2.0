@@ -15,8 +15,8 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
 import Link from "next/link";
-import { ClassDeletionDialog } from "~/app/_components/shared/forms/class/ClassDeletion";
-import { StudentAllotmentDialog } from "~/app/_components/shared/forms/class/StudentAlotment";
+import { ClassDeletionDialog } from "../forms/class/ClassDeletion";
+import { StudentAllotmentDialog } from "../forms/class/StudentAlotment";
 
 const columns: ColumnDef<ClassStudentProps>[] = [
   {
@@ -42,18 +42,18 @@ const columns: ColumnDef<ClassStudentProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "className",
+    accessorKey: "Grade",
     header: "Class",
-    cell: ({ row }) => <div>{row.getValue("className")}</div>,
+    cell: ({ row }) => <div>{row.getValue("grade")}</div>,
   },
 ];
 
-export const ClassFeeTable = ({classId}:{classId:string}) => {
+export const ClassFeeTable = ({classId, sessionId}:{classId:string, sessionId: string}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState<ClassStudentProps[]>([]);
 
-  const students = api.alotment.getStudentsInClass.useQuery({classId:classId});
+  const students = api.alotment.getStudentsByClassAndSession.useQuery({classId:classId, sessionId:sessionId});
 
   useMemo(() => {
     if (students.data) setData(students.data);
@@ -88,10 +88,10 @@ export const ClassFeeTable = ({classId}:{classId:string}) => {
           <Input
             placeholder="Search name"
             value={
-              (table.getColumn("className")?.getFilterValue() as string) ?? ""
+              (table.getColumn("grade")?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("className")?.setFilterValue(event.target.value)
+              table.getColumn("grade")?.setFilterValue(event.target.value)
             }
             className="max-w-sm border-blue-500"
           />
@@ -133,7 +133,7 @@ export const ClassFeeTable = ({classId}:{classId:string}) => {
                   </h3>
                 </div>
                 <span className="rounded-md bg-blue-500 px-2 py-1 text-xs text-white">
-                  {row.original.class.className}
+                  {row.original.class.grade}
                 </span>
               </div>
               <p className="text-sm text-gray-600">{row.original.session.sessionName}</p>

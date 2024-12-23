@@ -3,7 +3,7 @@ type ClassProps = {
   classId: string
   grade: string
   section: string
-  category: "Montessori" | "Primary" | "Middle" | "SSC-I" | "SSC-II"
+  category: "Montessori" | "Primary" | "Middle" | "SSC_I" | "SSC_II"
   fee: number
 }
 
@@ -72,6 +72,7 @@ type FeeProps = {
 type ClassStudentProps = {
   scId: string
   classId: string
+  sessionId: string
   student: StudentProps
   class: ClassProps
   session: SessionProps
