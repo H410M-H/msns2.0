@@ -1,11 +1,12 @@
 import { StudentAllotmentTable } from "~/app/_components/tables/StudentAlotmentTable";
 import { Separator } from "~/components/ui/separator";
 
-export default function ClassStudentPage({
+export default async function ClassStudentPage({
   searchParams,
 }: {
-  searchParams: { classId: string, sessionId: string };
+  searchParams: Promise<{ classId: string, sessionId: string }>
 }) {
+  const searchProps = await searchParams
   return (
     <main className="min-h-screen bg-yellow-100/50 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
       <div className="container mx-auto pt-20">
@@ -20,7 +21,7 @@ export default function ClassStudentPage({
         </div>
       </div>
       <Separator className="bg-green-900" />
-      <StudentAllotmentTable classId={searchParams.classId} sessionId={searchParams.sessionId} />
+      <StudentAllotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} />
       <Separator className="bg-green-900" />
     </main>
   );
