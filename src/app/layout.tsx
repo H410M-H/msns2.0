@@ -7,7 +7,7 @@ import Header from "./_components/shared/nav/Header";
 import { Footer } from "./_components/shared/footer/footer";
 
 export const metadata: Metadata = {
-  title: "MSNS®",
+  title: "MSNS® | LMS",
   description: "Developed by MSND-DEV™",
   icons: [{ rel: "icon", url: "/logo-w.ico" }],
 };

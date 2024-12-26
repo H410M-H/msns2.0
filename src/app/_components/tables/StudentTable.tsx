@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { api } from "~/trpc/react";
@@ -15,8 +15,24 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
-import { type ColumnDef, type SortingState, useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel, flexRender } from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import {
+  type ColumnDef,
+  type SortingState,
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+} from "@tanstack/react-table";
 import { CSVUploadDialog } from "../forms/student/FileInput";
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion";
 
@@ -26,13 +42,15 @@ type StudentProps = {
   admissionNumber: string;
   studentName: string;
   fatherName: string;
-  gender: 'MALE' | 'FEMALE' | 'CUSTOM';
+  gender: "MALE" | "FEMALE" | "CUSTOM";
   dateOfBirth: string;
   studentCNIC: string;
   fatherCNIC: string;
   fatherMobile: string;
+  profilePic: string;
 };
 
+// Define table columns
 const columns: ColumnDef<StudentProps>[] = [
   {
     id: "select",
@@ -42,9 +60,7 @@ const columns: ColumnDef<StudentProps>[] = [
           table.getIsAllPageRowsSelected() ||
           (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={(value) =>
-          table.toggleAllPageRowsSelected(!!value)
-        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
     ),
@@ -61,92 +77,83 @@ const columns: ColumnDef<StudentProps>[] = [
   {
     accessorKey: "registrationNumber",
     header: "Registration #",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("registrationNumber")}</div>,
+    cell: ({ row }) => <span>{row.getValue("registrationNumber")}</span>,
   },
   {
     accessorKey: "admissionNumber",
     header: "Adm #",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("admissionNumber")}</div>,
+    cell: ({ row }) => <span>{row.getValue("admissionNumber")}</span>,
   },
+  // {
+  //   accessorKey: "profilePic",
+  //   header: "Profile Picture",
+  //   cell: ({ row }) => (
+  //     <div className="flex items-center justify-center">
+  //       <Image
+  //         src={row.getValue("profilePic")}
+  //         alt="Profile"
+  //         className="w-10 h-10 rounded-full object-cover"
+  //         width={40}
+  //         height={40}
+  //       />
+  //     </div>
+  //   ),
+  // },
   {
     accessorKey: "studentName",
     header: "Student Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("studentName")}</div>,
+    cell: ({ row }) => <span>{row.getValue("studentName")}</span>,
   },
   {
     accessorKey: "fatherName",
     header: "Father Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("fatherName")}</div>,
+    cell: ({ row }) => <span>{row.getValue("fatherName")}</span>,
   },
   {
     accessorKey: "gender",
     header: "Gender",
-    cell: ({ row }) => <div>{row.getValue("gender")}</div>,
+    cell: ({ row }) => <span>{row.getValue("gender")}</span>,
   },
   {
     accessorKey: "dateOfBirth",
     header: "Date of Birth",
     cell: ({ row }) => {
       const date = new Date(row.getValue("dateOfBirth"));
-      return <div>{date.toLocaleDateString()}</div>;
+      return <span>{date.toLocaleDateString()}</span>;
     },
   },
-  // {
-  //   accessorKey: "studentCNIC",
-  //   header: "Student B-Form #",
-  //   cell: ({ row }) => <div>{row.getValue("studentCNIC")}</div>,
-  // },
-  // {
-  //   accessorKey: "fatherCNIC",
-  //   header: "Father CNIC",
-  //   cell: ({ row }) => <div>{row.getValue("fatherCNIC")}</div>,
-  // },
-  // {
-  //   accessorKey: "fatherMobile",
-  //   header: "Mobile No",
-  //   cell: ({ row }) => <div>{row.getValue("fatherMobile")}</div>,
-  // },
   {
     id: "actions",
     header: "Actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-8 h-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href={`/dashboard/student/edit/${row.original.studentId}`}>
-                Edit
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: ({ row }) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="w-8 h-8 p-0">
+            <DotsHorizontalIcon className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href={`/dashboard/student/edit/${row.original.studentId}`}>
+              Edit
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
   },
 ];
 
 export const StudentTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [data, setData] = useState<StudentProps[]>([]);
-
-  const studentsData = api.student.getStudents.useQuery();
-
-  useMemo(() => {
-    if (studentsData.data) setData(studentsData.data);
-  }, [studentsData.data]);
+  const { data: students, refetch } = api.student.getStudents.useQuery();
 
   const table = useReactTable({
-    data,
+    data: students ?? [],
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -154,82 +161,65 @@ export const StudentTable = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      rowSelection,
-    },
+    state: { sorting, rowSelection },
   });
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between m-2">
+      <div className="flex items-center justify-between p-4">
         <Input
           placeholder="Search name"
           value={(table.getColumn("studentName")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("studentName")?.setFilterValue(event.target.value)
+          onChange={(e) =>
+            table.getColumn("studentName")?.setFilterValue(e.target.value)
           }
           className="max-w-sm"
         />
         <div className="flex items-center gap-3">
-          <Button variant={'outline'} type="button" onClick={() => studentsData.refetch()}>
+          <Button variant="outline" onClick={() => refetch()}>
             Refresh
           </Button>
           <StudentDeletionDialog
-  studentIds={table
-    .getSelectedRowModel()
-    .rows.map((row) => row.original.studentId)
-    .filter((id): id is string => !!id)}
-/>
+            studentIds={table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original.studentId)
+              .filter(Boolean)}
+          />
           <CSVUploadDialog />
-          <Button type="button" asChild>
-            <Link href={'/userReg/student/create'}>Create</Link>
+          <Button asChild>
+            <Link href="/userReg/student/create">Create</Link>
           </Button>
         </div>
       </div>
-      <div className="m-2 border rounded-md">
+      <div className="p-4 border rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext(),
-                          )}
-                    </TableHead>
-                  );
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -237,12 +227,12 @@ export const StudentTable = () => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end m-6 space-x-2">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex items-center justify-between p-4">
+        <span className="text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
+        </span>
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"

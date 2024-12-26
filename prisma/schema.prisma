@@ -39,6 +39,7 @@ model students {
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
   isAssign            Boolean        @default(false)
+  profilePic          String            @default("/user.jpg")
   discount            Float          @default(0)
   discountbypercent   Float          @default(0)
   StudentClass        StudentClass[]

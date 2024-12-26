@@ -189,7 +189,7 @@ export const ClassTable = ({sessionId}:ComponentProps) => {
                   className="bg-green-500 text-white hover:bg-green-600"
                   asChild
                 >
-                  <Link href={`/academics/classwiseDetail?classId${row.original.classId}&sessionId=${sessionId}`}>View Details</Link>
+                  <Link href={`/academics/classwiseDetail?classId=${row.original.classId}&sessionId=${sessionId}`}>View Details</Link>
                 </Button>
                 <div className="flex gap-2">
                   <Button

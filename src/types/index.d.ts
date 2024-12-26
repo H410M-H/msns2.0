@@ -26,6 +26,7 @@ type StudentProps = {
   currentAddress: string
   permanentAddress: string
   medicalProblem?: string | null
+  profilePic?: string | null
   isAssign: boolean
   discount: number
   discountbypercent: number
