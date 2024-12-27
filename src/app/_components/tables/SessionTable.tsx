@@ -218,6 +218,8 @@ export const SessionTable = () => {
           >
             Previous
           </Button>
+          </div>
+          <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -227,8 +229,8 @@ export const SessionTable = () => {
           >
             Next
           </Button>
+          </div>
         </div>
       </div>
-    </div>
   );
 };

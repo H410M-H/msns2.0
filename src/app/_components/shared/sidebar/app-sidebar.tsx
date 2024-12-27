@@ -2,10 +2,8 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
   Frame,
   Map,
   PieChart,
@@ -40,18 +38,18 @@ const data = {
       logo: School,
       plan: "Enterprise",
     },
-    {
-      id: "2", // Add the missing id
-      name: "Faculty",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      id: "3", // Add the missing id
-      name: "Student",
-      logo: Command,
-      plan: "Free",
-    },
+    // {
+    //   id: "2", // Add the missing id
+    //   name: "Faculty",
+    //   logo: AudioWaveform,
+    //   plan: "Startup",
+    // },
+    // {
+    //   id: "3", // Add the missing id
+    //   name: "Student",
+    //   logo: Command,
+    //   plan: "Free",
+    // },
   ],
   navMain: [
     {
@@ -60,7 +58,7 @@ const data = {
       icon: SquareTerminal,
       isActive: true,
       items: [
-        { title: "Greetings", url: "/dashboard" },
+        { title: "Greetings", url: "/" },
         { title: "Analytics", url: "/dashboard" },
         { title: "Profile", url: "/dashboard" },
       ],
@@ -72,7 +70,7 @@ const data = {
       items: [
         { title: "Session", url: "/academics/sessionalDetails" },
         { title: "Classes", url: "/academics/classwiseDetail" },
-        { title: "Students", url: "/userReg/faculty/view" },
+        { title: "Students", url: "/userReg/student/view" },
       ],
     },
     {
@@ -80,8 +78,8 @@ const data = {
       url: "/userReg",
       icon: BookOpen,
       items: [
-        { title: "Faculty", url: "/userReg/faculty/create" },
-        { title: "Students", url: "/userReg/student/create" },
+        { title: "Faculty", url: "/userReg/faculty/view" },
+        { title: "Students", url: "/userReg/student/view" },
         // { title: "Tutorials", url: "#" },
         // { title: "Changelog", url: "#" },
       ],
