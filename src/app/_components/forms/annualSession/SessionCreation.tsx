@@ -1,11 +1,14 @@
-"use client";
-
-import { CalendarIcon, ReloadIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
+import { useState } from 'react';
+import { CalendarIcon, LoaderIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { api } from "~/trpc/react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -15,31 +18,25 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "~/components/ui/dialog";
-import dayjs from "dayjs";
 import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { cn } from "~/lib/utils";
 import { Calendar } from "~/components/ui/calendar";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import dayjs from "dayjs";
+import { cn } from "~/lib/utils";
 import { format } from "date-fns";
 
 const formSchema = z.object({
-  sessionName: z.string({ required_error: "Field is required" }),
+  sessionName: z.string().min(1, "Session name is required"),
   sessionFrom: z.date({
-    required_error: "Session From date is required",
-  }),
-  sessionTo: z.date({
-    required_error: "Session To date is required",
+    required_error: "Start date is required",
   }),
 });
 
-export const SessionCreationDialog = () => {
+export default function SessionCreationDialog() {
+  const [isOpen, setIsOpen] = useState(false);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
@@ -47,141 +44,105 @@ export const SessionCreationDialog = () => {
   const createSession = api.session.createSession.useMutation({
     onSuccess: () => {
       form.reset();
+      setIsOpen(false);
     },
   });
 
   const formSubmitted = (values: z.infer<typeof formSchema>) => {
+    const sessionFrom = dayjs(values.sessionFrom).format('YYYY-MM-DD');
+    const sessionTo = dayjs(values.sessionFrom).add(365, 'days').format('YYYY-MM-DD');
+    
     createSession.mutate({
-      sessionName: values.sessionName ?? "none",
-      sessionFrom: dayjs(values.sessionFrom).format('YYYY-MM-DD'),
-      sessionTo: dayjs(values.sessionTo).format('YYYY-MM-DD'),
+      sessionName: values.sessionName,
+      sessionFrom: sessionFrom,
+      sessionTo: sessionTo,
     });
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
-          Add Session
+        <Button variant="outline" className="gap-2">
+          <CalendarIcon className="h-4 w-4" />
+          Add New Session
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-full sm:max-w-md">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Session</DialogTitle>
+          <DialogTitle>Create New Session</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(formSubmitted)}
-            className="flex flex-col gap-4 p-4"
-          >
+          <form onSubmit={form.handleSubmit(formSubmitted)} className="space-y-6">
             <FormField
               control={form.control}
               name="sessionName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Session name</FormLabel>
+                  <FormLabel>Session Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Name of Session"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
+                    <Input placeholder="Enter session name" {...field}
+                    value={field.value ?? ""}
+                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-              <FormField
-                control={form.control}
-                name="sessionFrom"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Session Starting Date:*</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                            <FormField
-                control={form.control}
-                name="sessionTo"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Session Ending Date:*</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant="outline"
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground",
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="sessionFrom"
+              render={({ field }) => (
+                <FormItem className="flex flex-col">
+                  <FormLabel>Start Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) =>
+                          date < new Date()
+                        }
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  {field.value && (
+                    <p className="text-sm text-muted-foreground">
+                      Session will end on: {dayjs(field.value).add(365, 'days').format('MMMM D, YYYY')}
+                    </p>
+                  )}
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button
               type="submit"
-              disabled={createSession.isPending}
               className="w-full"
+              disabled={createSession.isPending}
             >
               {createSession.isPending ? (
                 <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
+                  <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
                 </>
               ) : (
                 "Create Session"
@@ -192,4 +153,4 @@ export const SessionCreationDialog = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}
