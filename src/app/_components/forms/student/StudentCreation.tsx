@@ -87,9 +87,9 @@ export default function StudentCreationDialog() {
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input 
-              type={type} 
-              {...field} 
+            <Input
+              type={type}
+              {...field}
               onChange={type === "number" ? (e) => field.onChange(parseFloat(e.target.value)) : field.onChange}
             />
           </FormControl>
@@ -130,37 +130,37 @@ export default function StudentCreationDialog() {
                       {expandedSection === 'academic' ? <ChevronUp /> : <ChevronDown />}
                     </div>
                     <FormField
-                            control={form.control}
-                            name="profilePic"
-                            render={({ field }) => (
-                                <FormItem className="grid gap-2">
-                                    <FormLabel>Upload hotel logo</FormLabel>
-                                    <CldUploadWidget
-                                        options={{ sources: ["local"] }}
-                                        uploadPreset="msnsPDP"
-                                        onSuccess={(result: CloudinaryUploadWidgetResults) => {
-                                            const info = result.info;
-                                            if (typeof info !== "string") {
-                                                const secure_url = info?.secure_url ?? 'none';
-                                                    field.onChange(secure_url);
-                                            }
-                                        }}
-                                    >
-                                        {({ open }) => {
-                                            function handleOnClick() {
-                                                open();
-                                            }
-                                            return (
-                                                <Button type="button" onClick={handleOnClick} className="w-fit bg-primary text-white ">
-                                                    Upload files
-                                                </Button>
-                                            );
-                                        }}
-                                    </CldUploadWidget>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
+                      control={form.control}
+                      name="profilePic"
+                      render={({ field }) => (
+                        <FormItem className="grid gap-2">
+                          <FormLabel>Upload hotel logo</FormLabel>
+                          <CldUploadWidget
+                            options={{ sources: ["local"] }}
+                            uploadPreset="msnsPDP"
+                            onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                              const info = result.info;
+                              if (typeof info !== "string") {
+                                const secure_url = info?.secure_url ?? 'none';
+                                field.onChange(secure_url);
+                              }
+                            }}
+                          >
+                            {({ open }) => {
+                              function handleOnClick() {
+                                open();
+                              }
+                              return (
+                                <Button type="button" onClick={handleOnClick} className="w-fit bg-primary text-white ">
+                                  Upload files
+                                </Button>
+                              );
+                            }}
+                          </CldUploadWidget>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <AnimatePresence>
                       {expandedSection === 'academic' && (
                         <motion.div

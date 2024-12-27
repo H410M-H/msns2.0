@@ -22,9 +22,9 @@ export const SessionDialog = ({sessionId}:ComponentProps) => {
             User Registration
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-full lg:max-w-6xl rounded-md bg-white p-6 shadow-lg animate-fade-in">
+        <DialogContent className="w-full lg:max-w-6xl rounded-md bg-white shadow-lg animate-fade-in">
           <DialogHeader>
-            <DialogTitle className="mb-4 text-2xl font-semibold text-gray-800">
+            <DialogTitle className="text-2xl font-semibold text-green-800">
               Register Employee/ Student
             </DialogTitle>
             <RegistrationCards />
@@ -41,9 +41,9 @@ export const SessionDialog = ({sessionId}:ComponentProps) => {
             View Classes
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-full lg:max-w-6xl rounded-md bg-white p-6 shadow-lg animate-fade-in">
+        <DialogContent className="w-full lg:max-w-6xl rounded-md bg-white shadow-lg animate-fade-in">
           <DialogHeader>
-            <DialogTitle className="mb-4 text-2xl font-semibold text-gray-800">
+            <DialogTitle className="text-2xl font-semibold text-green-800">
               Classwise Details
             </DialogTitle>
             <ClassTable sessionId={sessionId}/>

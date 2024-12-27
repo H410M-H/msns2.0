@@ -18,7 +18,7 @@ export function HeroSection({ currentVideoIndex, videos, heroOpacity, heroScale 
     >
       <video
         key={currentVideoIndex}
-        className="absolute top-16 left-0 w-full h-full object-cover"
+        className="absolute top-18 left-0 w-full h-full object-cover"
         autoPlay
         muted
         loop

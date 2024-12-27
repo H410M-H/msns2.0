@@ -1,5 +1,6 @@
 
 type ClassProps = {
+  sessionId: string
   classId: string
   grade: string
   section: string

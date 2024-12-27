@@ -27,6 +27,7 @@ type StudentAllotmentProps = {
   fatherName: string
   grade: string
   sessionName: string
+  sessionId: string
 }
 
 export function StudentAllotmentTable({ classId, sessionId }: { classId: string, sessionId: string }) {
@@ -52,6 +53,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
         fatherName: item.student.fatherName,
         grade: item.class.grade,
         sessionName: item.session.sessionName,
+        sessionId: item.session.sessionId,
       }))
       setData(transformedData)
     }
@@ -118,7 +120,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
           onClick={() => {
             removeStudent.mutate({
               studentId: row.original.studentId,
-              classId: classId
+              classId: classId,
             })
           }}
           disabled={removeStudent.isPending}

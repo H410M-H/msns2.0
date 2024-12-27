@@ -32,6 +32,7 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { SessionDialog } from "../dialogs/SessionDetailDialog";
+import { Input } from "~/components/ui/input";
 
 const columns: ColumnDef<SessionProps>[] = [
   {
@@ -81,7 +82,7 @@ const columns: ColumnDef<SessionProps>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-4 w-4 p-0">
               <span className="sr-only">Open menu</span>
               <DotsHorizontalIcon className="h-4 w-4" />
             </Button>
@@ -140,16 +141,16 @@ export const SessionTable = () => {
           >
             {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
           </Button>
-          {/* <Input
+          <Input
             placeholder="Search name"
             value={
-              (table.getColumn("className")?.getFilterValue() as string) ?? ""
+              (table.getColumn("sessionName")?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("className")?.setFilterValue(event.target.value)
+              table.getColumn("sessionName")?.setFilterValue(event.target.value)
             }
             className="max-w-sm border-blue-500"
-          /> */}
+          />
         </div>
         <div className="flex items-center gap-2">
           <SessionCreationDialog />
@@ -174,19 +175,20 @@ export const SessionTable = () => {
           table.getRowModel().rows.map((row) => (
             <div
             key={row.id}
-            className="flex flex-col justify-between rounded-md border bg-gradient-to-r from-blue-200 to-purple-200 p-4 shadow-md transition-shadow hover:shadow-lg"
+            className="flex flex-col justify-between rounded-md border bg-gradient-to-r from-blue-200 to-purple-200 m-2 shadow-md transition-shadow hover:shadow-lg"
             data-state={row.getIsSelected() && "selected"}
           >
             <Accordion
               type="single"
               collapsible
               key={row.id}
-              className="flex flex-col justify-between rounded-md border bg-gradient-to-r from-blue-200 to-purple-200 p-4 shadow-md transition-shadow hover:shadow-lg"
+              className="flex flex-col justify-between rounded-md border bg-gradient-to-r from-blue-200 to-purple-200 m-2 shadow-md transition-shadow hover:shadow-lg"
               data-state={row.getIsSelected() && "selected"}
             >
               <AccordionItem value={row.id}>
-                <AccordionTrigger className="flex gap-4  bg-white p-4 rounded-md shadow-lg space-y-4 md:space-y-0 md:space-x-4 transition duration-300 ease-in-out hover:shadow-x">
-                  <span>Session - {row.original.sessionName}</span>
+                <AccordionTrigger className="flex gap-4 bg-white p-4 rounded-md shadow-lg space-y-4 md:space-y-0 md:space-x-4 transition duration-300 ease-in-out hover:shadow-x">
+                <span className="text-lg font-semibold text-green-800">
+                {row.original.sessionName}</span>
                   <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 shadow-inner">
                     {row.original.sessionFrom}
                   </span>

@@ -190,6 +190,7 @@ export const ClassTable = ({sessionId}:ComponentProps) => {
                   asChild
                 >
                   <Link href={`/academics/classwiseDetail?classId=${row.original.classId}&sessionId=${sessionId}`}>View Details</Link>
+                  {/* <ClasswiseDialog sessionId={sessionId} classId={row.original.classId}/> */}
                 </Button>
                 <div className="flex gap-2">
                   <Button

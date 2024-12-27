@@ -12,7 +12,6 @@ import {
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { Input } from "~/components/ui/input";
 import { api } from "~/trpc/react";
 import Link from "next/link";
 import { StudentAllotmentDialog } from "../forms/class/StudentAlotment";
@@ -31,10 +30,12 @@ type ClassStudentProps = {
   class: {
     grade: string;
     fee: number;
+    classId: number;
     // Add other properties as needed...
   };
   session: {
     sessionName: string;
+    sessionId: string;
     // Add other properties as needed...
   };
 };
@@ -63,6 +64,11 @@ const columns: ColumnDef<ClassStudentProps>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "scid",
+    header: "Id",
+    cell: ({ row }) => <div>{row.getValue("scid")}</div>,
+  },
+  {
     accessorKey: "student.studentName",
     header: "Student Name",
     cell: ({ row }) => <div>{row.getValue("student.studentName")}</div>,
@@ -89,7 +95,7 @@ const columns: ColumnDef<ClassStudentProps>[] = [
   },
 ];
 
-export const ClassAlotmentTable = ({ classId }: { classId: string }) => {
+export const ClassAlotmentTable = ({ classId }: { classId: string, sessionId: string }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState<ClassStudentProps[]>([]);
@@ -135,8 +141,8 @@ export const ClassAlotmentTable = ({ classId }: { classId: string }) => {
           >
             {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
           </Button>
-          <Input
-            placeholder="Search student name"
+          {/* <Input
+            placeholder="Search Student"
             value={
               (table.getColumn("student.studentName")?.getFilterValue() as string) ?? ""
             }
@@ -144,10 +150,10 @@ export const ClassAlotmentTable = ({ classId }: { classId: string }) => {
               table.getColumn("student.studentName")?.setFilterValue(event.target.value)
             }
             className="max-w-sm border-blue-500"
-          />
+          /> */}
         </div>
         <div className="flex items-center gap-2">
-          <StudentAllotmentDialog classId={classId} />
+          <StudentAllotmentDialog classId={classId}/>
           <Button
             variant="outline"
             className="bg-blue-500 text-white hover:bg-blue-600"

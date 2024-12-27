@@ -84,7 +84,7 @@ export const SessionCreationDialog = () => {
                     <Input
                       placeholder="Name of Session"
                       {...field}
-                      value={field.value ?? "PPP"}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -108,7 +108,7 @@ export const SessionCreationDialog = () => {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, "")
                             ) : (
                               <span>Pick a date</span>
                             )}
@@ -149,7 +149,7 @@ export const SessionCreationDialog = () => {
                             )}
                           >
                             {field.value ? (
-                              format(field.value, "PPP")
+                              format(field.value, "")
                             ) : (
                               <span>Pick a date</span>
                             )}
