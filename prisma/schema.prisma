@@ -101,11 +101,8 @@ model sessions {
 model fees {
   feeId      String   @id @default(uuid())
   feeName    String
-  feeTuition Int
-  feePaper   Int
-  feeSport   Int
-  feeIdcard  Int
-  feeComm    Int
+  tuition          Float          @default(0)
+  type       FeeCategory        @default(MonthlyFee)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 }
@@ -159,4 +156,8 @@ enum ClassCategory {
   Middle
   SSC_I
   SSC_II
+}
+enum FeeCategory {
+  MonthlyFee
+  AnnualFee
 }

@@ -8,6 +8,7 @@ import {
 } from "~/components/ui/dialog";
 import { ClassTable } from "../tables/ClassTable";
 import { RegistrationCards } from "../cards/RegistrationCard";
+import { FeeManagementDialog } from "./FeeManagement";
 
 
 type ComponentProps = {
@@ -64,6 +65,7 @@ export const SessionDialog = ({sessionId}:ComponentProps) => {
             <DialogTitle className="mb-4 text-2xl font-semibold text-gray-800">
               Fee Details
             </DialogTitle>
+            <FeeManagementDialog sessionId={sessionId}/>
             <p className="text-gray-600">More information about the session can go here...</p>
           </DialogHeader>
         </DialogContent>

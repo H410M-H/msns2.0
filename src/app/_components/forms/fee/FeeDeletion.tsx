@@ -14,29 +14,30 @@ import {
 } from "~/components/ui/alert-dialog"
 import { Button } from "~/components/ui/button"
 
-
 export const FeeDeletionDialog = ({ feeIds }: { feeIds: string[] }) => {
     const deleteFees = api.fee.deleteFeesByIds.useMutation()
 
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>
-                <Button variant="destructive" disabled={feeIds.length == 0}>Delete selected</Button>
+                <Button variant="destructive" disabled={feeIds.length === 0}>Delete selected</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently delete your
-                        account and remove your data from our servers.
+                        This action cannot be undone. This will permanently delete the selected fees
+                        and remove the data from our servers.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction  asChild>
+                    <AlertDialogAction asChild>
                         <Button variant="destructive"
-                            onClick={() => deleteFees.mutate({ feeIds: feeIds })}
-                            disabled={deleteFees.isPending}>Confirm</Button>
+                            onClick={() => deleteFees.mutate({ feeIds })}
+                            disabled={deleteFees.isPending}>
+                            Confirm
+                        </Button>
                     </AlertDialogAction>
                 </AlertDialogFooter>
             </AlertDialogContent>

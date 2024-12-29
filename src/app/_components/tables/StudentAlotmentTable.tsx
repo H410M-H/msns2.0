@@ -19,6 +19,7 @@ import {
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { StudentAllotmentDialog } from "../forms/class/StudentAlotment"
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion"
+import { FeeManagementDialog } from "../dialogs/FeeManagement"
 
 type StudentAllotmentProps = {
   registrationNumber: string
@@ -114,6 +115,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
     {
       id: "actions",
       cell: ({ row }) => (
+        <><FeeManagementDialog sessionId={sessionId} />
         <Button
           variant="destructive"
           size="sm"
@@ -122,11 +124,12 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
               studentId: row.original.studentId,
               classId: classId,
             })
-          }}
+          } }
           disabled={removeStudent.isPending}
         >
           {removeStudent.isPending ? "Removing..." : "Remove"}
-        </Button>
+        </Button></>
+
       ),
     },
   ]

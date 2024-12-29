@@ -1,6 +1,6 @@
 
 type ClassProps = {
-  sessionId: string
+  sessionId?: string
   classId: string
   grade: string
   section: string
@@ -62,11 +62,9 @@ type SessionProps = {
 type FeeProps = {
   feeId: string
   feeName: string
-  feeTuition: number
-  feePaper: number
-  feeSport: number
-  feeIdcard: number
-  feeComm: number
+  tuition: number
+  fee: number
+  type: "MonthlyFee" | "AnnualFee" 
   createdAt: Date
   updatedAt: Date
 }

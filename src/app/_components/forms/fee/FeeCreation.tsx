@@ -22,19 +22,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
 
 const formSchema = z.object({
-  feeName: z.string().min(1, "Fee name is required"),
-  feeTuition: z.number().nonnegative("Tuition fee must be non-negative"),
-  feePaper: z.number().nonnegative("Paper fund must be non-negative"),
-  feeSport: z.number().nonnegative("Sports fund must be non-negative"),
-  feeIdcard: z.number().nonnegative("ID card fee must be non-negative"),
-  feeComm: z.number().nonnegative("INFO & CALLS fee must be non-negative"),
+  feeName: z.string({ required_error: "Field is required" }),
+  tuition: z.number().min(0, "Tuition must be a positive number"),
+  type: z.enum(["MonthlyFee", "AnnualFee"], {
+    required_error: "Fee type is required",
+  }),
+  fee: z.number().min(0, "Fee must be a positive number"),
 });
 
-export const FeeCreationDialog: React.FC = () => {
+export const FeeCreationDialog = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      tuition: 0,
+      fee: 0,
+    },
   });
 
   const createFee = api.fee.createFee.useMutation({
@@ -50,57 +55,98 @@ export const FeeCreationDialog: React.FC = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Set Fee</Button>
+        <Button>
+          Add Fee
+        </Button>
       </DialogTrigger>
       <DialogContent className="w-full sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Create Fee Structure</DialogTitle>
+          <DialogTitle>Create Fee</DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(formSubmitted)} className="flex flex-col gap-4 p-4">
+          <form
+            onSubmit={form.handleSubmit(formSubmitted)}
+            className="flex flex-col gap-4 p-4"
+          >
             <FormField
               control={form.control}
               name="feeName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Fee name</FormLabel>
+                  <FormLabel>Fee Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Fee of Class" {...field} />
+                    <Input
+                      placeholder="Enter fee name"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {['feeTuition', 'feePaper', 'feeSport', 'feeIdcard', 'feeComm'].map((feeField) => (
-              <FormField
-                key={feeField}
-                control={form.control}
-                name={feeField as keyof z.infer<typeof formSchema>}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{feeField.replace('fee', '').charAt(0).toUpperCase() + feeField.slice(1)} Fee</FormLabel>
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Fee Type</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <Input
-                        placeholder="Enter room price"
-                        {...field}
-                        value={field.value ?? ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          if (
-                            value === "" ||
-                            (/^\d+$/.test(value) && parseInt(value) > 0)
-                          ) {
-                            field.onChange(value === "" ? "" : parseInt(value));
-                          }
-                        }}
-                      />
-                      </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            ))}
-            <Button type="submit" disabled={createFee.isPending} className="w-full">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select fee type" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="MonthlyFee">Monthly Fee</SelectItem>
+                      <SelectItem value="AnnualFee">Annual Fee</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tuition"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tuition Amount</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter tuition amount"
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="fee"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Additional Fee</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="number"
+                      placeholder="Enter additional fee amount"
+                      {...field}
+                      onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              disabled={createFee.isPending}
+              className="w-full"
+            >
               {createFee.isPending ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

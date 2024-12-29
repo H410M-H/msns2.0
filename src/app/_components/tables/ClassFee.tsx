@@ -48,12 +48,12 @@ const columns: ColumnDef<ClassStudentProps>[] = [
   },
 ];
 
-export const ClassFeeTable = ({classId, sessionId}:{classId:string, sessionId: string}) => {
+export const ClassFeeTable = ({classId, feeId}:{classId:string, feeId: string}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [data, setData] = useState<ClassStudentProps[]>([]);
 
-  const students = api.alotment.getStudentsByClassAndSession.useQuery({classId:classId, sessionId:sessionId});
+  const students = api.alotment.getStudentsByClassAndSession.useQuery({classId:classId, sessionId:feeId});
 
   useMemo(() => {
     if (students.data) setData(students.data);
@@ -144,7 +144,7 @@ export const ClassFeeTable = ({classId, sessionId}:{classId:string, sessionId: s
                   className="bg-green-500 text-white hover:bg-green-600"
                   asChild
                 >
-                  <Link href={`/admin/academics/classwiseDetail/${row.original.classId}`}>View Details</Link>
+                  <Link href={`/academics/classwiseDetail/${row.original.classId}`}>View Details</Link>
                 </Button>
                 <div className="flex gap-2">
                   <Button

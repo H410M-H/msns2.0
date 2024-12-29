@@ -1,3 +1,5 @@
+"use client"
+
 import { useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useForm } from "react-hook-form";

@@ -275,5 +275,3 @@ export const ClassTable = ({ sessionId }: ComponentProps) => {
     </div>
   );
 };
-
-export default ClassTable;

@@ -24,7 +24,7 @@ const services: Services[] = [
     iconColor: "text-green-500",
     gradientFrom: "from-green-400",
     gradientTo: "to-green-700",
-    href: "/revenue",
+    href: "/revenue/salary",
   },
   {
     title: "Fee Management",
@@ -33,7 +33,7 @@ const services: Services[] = [
     iconColor: "text-green-500",
     gradientFrom: "from-green-400",
     gradientTo: "to-green-700",
-    href: "/revenue",
+    href: "/revenue/fee",
   },
   {
     title: "Invoice Management",
@@ -70,7 +70,7 @@ export const RevenueCards = () => {
       />
 
       {/* Cards Grid */}
-      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
+      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
         {services.map((service, index) => {
           const Icon = service.icon
           return (
