@@ -1,8 +1,11 @@
 import "~/styles/globals.css";
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
+
 import { TRPCReactProvider } from "~/trpc/react";
 import { SidebarProvider } from "~/components/ui/sidebar";
+import { UserProvider } from "~/lib/context/user-context";
+import { Toaster } from "~/components/ui/toaster";
 import Header from "./_components/shared/nav/Header";
 import { Footer } from "./_components/shared/footer/footer";
 
@@ -19,11 +22,14 @@ export default function RootLayout({
     <html lang="en" className={GeistSans.variable}>
       <body className="flex min-h-screen flex-col">
         <TRPCReactProvider>
+          <UserProvider>
             <Header />
             <SidebarProvider>
-            <main className="flex-1">{children}</main>
-          </SidebarProvider>
-        <Footer />
+              <main className="flex-1">{children}</main>
+            </SidebarProvider>
+            <Footer />
+            <Toaster />
+          </UserProvider>
         </TRPCReactProvider>
       </body>
     </html>
