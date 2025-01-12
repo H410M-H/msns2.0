@@ -18,7 +18,6 @@ export default function sessionalDetail() {
         </div>
       </div>
       <Separator className="bg-green-900" />
-      {/* <SessionDialog /> */}
       <SessionTable />
       <Separator className="bg-green-900" />
     </main>

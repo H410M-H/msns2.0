@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Loader2, ChevronDown, ChevronUp } from "lucide-react"
 import { api } from "~/trpc/react"
 import { toast } from '~/hooks/use-toast'
+import { CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary";
 
 const studentSchema = z.object({
   studentMobile: z.string().min(10, "Invalid mobile number"),
@@ -33,6 +34,7 @@ const studentSchema = z.object({
   medicalProblem: z.string().optional(),
   discount: z.number().min(0).max(100),
   discountbypercent: z.number().min(0).max(100),
+  profilePic: z.string().optional(),
 })
 
 type StudentSchema = z.infer<typeof studentSchema>
@@ -85,9 +87,9 @@ export default function StudentCreationDialog() {
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input 
-              type={type} 
-              {...field} 
+            <Input
+              type={type}
+              {...field}
               onChange={type === "number" ? (e) => field.onChange(parseFloat(e.target.value)) : field.onChange}
             />
           </FormControl>
@@ -127,6 +129,38 @@ export default function StudentCreationDialog() {
                       <h3 className="text-2xl font-semibold text-secondary-foreground">Academic Data</h3>
                       {expandedSection === 'academic' ? <ChevronUp /> : <ChevronDown />}
                     </div>
+                    <FormField
+                      control={form.control}
+                      name="profilePic"
+                      render={({ field }) => (
+                        <FormItem className="grid gap-2">
+                          <FormLabel>Upload hotel logo</FormLabel>
+                          <CldUploadWidget
+                            options={{ sources: ["local"] }}
+                            uploadPreset="msnsPDP"
+                            onSuccess={(result: CloudinaryUploadWidgetResults) => {
+                              const info = result.info;
+                              if (typeof info !== "string") {
+                                const secure_url = info?.secure_url ?? 'none';
+                                field.onChange(secure_url);
+                              }
+                            }}
+                          >
+                            {({ open }) => {
+                              function handleOnClick() {
+                                open();
+                              }
+                              return (
+                                <Button type="button" onClick={handleOnClick} className="w-fit bg-primary text-white ">
+                                  Upload files
+                                </Button>
+                              );
+                            }}
+                          </CldUploadWidget>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <AnimatePresence>
                       {expandedSection === 'academic' && (
                         <motion.div

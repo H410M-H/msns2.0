@@ -18,6 +18,7 @@ const studentSchema = z.object({
   currentAddress: z.string(),
   permanentAddress: z.string(),
   medicalProblem: z.string().optional(),
+  profilePic: z.string().optional(),
 })
 
 export const StudentRouter = createTRPCRouter({

@@ -9,78 +9,78 @@ datasource db {
 
 model classes {
   classId      String         @id @default(uuid())
-  grade    String         @default("none")
+  grade        String         @default("none")
   section      String         @default("ROSE")
   category     ClassCategory  @default(Montessori)
   fee          Float          @default(0)
   StudentClass StudentClass[]
+
   @@index([grade])
 }
 
 model students {
-  studentId           String         @id @default(uuid())
-  registrationNumber  String         @unique
-  studentMobile       String         @default("none")
-  fatherMobile        String         @default("none")
-  admissionNumber     String         @unique
-  studentName         String         @default("none")
-  gender              Gender
-  dateOfBirth         String         @default("none")
-  fatherName          String         @default("none")
-  studentCNIC         String         @default("0000-0000000-0")
-  fatherCNIC          String         @default("0000-0000000-0")
-  fatherProfession    String         @default("none")
-  bloodGroup          String?        @default("none")
-  guardianName        String?        @default("none")
-  caste               String         @default("none")
-  currentAddress      String         @default("none")
-  permanentAddress    String         @default("none")
-  medicalProblem      String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
-  isAssign            Boolean        @default(false)
-  discount            Float          @default(0)
-  discountbypercent   Float          @default(0)
-  StudentClass        StudentClass[]
+  studentId          String         @id @default(uuid())
+  registrationNumber String         @unique
+  studentMobile      String         @default("none")
+  fatherMobile       String         @default("none")
+  admissionNumber    String         @unique
+  studentName        String         @default("none")
+  gender             Gender
+  dateOfBirth        String         @default("none")
+  fatherName         String         @default("none")
+  studentCNIC        String         @default("0000-0000000-0")
+  fatherCNIC         String         @default("0000-0000000-0")
+  fatherProfession   String         @default("none")
+  bloodGroup         String?        @default("none")
+  guardianName       String?        @default("none")
+  caste              String         @default("none")
+  currentAddress     String         @default("none")
+  permanentAddress   String         @default("none")
+  medicalProblem     String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  isAssign           Boolean        @default(false)
+  profilePic         String         @default("/user.jpg")
+  StudentClass       StudentClass[]
 }
 
 model employees {
-  employeeId        String   @id @default(uuid())
-  employeeName      String   @db.VarChar(100)
-  fatherName        String   @db.VarChar(100)
-  gender            Gender
-  dob               String   @default("none")
-  cnic              String   @db.Char(15)
-  maritalStatus     MaritalStatus
-  doj               String   @default("none")
-  designation       Designation
+  employeeId         String             @id @default(uuid())
+  employeeName       String             @db.VarChar(100)
+  fatherName         String             @db.VarChar(100)
+  gender             Gender
+  dob                String             @default("none")
+  cnic               String             @db.Char(15)
+  maritalStatus      MaritalStatus
+  doj                String             @default("none")
+  designation        Designation
   residentialAddress String
-  mobileNo          String   @db.VarChar(13)
-  additionalContact String?  @db.VarChar(13)
-  education         String   @db.VarChar(100)
-  salaryAssignments SalaryAssignment[]
-  salaryIncrements  SalaryIncrement[]
-    profilePicture    String?
-  cv                String?
+  mobileNo           String             @db.VarChar(13)
+  additionalContact  String?            @db.VarChar(13)
+  education          String             @db.VarChar(100)
+  salaryAssignments  SalaryAssignment[]
+  salaryIncrements   SalaryIncrement[]
+  profilePicture     String?
+  cv                 String?
 
   @@index([employeeName])
   @@index([cnic])
 }
 
 model SalaryAssignment {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   employeeId   String
   employee     employees @relation(fields: [employeeId], references: [employeeId])
   baseSalary   Float
   increment    Float
   totalSalary  Float
-  assignedDate DateTime @default(now())
+  assignedDate DateTime  @default(now())
   sessionId    String
-  session      sessions @relation(fields: [sessionId], references: [sessionId])
+  session      sessions  @relation(fields: [sessionId], references: [sessionId])
 }
 
 model SalaryIncrement {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   employeeId      String
   employee        employees @relation(fields: [employeeId], references: [employeeId])
   incrementAmount Float
@@ -98,15 +98,13 @@ model sessions {
 }
 
 model fees {
-  feeId      String   @id @default(uuid())
-  feeName    String
-  feeTuition Int
-  feePaper   Int
-  feeSport   Int
-  feeIdcard  Int
-  feeComm    Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  feeId           String            @id @default(uuid())
+  feeName         String
+  tuition         Float             @default(0)
+  type            FeeCategory       @default(MonthlyFee)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  FeeStudentClass FeeStudentClass[]
 }
 
 model users {
@@ -118,14 +116,39 @@ model users {
   @@index([email])
 }
 
+model User {
+  id              String  @id @default(cuid())
+  name            String
+  email           String  @unique
+  avatar          String
+  bio             String?
+  notifications   Boolean @default(true)
+  marketing       Boolean @default(false)
+  security_emails Boolean @default(true)
+}
+
 model StudentClass {
-  scId      String   @id @default(uuid())
-  studentId String
-  classId   String
-  sessionId String
-  class     classes  @relation(fields: [classId], references: [classId])
-  session   sessions @relation(fields: [sessionId], references: [sessionId])
-  student   students @relation(fields: [studentId], references: [studentId])
+  scId            String            @id @default(uuid())
+  studentId       String
+  classId         String
+  sessionId       String
+  class           classes           @relation(fields: [classId], references: [classId])
+  session         sessions          @relation(fields: [sessionId], references: [sessionId])
+  student         students          @relation(fields: [studentId], references: [studentId])
+  FeeStudentClass FeeStudentClass[]
+}
+
+model FeeStudentClass {
+  sfcId               String       @id @default(uuid())
+  studentClassId      String
+  feeId               String
+  discount            Float        @default(0)
+  discountbypercent   Float        @default(0)
+  discountDescription String
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  studentClass        StudentClass @relation(fields: [studentClassId], references: [scId])
+  fee                 fees         @relation(fields: [feeId], references: [feeId])
 }
 
 enum Gender {
@@ -133,17 +156,20 @@ enum Gender {
   FEMALE
   CUSTOM
 }
+
 enum Role {
   ADMIN
   TEACHER
   CLERK
 }
+
 enum MaritalStatus {
   Married
   Unmarried
   Widow
   Divorced
 }
+
 enum Designation {
   Principal
   Admin
@@ -152,10 +178,16 @@ enum Designation {
   Teacher
   Worker
 }
+
 enum ClassCategory {
   Montessori
   Primary
   Middle
   SSC_I
   SSC_II
+}
+
+enum FeeCategory {
+  MonthlyFee
+  AnnualFee
 }

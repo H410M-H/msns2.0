@@ -69,6 +69,7 @@ export const AlotmentRouter = createTRPCRouter({
         throw new Error("Unable to fetch students for the class.");
       }
     }),
+    
 
   deleteFromClass: publicProcedure
     .input(

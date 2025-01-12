@@ -79,6 +79,7 @@ export const ClassCreationDialog = () => {
                     <Input
                       placeholder="Write Class/Grade"
                       {...field}
+                      value={field.value ?? ""}
                     />
                   </FormControl>
                   <FormMessage />

@@ -19,6 +19,7 @@ import {
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { StudentAllotmentDialog } from "../forms/class/StudentAlotment"
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion"
+import { FeeManagementDialog } from "../dialogs/FeeManagementDialog"
 
 type StudentAllotmentProps = {
   registrationNumber: string
@@ -27,6 +28,7 @@ type StudentAllotmentProps = {
   fatherName: string
   grade: string
   sessionName: string
+  sessionId: string
 }
 
 export function StudentAllotmentTable({ classId, sessionId }: { classId: string, sessionId: string }) {
@@ -52,6 +54,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
         fatherName: item.student.fatherName,
         grade: item.class.grade,
         sessionName: item.session.sessionName,
+        sessionId: item.session.sessionId,
       }))
       setData(transformedData)
     }
@@ -112,22 +115,24 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
     {
       id: "actions",
       cell: ({ row }) => (
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={() => {
-            removeStudent.mutate({
-              studentId: row.original.studentId,
-              classId: classId
-            })
-          }}
-          disabled={removeStudent.isPending}
-        >
-          {removeStudent.isPending ? "Removing..." : "Remove"}
-        </Button>
+        <div className="flex space-x-2">
+          <FeeManagementDialog studentClassId={row.original.studentId} />
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() => {
+              removeStudent.mutate({
+                studentId: row.original.studentId,
+                classId: classId,
+              });
+            }}
+            disabled={removeStudent.isPending}
+          >
+            {removeStudent.isPending ? "Removing..." : "Remove"}
+          </Button>
+        </div>
       ),
-    },
-  ]
+    },  ]
 
   const table = useReactTable({
     data,

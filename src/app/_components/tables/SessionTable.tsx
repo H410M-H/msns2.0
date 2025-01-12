@@ -13,18 +13,6 @@ import { useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { api } from "~/trpc/react";
-import Link from "next/link";
-import { DotsHorizontalIcon } from "@radix-ui/react-icons";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
-import { SessionDeletionDialog } from "../forms/annualSession/SessionDeletion";
-import { SessionCreationDialog } from "../forms/annualSession/SessionCreation";
 import {
   Accordion,
   AccordionContent,
@@ -32,6 +20,18 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { SessionDialog } from "../dialogs/SessionDetailDialog";
+import SessionCreationDialog from "../forms/annualSession/SessionCreation";
+import SessionDeletionDialog from "../forms/annualSession/SessionDeletion";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@radix-ui/react-dropdown-menu";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
+import { Link } from "lucide-react";
 
 const columns: ColumnDef<SessionProps>[] = [
   {
@@ -81,7 +81,7 @@ const columns: ColumnDef<SessionProps>[] = [
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
+            <Button variant="ghost" className="h-4 w-4 p-0">
               <span className="sr-only">Open menu</span>
               <DotsHorizontalIcon className="h-4 w-4" />
             </Button>
@@ -131,31 +131,22 @@ export const SessionTable = () => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between gap-2 py-4">
+      {/* Header Section */}
+      <div className="flex items-center justify-between gap-4 my-4">
         <div className="flex items-center gap-2">
           <Button
             onClick={() => table.toggleAllRowsSelected()}
             variant="outline"
-            className="bg-purple-500 text-white hover:bg-purple-600"
+            className="bg-purple-500 text-white hover:bg-purple-600 px-4 py-2 rounded-md"
           >
             {table.getIsAllRowsSelected() ? "Deselect All" : "Select All"}
           </Button>
-          {/* <Input
-            placeholder="Search name"
-            value={
-              (table.getColumn("className")?.getFilterValue() as string) ?? ""
-            }
-            onChange={(event) =>
-              table.getColumn("className")?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm border-blue-500"
-          /> */}
         </div>
         <div className="flex items-center gap-2">
           <SessionCreationDialog />
           <Button
             variant="outline"
-            className="bg-blue-500 text-white hover:bg-blue-600"
+            className="bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md"
             onClick={() => sessionsData.refetch()}
           >
             Refresh
@@ -168,69 +159,78 @@ export const SessionTable = () => {
         </div>
       </div>
 
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+      {/* Content Section */}
+      <div className="grid grid-cols-1 gap-6 p-6 md:grid-cols-2 lg:grid-cols-3">
         {table.getRowModel().rows?.length ? (
           table.getRowModel().rows.map((row) => (
             <div
-            key={row.id}
-            className="flex flex-col justify-between rounded-md border bg-gradient-to-r from-blue-200 to-purple-200 p-4 shadow-md transition-shadow hover:shadow-lg"
-            data-state={row.getIsSelected() && "selected"}
-          >
-            <Accordion
-              type="single"
-              collapsible
               key={row.id}
-              className="flex flex-col justify-between rounded-md border bg-gradient-to-r from-blue-200 to-purple-200 p-4 shadow-md transition-shadow hover:shadow-lg"
-              data-state={row.getIsSelected() && "selected"}
+              className="rounded-lg border bg-gradient-to-r from-blue-200 to-purple-300 p-4 shadow-lg transition-transform transform hover:scale-105"
             >
-              <AccordionItem value={row.id}>
-                <AccordionTrigger className="flex gap-4  bg-white p-4 rounded-md shadow-lg space-y-4 md:space-y-0 md:space-x-4 transition duration-300 ease-in-out hover:shadow-x">
-                  <span>Session - {row.original.sessionName}</span>
-                  <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 shadow-inner">
-                    {row.original.sessionFrom}
-                  </span>
-                  <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 shadow-inner">
-                    {row.original.sessionTo}
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent className="bg-white">
-                  <SessionDialog sessionId={row.original.sessionId}/>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value={row.id}>
+                  <AccordionTrigger className="flex justify-between items-center p-4 rounded-lg bg-white shadow-md hover:bg-green-100 hover:no-underline">
+                    <div className="flex items-center gap-4">
+                      <Checkbox
+                        checked={row.getIsSelected()}
+                        onCheckedChange={(value) => row.toggleSelected(!!value)}
+                        aria-label="Select session"
+                      />
+                      <span className="text-gray-800 font-semibold text-lg">
+                        {row.original.sessionName}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 shadow-inner">
+                        {row.original.sessionFrom}
+                      </span>
+                      <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-600 shadow-inner">
+                        {row.original.sessionTo}
+                      </span>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-white p-4 mt-2 rounded-md">
+                    <SessionDialog sessionId={row.original.sessionId} />
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           ))
         ) : (
-          <div className="col-span-full py-4 text-center">No results.</div>
+          <div className="col-span-full py-6 text-center text-gray-500">
+            No results found.
+          </div>
         )}
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-gray-600">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
+
+      {/* Footer Section */}
+      <div className="flex items-center justify-between py-4 px-6 bg-gray-100 border-t">
+        <div className="text-sm text-gray-600">
+          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="bg-indigo-500 text-white hover:bg-indigo-600"
+            className="bg-indigo-500 text-white hover:bg-indigo-600 px-3 py-1 rounded-md"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
             Previous
           </Button>
+          </div>
+          <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
-            className="bg-indigo-500 text-white hover:bg-indigo-600"
+            className="bg-indigo-500 text-white hover:bg-indigo-600 px-3 py-1 rounded-md"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
             Next
           </Button>
+          </div>
         </div>
       </div>
-    </div>
   );
 };

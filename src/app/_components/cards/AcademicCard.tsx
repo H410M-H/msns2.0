@@ -42,7 +42,7 @@ import { CldImage } from "next-cloudinary";
         iconColor: "text-green-500",
         gradientFrom: "from-green-400",
         gradientTo: "to-green-700",
-        href: "/userReg",
+        href: "/revenue",
       },
     ];
 

@@ -1,9 +1,10 @@
 
 type ClassProps = {
+  sessionId?: string
   classId: string
   grade: string
   section: string
-  category: "Montessori" | "Primary" | "Middle" | "SSC-I" | "SSC-II"
+  category: "Montessori" | "Primary" | "Middle" | "SSC_I" | "SSC_II"
   fee: number
 }
 
@@ -26,6 +27,7 @@ type StudentProps = {
   currentAddress: string
   permanentAddress: string
   medicalProblem?: string | null
+  profilePic?: string | null
   isAssign: boolean
   discount: number
   discountbypercent: number
@@ -58,20 +60,20 @@ type SessionProps = {
 }
 
 type FeeProps = {
-  feeId: string
+  feeId?: string
   feeName: string
-  feeTuition: number
-  feePaper: number
-  feeSport: number
-  feeIdcard: number
-  feeComm: number
-  createdAt: Date
-  updatedAt: Date
+  tuition: number
+  fee: number
+  type: "MonthlyFee" | "AnnualFee" 
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 type ClassStudentProps = {
+  feeId: any
   scId: string
   classId: string
+  sessionId: string
   student: StudentProps
   class: ClassProps
   session: SessionProps
@@ -85,6 +87,19 @@ type ClassFeeProps = {
   class: ClassProps
   fee: FeeProps
   session: SessionProps
+}
+
+type FeeStudentClassProps = {
+  sfcId: string
+  studentClassId: string
+  feeId: string
+  discount: number
+  discountbypercent: number
+  discountDescription: string
+  createdAt: Date
+  updatedAt: Date
+  feeStudentClass: ClassStudentProps
+  fee: FeeProps
 }
 
 type SalaryAssignmentProps = {
