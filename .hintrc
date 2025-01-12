@@ -5,6 +5,12 @@
   "hints": {
     "no-inline-styles": "off",
     "button-type": "off",
-    "typescript-config/is-valid": "off"
+    "typescript-config/is-valid": "off",
+    "axe/forms": [
+      "default",
+      {
+        "label": "off"
+      }
+    ]
   }
 }

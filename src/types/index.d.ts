@@ -60,16 +60,17 @@ type SessionProps = {
 }
 
 type FeeProps = {
-  feeId: string
+  feeId?: string
   feeName: string
   tuition: number
   fee: number
   type: "MonthlyFee" | "AnnualFee" 
-  createdAt: Date
-  updatedAt: Date
+  createdAt?: Date
+  updatedAt?: Date
 }
 
 type ClassStudentProps = {
+  feeId: any
   scId: string
   classId: string
   sessionId: string
@@ -86,6 +87,19 @@ type ClassFeeProps = {
   class: ClassProps
   fee: FeeProps
   session: SessionProps
+}
+
+type FeeStudentClassProps = {
+  sfcId: string
+  studentClassId: string
+  feeId: string
+  discount: number
+  discountbypercent: number
+  discountDescription: string
+  createdAt: Date
+  updatedAt: Date
+  feeStudentClass: ClassStudentProps
+  fee: FeeProps
 }
 
 type SalaryAssignmentProps = {

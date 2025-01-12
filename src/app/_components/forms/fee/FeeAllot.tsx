@@ -1,166 +1,119 @@
 "use client"
 
-import { useState } from "react";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useForm } from "react-hook-form";
-import { Button } from "~/components/ui/button";
-import { api } from "~/trpc/react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-
+import { useState } from "react"
+import { Button } from "~/components/ui/button"
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+} from "~/components/ui/dialog"
+import { Input } from "~/components/ui/input"
+import { Label } from "~/components/ui/label"
+import { api } from "~/trpc/react"
+import { useToast } from "~/hooks/use-toast"
 
-const formSchema = z.object({
-  studentId: z.string({ required_error: "Student is required." }),
-  sessionId: z.string({ required_error: "Session is required." }),
-});
+type FeeAllotmentDialogProps = {
+  studentClassId: string
+  feeId: string
+  onAllotmentSuccess: () => void
+}
 
-export const FeeAllotmentDialog = ({ classId }: { classId: string }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
+export function FeeAllotmentDialog({ studentClassId, feeId, onAllotmentSuccess }: FeeAllotmentDialogProps) {
+  const [open, setOpen] = useState(false)
+  const [discount, setDiscount] = useState("")
+  const [discountbypercent, setDiscountbypercent] = useState("")
+  const [discountDescription, setDiscountDescription] = useState("")
 
-  const sessionYears = api.session.getSessions.useQuery();
-  const students = api.student.getUnAllocateStudents.useQuery();
+  const { toast } = useToast()
 
-  const allotStudent = api.alotment.addToClass.useMutation({
-    onSuccess:()=>{
-      form.reset()
-    }
-  });
-  const formSubmitted = (values: z.infer<typeof formSchema>) => {
-    allotStudent.mutate({
-        classId:classId,
-        sessionId:values.sessionId,
-        studentId:values.studentId
+  const assignFeeToStudent = api.fee.assignFeeToStudent.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Fee assigned successfully",
+        description: "The fee has been assigned to the student.",
+      })
+      setOpen(false)
+      onAllotmentSuccess()
+    },
+    onError: (error) => {
+      toast({
+        title: "Error assigning fee",
+        description: error.message,
+        variant: "destructive",
+      })
+    },
+  })
+
+  const handleSubmit = () => {
+    assignFeeToStudent.mutate({
+      studentClassId,
+      feeId,
+      discount: parseFloat(discount),
+      discountbypercent: parseFloat(discountbypercent),
+      discountDescription,
     })
-  };
-
-  const filteredStudents = students.data?.filter(
-    (student) =>
-      student.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add student</Button>
+        <Button variant="outline">Assign Fee</Button>
       </DialogTrigger>
-      <DialogContent className="w-full sm:max-w-md">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Allot student to class</DialogTitle>
+          <DialogTitle>Assign Fee to Student</DialogTitle>
+          <DialogDescription>
+            Assign a fee to a student with optional discounts.
+          </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(formSubmitted)}
-            className="flex flex-col gap-4 p-4"
-          >
-            <FormField
-              control={form.control}
-              name="studentId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select student</FormLabel>
-                  <FormControl>
-                    <div>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a student" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <Input
-                            type="text"
-                            placeholder="Search students..."
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="mb-2"
-                          />
-                          {filteredStudents?.map((student) => (
-                            <SelectItem
-                              key={student.studentId}
-                              value={student.studentId}
-                            >
-                              {student.studentName} | {student.fatherName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+        <div className="grid gap-4 py-4">
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="discount" className="text-right">
+              Discount
+            </Label>
+            <Input
+              id="discount"
+              type="number"
+              value={discount}
+              onChange={(e) => setDiscount(e.target.value)}
+              className="col-span-3"
             />
-            <FormField
-              control={form.control}
-              name="sessionId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select the session</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a session" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {sessionYears.data?.map((session) => (
-                        <SelectItem
-                          value={session.sessionId}
-                          key={session.sessionId}
-                        >
-                          {session.sessionName}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="discountbypercent" className="text-right">
+              Discount %
+            </Label>
+            <Input
+              id="discountbypercent"
+              type="number"
+              value={discountbypercent}
+              onChange={(e) => setDiscountbypercent(e.target.value)}
+              className="col-span-3"
             />
-            <Button
-              type="submit"
-              disabled={allotStudent.isPending}
-              className="w-full"
-            >
-              {allotStudent.isPending ? (
-                <>
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
-                </>
-              ) : (
-                "Allot student"
-              )}
-            </Button>
-          </form>
-        </Form>
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="discountDescription" className="text-right">
+              Description
+            </Label>
+            <Input
+              id="discountDescription"
+              value={discountDescription}
+              onChange={(e) => setDiscountDescription(e.target.value)}
+              className="col-span-3"
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button type="submit" onClick={handleSubmit}>
+            Assign Fee
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}
+

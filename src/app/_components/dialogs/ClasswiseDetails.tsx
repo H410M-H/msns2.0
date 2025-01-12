@@ -31,7 +31,6 @@ export const ClasswiseDialog = ({sessionId}:ComponentProps) => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-
     </div>
   );
 };
