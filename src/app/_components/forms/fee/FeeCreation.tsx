@@ -59,7 +59,7 @@ export function FeeCreationDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Create New Fee</Button>
+        <Button variant="default">Create New Fee</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -71,10 +71,11 @@ export function FeeCreationDialog() {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="feeName" className="text-right">
-              Fee Name
+              Fee Name 
             </Label>
             <Input
               id="feeName"
+              placeholder="Enter fee name"
               value={feeName}
               onChange={(e) => setFeeName(e.target.value)}
               className="col-span-3"

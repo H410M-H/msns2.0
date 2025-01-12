@@ -3,5 +3,8 @@
         "activityBar.background": "#0F3334",
         "titleBar.activeBackground": "#154749",
         "titleBar.activeForeground": "#F3FBFC"
-    }
+    },
+    "files.autoSaveWhenNoErrors": true,
+    "workbench.activityBar.location": "bottom",
+    "window.density.editorTabHeight": "default"
 }

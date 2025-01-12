@@ -1,70 +1,87 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
-import { api } from "~/trpc/react"
+import { useState } from "react";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
 import {
-  type ColumnDef,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "~/components/ui/table";
+import { api } from "~/trpc/react";
+import {
   flexRender,
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
   getSortedRowModel,
   getFilteredRowModel,
-  type SortingState,
-} from "@tanstack/react-table"
-import { FeeCreationDialog } from "../forms/fee/FeeCreation"
-import { FeeDeletionDialog } from "../forms/fee/FeeDeletion"
-import { type FeeCategory } from ".prisma/client/default.js"
-import { FeeAssignmentDialog } from "../forms/fee/feeAssignment"
-
-
-
-const columns: ColumnDef<{ type: FeeCategory; feeName: string; feeId: string; tuition: number; createdAt: Date; updatedAt: Date; }, unknown>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <input
-        type="checkbox"
-        checked={table.getIsAllPageRowsSelected()}
-        onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
-      />
-    ),
-    cell: ({ row }) => (
-      <input
-        type="checkbox"
-        checked={row.getIsSelected()}
-        onChange={(e) => row.toggleSelected(!!e.target.checked)}
-      />
-    ),
-  },
-  {
-    accessorKey: "feeName",
-    header: "Fee Name",
-  },
-  {
-    accessorKey: "tuition",
-    header: "Tuition",
-    cell: ({ row }) => <div>{row.getValue<number>("tuition").toFixed(2)}</div>,
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-  },
-]
+  type ColumnSort,
+} from "@tanstack/react-table";
+import { format } from "date-fns";
+import { FeeCreationDialog } from "../forms/fee/FeeCreation";
+import { FeeDeletionDialog } from "../forms/fee/FeeDeletion";
+import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
+import { RefreshCw } from "lucide-react";
 
 export function FeeTable() {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [globalFilter, setGlobalFilter] = useState("")
-  const [rowSelection, setRowSelection] = useState({})
+  const [sorting, setSorting] = useState<ColumnSort[]>([]);
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [rowSelection, setRowSelection] = useState({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: fees, refetch } = api.fee.getAllFees.useQuery()
+  const { data: fees, refetch } = api.fee.getAllFees.useQuery();
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await refetch();
+    setTimeout(() => setIsRefreshing(false), 1000);
+  };
 
   const table = useReactTable({
     data: fees ?? [],
-    columns,
+    columns: [
+      {
+        id: "select",
+        header: ({ table }) => (
+          <input
+            type="checkbox"
+            checked={table.getIsAllPageRowsSelected()}
+            onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+          />
+        ),
+        cell: ({ row }) => (
+          <input
+            type="checkbox"
+            checked={row.getIsSelected()}
+            onChange={(e) => row.toggleSelected(!!e.target.checked)}
+          />
+        ),
+      },
+      {
+        accessorKey: "feeName",
+        header: "Fee Name",
+      },
+      {
+        accessorKey: "tuition",
+        header: "Tuition",
+      },
+      {
+        accessorKey: "type",
+        header: "Type",
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Created At",
+        cell: ({ row }) => {
+          const date = new Date(row.getValue("createdAt"));
+          return format(date, "dd-MM-yyyy | HH:mm:ss");
+        },
+      },
+    ],
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -77,27 +94,42 @@ export function FeeTable() {
       rowSelection,
     },
     onGlobalFilterChange: setGlobalFilter,
-  })
+  });
 
-  const selectedFeeIds = table.getSelectedRowModel().rows.map(row => row.original.feeId)
+  const selectedFeeIds = table.getSelectedRowModel().rows.map(
+    (row) => row.original.feeId
+  );
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 p-4">
+      {/* Search and Actions */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
         <Input
           placeholder="Search fees..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(String(event.target.value))}
           className="max-w-sm"
         />
-        <div className="space-x-2">
+        <div className="flex flex-wrap gap-2">
+        <Button
+              variant="outline"
+              className={`bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 ${
+                isRefreshing ? 'animate-pulse' : ''
+              }`}
+              onClick={handleRefresh}
+            >
+              <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
           <FeeCreationDialog />
-          <FeeAssignmentDialog/>
+          <FeeAssignmentDialog />
           <FeeDeletionDialog feeIds={selectedFeeIds} onDeleteSuccess={refetch} />
         </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
+
+      {/* Table */}
+      <div className="overflow-x-auto rounded-md border shadow-md">
+        <Table className="min-w-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -119,14 +151,12 @@ export function FeeTable() {
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
+                  className="hover:bg-gray-100 transition-colors"
                   data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -134,7 +164,7 @@ export function FeeTable() {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
                   No fees found.
@@ -144,6 +174,8 @@ export function FeeTable() {
           </TableBody>
         </Table>
       </div>
+
+      {/* Pagination */}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
@@ -163,6 +195,5 @@ export function FeeTable() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
-

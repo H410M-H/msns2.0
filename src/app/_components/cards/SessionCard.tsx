@@ -18,7 +18,7 @@ const services: Service[] = [
     title: "Classes Allottment",
     description: "Easily enroll new Employees and manage their financial records.",
     icon: UserPlusIcon,
-    href: "/academics/classwiseDetail",
+    href: "/academics/classDetail",
     iconColor: "text-blue-500",
     gradientFrom: "from-blue-400",
     gradientTo: "to-blue-700",
