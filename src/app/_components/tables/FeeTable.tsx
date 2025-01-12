@@ -18,6 +18,7 @@ import {
 import { FeeCreationDialog } from "../forms/fee/FeeCreation"
 import { FeeDeletionDialog } from "../forms/fee/FeeDeletion"
 import { type FeeCategory } from ".prisma/client/default.js"
+import { FeeAssignmentDialog } from "../forms/fee/feeAssignment"
 
 
 
@@ -91,6 +92,7 @@ export function FeeTable() {
         />
         <div className="space-x-2">
           <FeeCreationDialog />
+          <FeeAssignmentDialog/>
           <FeeDeletionDialog feeIds={selectedFeeIds} onDeleteSuccess={refetch} />
         </div>
       </div>
