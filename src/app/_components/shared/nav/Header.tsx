@@ -7,8 +7,11 @@ import { Button } from '~/components/ui/button'
 import Link from 'next/link'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '~/components/ui/dropdown-menu'
 import { User } from 'lucide-react'
+import { cn } from "~/lib/utils"
 
-export default function Header() {
+type HeaderProps = React.HTMLAttributes<HTMLElement>
+
+export default function Header({ className, ...props }: HeaderProps) {
   const [scrolled, setScrolled] = useState(false)
   const [isAuthenticated] = useState(false)
   const pathname = usePathname()
@@ -26,14 +29,16 @@ export default function Header() {
     }
   }, [])
 
-  const isDashboard = pathname === '/dashboard'
+  const isDashboard = pathname === '/dashboard' || pathname === '/academics' || pathname === '/revenue' || pathname === '/account' || pathname === '/userReg';
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out ${scrolled
-        ? 'bg-transparent backdrop-blur-md py-2'
-        : 'bg-green-100/40 py-2'
-      }`}
+      className={cn(
+        `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out`,
+        scrolled ? 'bg-transparent backdrop-blur-md py-2' : 'bg-green-100/40 py-2',
+        className
+      )}
+      {...props}
     >
       <div className="container mx-auto px-4 flex items-center justify-between h-full">
         {/* Logo Section */}
@@ -97,7 +102,7 @@ export default function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : isDashboard ? (
-            <Link href="">
+            <Link href="/account">
               <Button variant="outline">Profile</Button>
             </Link>
           ) : (
@@ -110,3 +115,4 @@ export default function Header() {
     </header>
   )
 }
+

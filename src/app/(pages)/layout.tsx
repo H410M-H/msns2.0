@@ -7,10 +7,10 @@ export default function DashboardLayout({
 }) {
 
   return (
-    <div className="flex min-h-screen">
+    <div className="overflow-auto flex min-h-screen">
       <AppSidebar />
-      <div className="flex-1 flex flex-col">
-        <main className="flex-1 pt-16">{children}</main>
+      <div className="flex-1">
+        <main className="pt-16">{children}</main>
       </div>
     </div>
   );

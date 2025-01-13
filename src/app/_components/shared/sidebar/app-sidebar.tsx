@@ -9,10 +9,12 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "~/components/ui/sidebar"
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
 import { TeamSwitcher } from "./team-switcher"
+import { cn } from "~/lib/utils"
 
 const data = {
   teams: [
@@ -45,15 +47,6 @@ const data = {
       ],
     },
     {
-      title: "Account",
-      url: "/account",
-      icon: User,
-      items: [
-        { title: "Profile", url: "/account" },
-        { title: "Settings", url: "/account" },
-      ],
-    },
-    {
       title: "Settings",
       url: "/settings",
       icon: Settings2,
@@ -63,23 +56,31 @@ const data = {
         { title: "Notifications", url: "/settings/notifications" },
       ],
     },
+    {
+      title: "Account",
+      url: "/account",
+      icon: User,
+      items: [
+        { title: "Profile", url: "/account" },
+        { title: "Settings", url: "/account" },
+      ],
+    },
   ],
-  // projects: [
-  //   { name: "Design Engineering", url: "#", icon: Frame },
-  //   { name: "Sales & Marketing", url: "#", icon: PieChart },
-  //   { name: "Travel", url: "#", icon: Map },
-  // ],
 }
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({ className }: { className?: string }) {
+  const { isMobile } = useSidebar()
+
   return (
-    <Sidebar collapsible="icon" {...props} className="absolute  top-16">
+    <Sidebar 
+      collapsible={isMobile ? "offcanvas" : "icon"} 
+      className={cn("h-[calc(100vh-4rem)] top-16", className)}
+    >
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        {/* <NavProjects projects={data.projects} /> */}
       </SidebarContent>
       <SidebarFooter>
         <NavUser />

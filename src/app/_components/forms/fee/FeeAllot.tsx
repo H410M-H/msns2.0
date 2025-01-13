@@ -61,7 +61,7 @@ export function FeeAllotmentDialog({ studentClassId, feeId, onAllotmentSuccess }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Assign Fee</Button>
+        <Button variant="outline">Allot Fee to students</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

@@ -25,7 +25,8 @@ export default function RootLayout({
           <UserProvider>
             <Header />
             <SidebarProvider>
-              <main className="flex-1">{children}</main>
+              <main className="flex-1">{children}
+              </main>
             </SidebarProvider>
             <Footer />
             <Toaster />
