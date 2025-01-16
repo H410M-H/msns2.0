@@ -47,7 +47,7 @@ export const FeeAssignmentTable = ({}: ComponentProps) => {
   const [selectedAssignments, setSelectedAssignments] = useState<Set<string>>(new Set());
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
-  const getStudentFees = api.fee.getAllFees.useQuery();
+  const getStudentFees = api.fee.getStudentFees.useQuery({ studentClassId: "" });
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
