@@ -20,7 +20,7 @@ export default function sessionalDetail() {
           <div className="relative bg-gradient-to-r from-green-600 to-yellow-500 p-6 rounded-t-lg">
             <h1 className="text-center font-serif text-5xl font-bold tracking-tight text-white">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-100 to-yellow-300">
-                Student Allotment
+                Session Details
               </span>
             </h1>
           </div>
