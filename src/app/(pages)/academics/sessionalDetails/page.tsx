@@ -23,7 +23,7 @@ export default function SessionalDetail() {
   return (
     <div className="space-y-6 p-6">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 pt-14 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, index) => (
           <Card key={index} className="transition-all duration-300 hover:shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

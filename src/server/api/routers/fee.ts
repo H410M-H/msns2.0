@@ -1,7 +1,7 @@
-import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
+import { z } from "zod";
 
 export const feeRouter = createTRPCRouter({
   getAllFees: publicProcedure.query(async ({ ctx }) => {

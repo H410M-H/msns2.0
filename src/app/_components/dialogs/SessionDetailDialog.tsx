@@ -95,7 +95,7 @@ export function SessionDialog({ sessionId, isActive }: SessionDetailDialogProps)
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full justify-start gap-2">
-          <CalendarDays className="h-4 w-4" />
+          <CalendarDays className="h-4 w-14" />
           View Details
           {isActive && (
             <Badge variant="secondary" className="ml-auto">

@@ -1,4 +1,4 @@
-import { ClassTable } from "~/app/_components/tables/ClassTable";
+import { ClassFeeTable } from "~/app/_components/tables/ClassFee";
 import { Separator } from "~/components/ui/separator";
 
 export default async function ClassStudentPage({
@@ -21,7 +21,7 @@ export default async function ClassStudentPage({
         </div>
       </div>
       <Separator className="bg-green-900" />
-      <ClassTable sessionId={searchProps.sessionId} />
+      <ClassFeeTable sessionId={searchProps.sessionId} classId={searchProps.classId} />
       <Separator className="bg-green-900" />
     </main>
   );

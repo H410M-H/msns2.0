@@ -1,4 +1,4 @@
-import { ClassAlotmentTable } from "~/app/_components/tables/ClassAlotment";
+import { FeeAssignmentTable } from "~/app/_components/tables/FeeAssignmentTable";
 import { Separator } from "~/components/ui/separator";
 
 export default async function ClassDetailsPage({
@@ -21,7 +21,7 @@ export default async function ClassDetailsPage({
         </div>
       </div>
       <Separator className="bg-green-900" />
-      <ClassAlotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} />
+      <FeeAssignmentTable sessionId={searchProps.sessionId} feeId={searchProps.classId} />
       <Separator className="bg-green-900" />
     </main>
   );

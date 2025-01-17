@@ -1,34 +1,31 @@
-import React from 'react';
-import { useState } from 'react';
+"use client";
+
+import React, { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Checkbox } from "~/components/ui/checkbox";
-import { CalendarDays, Search, RefreshCcw } from 'lucide-react';
+import { CalendarDays, Search, RefreshCcw } from "lucide-react";
 import { api } from "~/trpc/react";
-import { SessionCreationDialog } from '../forms/annualSession/SessionCreation';
-import SessionDeletionDialog from '../forms/annualSession/SessionDeletion';
-import { SessionDialog } from '../dialogs/SessionDetailDialog';
+import { SessionCreationDialog } from "../forms/annualSession/SessionCreation";
+import SessionDeletionDialog from "../forms/annualSession/SessionDeletion";
+import { SessionDialog } from "../dialogs/SessionDetailDialog";
 
 export const SessionTable = () => {
   const [selectedSessions, setSelectedSessions] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
-  
-  const { data: sessions = [], refetch } = api.session.getSessions.useQuery();
-  type Session = {
-    sessionId: string;
-    sessionName: string;
-    sessionFrom: string;
-    sessionTo: string;
-    isActive?: boolean;
-  };
-  const filteredSessions: Session[] = sessions.filter((session: Session) =>
-    session.sessionName.toLowerCase().includes(searchTerm.toLowerCase())
+
+  const { data: sessionList = [], refetch } =
+    api.session.getSessions.useQuery(); // Use more descriptive variable name
+
+  const filteredSessions = sessionList.filter(
+    (session) =>
+      session.sessionName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const toggleSessionSelection = (sessionId: string) => {
-    setSelectedSessions(prev => {
+    setSelectedSessions((prev) => {
       const newSet = new Set(prev);
       if (newSet.has(sessionId)) {
         newSet.delete(sessionId);
@@ -40,11 +37,11 @@ export const SessionTable = () => {
   };
 
   const toggleAllSessions = () => {
-    if (selectedSessions.size === filteredSessions.length) {
-      setSelectedSessions(new Set());
-    } else {
-      setSelectedSessions(new Set(filteredSessions.map(s => s.sessionId)));
-    }
+    setSelectedSessions(
+      selectedSessions.size === filteredSessions.length
+        ? new Set()
+        : new Set(filteredSessions.map((s) => s.sessionId))
+    );
   };
 
   return (
@@ -70,7 +67,7 @@ export const SessionTable = () => {
             <RefreshCcw className="h-4 w-4" />
           </Button>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <SessionCreationDialog />
           <SessionDeletionDialog
@@ -88,7 +85,9 @@ export const SessionTable = () => {
           onClick={toggleAllSessions}
           className="text-sm"
         >
-          {selectedSessions.size === filteredSessions.length ? "Deselect All" : "Select All"}
+          {selectedSessions.size === filteredSessions.length
+            ? "Deselect All"
+            : "Select All"}
         </Button>
         <span className="text-sm text-muted-foreground">
           {selectedSessions.size} of {filteredSessions.length} selected
@@ -105,7 +104,7 @@ export const SessionTable = () => {
                 onCheckedChange={() => toggleSessionSelection(session.sessionId)}
               />
             </div>
-            
+
             <div className="p-6">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" />
@@ -114,12 +113,12 @@ export const SessionTable = () => {
                   <Badge className="bg-green-500">Active</Badge>
                 )}
               </div>
-              
+
               <div className="mb-4 space-y-2 text-sm text-muted-foreground">
                 <div>Start: {new Date(session.sessionFrom).toLocaleDateString()}</div>
                 <div>End: {new Date(session.sessionTo).toLocaleDateString()}</div>
               </div>
-              
+
               <SessionDialog
                 sessionId={session.sessionId}
                 isActive={session.isActive ?? false}
