@@ -74,7 +74,7 @@ export function AppSidebar({ className }: { className?: string }) {
   return (
     <Sidebar 
       collapsible={isMobile ? "offcanvas" : "icon"} 
-      className={cn("h-[calc(100vh-4rem)] top-16", className)}
+      className={cn("flex h-screen top-16", className)}
     >
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />

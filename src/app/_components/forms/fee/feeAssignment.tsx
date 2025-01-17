@@ -64,7 +64,7 @@ export function FeeAssignmentDialog() {
         title: "Fee assigned successfully",
         description: "The fee has been assigned to the student.",
       });
-      setOpen(false);
+      setOpen(true);
       form.reset();
     },
     onError: (error) => {
@@ -75,7 +75,7 @@ export function FeeAssignmentDialog() {
       });
     },
   });
-
+  
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const { classId, feeId } = values;
     assignFee.mutate({

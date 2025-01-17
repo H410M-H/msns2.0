@@ -1,7 +1,5 @@
-"use client"
-
-import { useState } from "react"
-import { Button } from "~/components/ui/button"
+import { useState } from "react";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,22 +8,25 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "~/components/ui/dialog"
-import { FeeTable } from "../tables/FeeTable"
-import { api } from "~/trpc/react"
-import { Calendar } from 'lucide-react'
-import { SessionCalendar } from "./SessionCalender"
+} from "~/components/ui/dialog";
+import { FeeTable } from "../tables/FeeTable";
+import { api } from "~/trpc/react";
+import { Calendar } from 'lucide-react';
+import { SessionCalendar } from "./SessionCalender";
 
 export function FeeManagementDialog() {
-  const [open, setOpen] = useState(false)
-  const [selectedSessionId] = useState<string | null>(null)
-  const [calendarSession, setCalendarSession] = useState<{
-    id: string;
-    start: Date;
-    end: Date;
-  } | null>(null)
+  const [open, setOpen] = useState(false);
+  const [calendarSession, setCalendarSession] = useState<{ id: string, start: Date, end: Date } | null>(null);
 
-  const { data: sessions } = api.session.getSessions.useQuery()
+  const { data: sessions } = api.session.getSessions.useQuery();
+
+  const handleCalendarSessionClick = (session: { sessionId: string, sessionFrom: string, sessionTo: string }) => {
+    setCalendarSession({
+      id: session.sessionId,
+      start: new Date(session.sessionFrom),
+      end: new Date(session.sessionTo),
+    });
+  };
 
   return (
     <>
@@ -58,13 +59,7 @@ export function FeeManagementDialog() {
                     <Button
                       variant="outline"
                       size="icon"
-                      onClick={() => {
-                        setCalendarSession({
-                          id: session.sessionId,
-                          start: new Date(session.sessionFrom),
-                          end: new Date(session.sessionTo)
-                        })
-                      }}
+                      onClick={() => handleCalendarSessionClick(session)}
                     >
                       <Calendar className="h-4 w-4" />
                     </Button>
@@ -72,9 +67,7 @@ export function FeeManagementDialog() {
                 ))}
               </div>
             </div>
-            {selectedSessionId && (
-              <FeeTable />
-            )}
+            {calendarSession && <FeeTable />}
           </div>
           <DialogFooter>
             <Button onClick={() => setOpen(false)}>Close</Button>
@@ -91,6 +84,7 @@ export function FeeManagementDialog() {
         />
       )}
     </>
-  )
+  );
 }
+
 

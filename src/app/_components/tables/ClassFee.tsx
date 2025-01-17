@@ -22,38 +22,66 @@ import {
   getFilteredRowModel,
   type SortingState,
 } from "@tanstack/react-table";
+import { type FeeCategory, type ClassCategory } from "@prisma/client";
 import { FeeAllotmentDialog } from "../forms/fee/FeeAllot";
-import { type FeeCategory } from "@prisma/client";
 
-// Define the type for the props used in the table
 type ClassFeeProps = {
-  fee: {
-    feeId: string;
-    type: FeeCategory;
-    createdAt: Date;
-    updatedAt: Date;
-    feeName: string;
-    tuition: number;
-  };
-  feeId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  scId: string; // Student class ID
+  sfcId: string;
   studentClassId: string;
+  feeId: string;
   discount: number;
   discountbypercent: number;
   discountDescription: string;
-  sfcId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  fee: {
+    feeId: string;
+    feeName: string;
+    tuition: number;
+    type: FeeCategory;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+  studentClass: {
+    scId: string;
+    student: {
+      studentId: string;
+      studentName: string;
+      studentMobile: string;
+      fatherMobile: string;
+      gender: string;
+      dateOfBirth: string;
+      fatherName: string;
+      studentCNIC: string;
+      fatherCNIC: string;
+      fatherProfession: string;
+      address: string;
+      city: string;
+      country: string;
+      isAssign: boolean;
+      createdAt?: Date;
+      updatedAt?: Date;
+    };
+    class: {
+      classId: string;
+      grade: string;
+      section: string;
+      category: ClassCategory;
+      fee: number;
+    };
+  };
 };
 
-// Define the component's props
 type ClassFeeTableProps = {
   classId: string;
   sessionId: string;
 };
 
-// Define the column configuration
 const columns: ColumnDef<ClassFeeProps>[] = [
+  {
+    accessorKey: "studentClass.student.studentName",
+    header: "Student Name",
+  },
   {
     accessorKey: "fee.feeName",
     header: "Fee Name",
@@ -64,31 +92,65 @@ const columns: ColumnDef<ClassFeeProps>[] = [
     cell: ({ row }) => <div>{row.getValue<number>("fee.tuition").toFixed(2)}</div>,
   },
   {
+    accessorKey: "discount",
+    header: "Discount",
+    cell: ({ row }) => <div>{row.getValue<number>("discount").toFixed(2)}</div>,
+  },
+  {
+    accessorKey: "discountbypercent",
+    header: "Discount %",
+    cell: ({ row }) => <div>{row.getValue<number>("discountbypercent").toFixed(2)}%</div>,
+  },
+  {
     accessorKey: "fee.type",
     header: "Fee Type",
   },
   {
     id: "actions",
+    header: "Actions",
     cell: ({ row }) => (
       <FeeAllotmentDialog
-        studentClassId={row.original.scId}
-        feeId={row.original.fee.feeId}
-        onAllotmentSuccess={() => {
-          console.log("Allotment successful!");
-        }}
+        sfcId={row.original.sfcId}
+        studentClassId={row.original.studentClassId}
+        feeId={row.original.feeId}
+        initialDiscount={row.original.discount}
+        initialDiscountPercent={row.original.discountbypercent}
+        initialDiscountDescription={row.original.discountDescription}
+        onAllotmentSuccess={refetchClassFees}
       />
     ),
   },
 ];
 
-// Define the table component
 export function ClassFeeTable({ classId }: ClassFeeTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  const { data: classFees } = api.fee.getStudentFees.useQuery<ClassFeeProps[]>({
-    studentClassId: classId,
-  });
+  const { data: classFees, refetch: refetchClassFees } = api.fee.getFeesByClass.useQuery(
+    { classId },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          ...item,
+          studentClass: {
+            ...item.studentClass,
+            student: {
+              ...item.studentClass.student,
+              dateOfBirth: item.studentClass.student.dateOfBirth || "",
+              fatherName: item.studentClass.student.fatherName || "",
+              studentCNIC: item.studentClass.student.studentCNIC || "",
+              fatherCNIC: item.studentClass.student.fatherCNIC || "",
+              fatherProfession: item.studentClass.student.fatherProfession || "",
+              address: "",
+              city: "",
+              country: "",
+            },
+          },
+        })),
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
 
   const table = useReactTable<ClassFeeProps>({
     data: classFees ?? [],
@@ -109,11 +171,17 @@ export function ClassFeeTable({ classId }: ClassFeeTableProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Input
-          placeholder="Search students..."
+          placeholder="Search fees..."
           value={globalFilter ?? ""}
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
+        <Button
+          onClick={() => void refetchClassFees()}
+          variant="outline"
+        >
+          Refresh
+        </Button>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -184,3 +252,7 @@ export function ClassFeeTable({ classId }: ClassFeeTableProps) {
     </div>
   );
 }
+function refetchClassFees(): void {
+  throw new Error("Function not implemented.");
+}
+

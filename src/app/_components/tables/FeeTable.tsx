@@ -24,8 +24,8 @@ import {
 import { format } from "date-fns";
 import { FeeCreationDialog } from "../forms/fee/FeeCreation";
 import { FeeDeletionDialog } from "../forms/fee/FeeDeletion";
-import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
 import { RefreshCw } from "lucide-react";
+import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
 
 export function FeeTable() {
   const [sorting, setSorting] = useState<ColumnSort[]>([]);
@@ -122,8 +122,10 @@ export function FeeTable() {
               Refresh
             </Button>
           <FeeCreationDialog />
-          <FeeAssignmentDialog />
-          <FeeDeletionDialog feeIds={selectedFeeIds} onDeleteSuccess={refetch} />
+                <FeeAssignmentDialog />
+          <FeeDeletionDialog feeIds={selectedFeeIds} onDeleteSuccess={function (): void {
+            throw new Error("Function not implemented.");
+          } } />
         </div>
       </div>
 

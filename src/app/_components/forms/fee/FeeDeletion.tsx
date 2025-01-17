@@ -43,7 +43,7 @@ export function FeeDeletionDialog({ feeIds, onDeleteSuccess }: FeeDeletionDialog
   })
 
   const handleDelete = () => {
-    deleteFees.mutate({ feeIds: feeIds.join(',') })
+    deleteFees.mutate({ feeIds: [feeIds.join(',')] })
   }
 
   return (

@@ -16,8 +16,8 @@ export const feeRouter = createTRPCRouter({
   createFee: publicProcedure
     .input(
       z.object({
-        feeName: z.string(),
-        tuition: z.number().min(0),
+        feeName: z.string().min(1, "Fee name is required"),
+        tuition: z.number().min(0, "Tuition must be a positive number"),
         type: z.enum(["MonthlyFee", "AnnualFee"]),
       })
     )
@@ -35,9 +35,9 @@ export const feeRouter = createTRPCRouter({
   updateFee: publicProcedure
     .input(
       z.object({
-        feeId: z.string(),
-        feeName: z.string().optional(),
-        tuition: z.number().min(0).optional(),
+        feeId: z.string().min(1, "Fee ID is required"),
+        feeName: z.string().min(1, "Fee name is required").optional(),
+        tuition: z.number().min(0, "Tuition must be a positive number").optional(),
         type: z.enum(["MonthlyFee", "AnnualFee"]).optional(),
       })
     )
@@ -50,57 +50,88 @@ export const feeRouter = createTRPCRouter({
         });
       } catch (error) {
         console.error("Error in updateFee:", error);
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === "P2025") {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Fee not found." });
+          }
+        }
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to update fee." });
       }
     }),
 
   deleteFeesByIds: publicProcedure
-    .input(z.object({ feeIds: z.string() }))
+    .input(z.object({ feeIds: z.array(z.string()).min(1, "At least one fee ID is required") }))
     .mutation(async ({ ctx, input }) => {
       try {
         return await ctx.db.fees.deleteMany({
-          where: { feeId: input.feeIds },
+          where: { feeId: { in: input.feeIds } },
         });
       } catch (error) {
-        console.error("Error in deleteFee:", error);
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to delete fee." });
+        console.error("Error in deleteFeesByIds:", error);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to delete fees." });
       }
     }),
 
   assignFeeToStudent: publicProcedure
     .input(
       z.object({
-        studentClassId: z.string(),
-        feeId: z.string(),
-        discount: z.number().min(0),
-        discountbypercent: z.number().min(0).max(100),
+        studentClassId: z.string().min(1, "Student Class ID is required"),
+        feeId: z.string().min(1, "Fee ID is required"),
+        discount: z.number().min(0, "Discount must be a non-negative number"),
+        discountbypercent: z.number().min(0).max(100, "Discount percentage must be between 0 and 100"),
         discountDescription: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
+        // Check if the studentClass and fee exist
+        const studentClass = await ctx.db.studentClass.findUnique({
+          where: { scId: input.studentClassId },
+        });
+        const fee = await ctx.db.fees.findUnique({
+          where: { feeId: input.feeId },
+        });
+
+        if (!studentClass) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Student Class not found." });
+        }
+        if (!fee) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Fee not found." });
+        }
+
         return await ctx.db.feeStudentClass.create({
-          data: input,
+          data: {
+            studentClass: { connect: { scId: input.studentClassId } },
+            fee: { connect: { feeId: input.feeId } },
+            discount: input.discount,
+            discountbypercent: input.discountbypercent,
+            discountDescription: input.discountDescription,
+          },
         });
       } catch (error) {
         console.error("Error in assignFeeToStudent:", error);
+        if (error instanceof TRPCError) {
+          throw error;
+        }
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Failed to assign fee to student. Please check the provided data.",
-          });
+          if (error.code === "P2002") {
+            throw new TRPCError({
+              code: "CONFLICT",
+              message: "This fee is already assigned to the student.",
+            });
+          }
         }
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to assign fee to student." });
       }
     }),
 
   getStudentFees: publicProcedure
-    .input(z.object({ studentClassId: z.string() }))
+    .input(z.object({ studentClassId: z.string().min(1, "Student Class ID is required") }))
     .query(async ({ ctx, input }) => {
       try {
         return await ctx.db.feeStudentClass.findMany({
           where: { studentClassId: input.studentClassId },
-          include: { fee: true },
+          include: { fee: true, studentClass: { include: { student: true, class: true } } },
         });
       } catch (error) {
         console.error("Error in getStudentFees:", error);
@@ -111,9 +142,9 @@ export const feeRouter = createTRPCRouter({
   updateFeeAssignment: publicProcedure
     .input(
       z.object({
-        sfcId: z.string(),
-        discount: z.number().min(0).optional(),
-        discountbypercent: z.number().min(0).max(100).optional(),
+        sfcId: z.string().min(1, "Fee Student Class ID is required"),
+        discount: z.number().min(0, "Discount must be a non-negative number").optional(),
+        discountbypercent: z.number().min(0).max(100, "Discount percentage must be between 0 and 100").optional(),
         discountDescription: z.string().optional(),
       })
     )
@@ -127,17 +158,16 @@ export const feeRouter = createTRPCRouter({
       } catch (error) {
         console.error("Error in updateFeeAssignment:", error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Failed to update fee assignment. Please check the provided data.",
-          });
+          if (error.code === "P2025") {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Fee assignment not found." });
+          }
         }
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to update fee assignment." });
       }
     }),
 
   removeFeeAssignment: publicProcedure
-    .input(z.object({ sfcId: z.string() }))
+    .input(z.object({ sfcId: z.string().min(1, "Fee Student Class ID is required") }))
     .mutation(async ({ ctx, input }) => {
       try {
         return await ctx.db.feeStudentClass.delete({
@@ -146,12 +176,39 @@ export const feeRouter = createTRPCRouter({
       } catch (error) {
         console.error("Error in removeFeeAssignment:", error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Failed to remove fee assignment. Please check the provided data.",
-          });
+          if (error.code === "P2025") {
+            throw new TRPCError({ code: "NOT_FOUND", message: "Fee assignment not found." });
+          }
         }
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to remove fee assignment." });
+      }
+    }),
+
+  getFeesByClass: publicProcedure
+    .input(z.object({ classId: z.string().min(1, "Class ID is required") }))
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.feeStudentClass.findMany({
+          where: { studentClass: { classId: input.classId } },
+          include: { fee: true, studentClass: { include: { student: true, class: true } } },
+        });
+      } catch (error) {
+        console.error("Error in getFeesByClass:", error);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the class." });
+      }
+    }),
+
+  getFeesBySession: publicProcedure
+    .input(z.object({ sessionId: z.string().min(1, "Session ID is required") }))
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.feeStudentClass.findMany({
+          where: { studentClass: { sessionId: input.sessionId } },
+          include: { fee: true, studentClass: { include: { student: true, class: true } } },
+        });
+      } catch (error) {
+        console.error("Error in getFeesBySession:", error);
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the session." });
       }
     }),
 });
