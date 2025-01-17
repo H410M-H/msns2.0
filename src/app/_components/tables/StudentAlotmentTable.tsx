@@ -116,7 +116,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
       id: "actions",
       cell: ({ row }) => (
         <div className="flex space-x-2">
-          <FeeManagementDialog studentClassId={row.original.studentId} />
+          <FeeManagementDialog />
           <Button
             variant="destructive"
             size="sm"

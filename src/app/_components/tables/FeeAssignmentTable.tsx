@@ -47,7 +47,8 @@ export const FeeAssignmentTable = ({}: ComponentProps) => {
   const [selectedAssignments, setSelectedAssignments] = useState<Set<string>>(new Set());
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
 
-  const getStudentFees = api.fee.getStudentFees.useQuery({ studentClassId: "" });
+  const FeeDetails = { studentClassId: "your_student_class_id" }; // Replace "your_student_class_id" with the actual value
+  const getStudentFees = api.fee.getFeesByClass.useQuery({ classId: FeeDetails.studentClassId });
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const handleRefresh = async () => {
@@ -268,4 +269,3 @@ export const FeeAssignmentTable = ({}: ComponentProps) => {
     </div>
   );
 };
-

@@ -53,8 +53,8 @@ export function FeeAssignmentDialog() {
   const feeData = api.fee.getAllFees.useQuery();
   const sessionData = api.session.getSessions.useQuery();
   const classData = api.class.getClasses.useQuery();
-  const studentData = api.student.getStudentsByClassId.useQuery(
-    { classId: form.watch("classId") },
+  const studentData = api.alotment.getStudentsByClassAndSession.useQuery(
+    { classId: form.watch("classId"), sessionId: form.watch("sessionId")},
     { enabled: !!form.watch("classId") },
   );
 
@@ -195,7 +195,7 @@ export function FeeAssignmentDialog() {
                               key={student.studentId}
                               value={student.studentId}
                             >
-                              {student.studentName}
+                              {student.student.studentName}
                             </SelectItem>
                           ))}
                         </SelectContent>

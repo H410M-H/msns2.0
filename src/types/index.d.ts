@@ -56,6 +56,7 @@ type SessionProps = {
   sessionName: string
   sessionFrom: string
   sessionTo: string
+  isActive: boolean
   salaryAssignments?: SalaryAssignmentProps[]
 }
 
@@ -70,7 +71,7 @@ type FeeProps = {
 }
 
 type ClassStudentProps = {
-  feeId: any
+  feeId: unknown
   scId: string
   classId: string
   sessionId: string

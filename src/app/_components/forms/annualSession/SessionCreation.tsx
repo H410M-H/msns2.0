@@ -1,7 +1,8 @@
+import React from 'react';
 import { useState } from 'react';
-import { CalendarIcon, LoaderIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
-import { api } from "~/trpc/react";
+import { Calendar } from "~/components/ui/calendar";
+import { Input } from "~/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -17,15 +18,18 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { Input } from "~/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "~/components/ui/popover";
-import { Calendar } from "~/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import { Plus, CalendarDays, Loader2 } from 'lucide-react';
+import { format, addYears } from "date-fns";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import dayjs from "dayjs";
+import { z } from "zod";
+import { api } from "~/trpc/react";
 import { cn } from "~/lib/utils";
-import { format } from "date-fns";
 
 const formSchema = z.object({
   sessionName: z.string().min(1, "Session name is required"),
@@ -34,45 +38,51 @@ const formSchema = z.object({
   }),
 });
 
-export default function SessionCreationDialog() {
+export function SessionCreationDialog() {
   const [isOpen, setIsOpen] = useState(false);
+  const utils = api.useContext();
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      sessionName: "",
+    },
   });
 
   const createSession = api.session.createSession.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await utils.session.getSessions.invalidate();
       form.reset();
       setIsOpen(false);
     },
   });
 
-  const formSubmitted = (values: z.infer<typeof formSchema>) => {
-    const sessionFrom = dayjs(values.sessionFrom).format('YYYY-MM-DD');
-    const sessionTo = dayjs(values.sessionFrom).add(365, 'days').format('YYYY-MM-DD');
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    const sessionTo = addYears(values.sessionFrom, 1);
     
     createSession.mutate({
       sessionName: values.sessionName,
-      sessionFrom: sessionFrom,
-      sessionTo: sessionTo,
+      sessionFrom: format(values.sessionFrom, 'yyyy-MM-dd'),
+      sessionTo: format(sessionTo, 'yyyy-MM-dd'),
     });
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <CalendarIcon className="h-4 w-4" />
-          Add New Session
+        <Button className="gap-2">
+          <Plus className="h-4 w-4" />
+          New Session
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create New Session</DialogTitle>
+          <DialogTitle>Create New Academic Session</DialogTitle>
         </DialogHeader>
+        
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(formSubmitted)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="sessionName"
@@ -80,14 +90,16 @@ export default function SessionCreationDialog() {
                 <FormItem>
                   <FormLabel>Session Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter session name" {...field}
-                    value={field.value ?? ""}
-                     />
+                    <Input
+                      placeholder="e.g., Academic Year 2025-26"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
             <FormField
               control={form.control}
               name="sessionFrom"
@@ -109,7 +121,7 @@ export default function SessionCreationDialog() {
                           ) : (
                             <span>Pick a date</span>
                           )}
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          <CalendarDays className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
@@ -118,22 +130,21 @@ export default function SessionCreationDialog() {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date < new Date()
-                        }
+                        disabled={(date) => date < new Date()}
                         initialFocus
                       />
                     </PopoverContent>
                   </Popover>
                   {field.value && (
                     <p className="text-sm text-muted-foreground">
-                      Session will end on: {dayjs(field.value).add(365, 'days').format('MMMM D, YYYY')}
+                      Session will end on: {format(addYears(field.value, 1), "PPP")}
                     </p>
                   )}
                   <FormMessage />
                 </FormItem>
               )}
             />
+            
             <Button
               type="submit"
               className="w-full"
@@ -141,7 +152,7 @@ export default function SessionCreationDialog() {
             >
               {createSession.isPending ? (
                 <>
-                  <LoaderIcon className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Creating...
                 </>
               ) : (

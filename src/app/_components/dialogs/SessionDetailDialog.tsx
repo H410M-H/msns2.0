@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -6,74 +8,141 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ClassTable } from "../tables/ClassTable";
 import { RegistrationCards } from "../cards/RegistrationCard";
-import { FeeManagementDialog } from "./FeeManagementDialog";
+import { api } from "~/trpc/react";
+import { useState } from "react";
+import { Badge } from "~/components/ui/badge";
+import { CalendarDays, Users, BookOpen, Calculator } from "lucide-react";
+import { FeeTable } from "../tables/FeeTable";
+import { SessionCalendar } from "./SessionCalender";
 
+interface SessionDetailDialogProps {
+  sessionId: string;
+  isActive: boolean;
+}
 
-export const SessionDialog = ({ sessionId }: { sessionId: string }) => {
-  const dialogButtons = [
+export function SessionDialog({ sessionId, isActive }: SessionDetailDialogProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const utils = api.useUtils();
+
+  const { data: session } = api.session.getSessions.useQuery(undefined, {
+    select: (sessions) => sessions.find((s) => s.sessionId === sessionId),
+  });
+
+  const setActiveSession = api.session.setActiveSession.useMutation({
+    onSuccess: async (_data, _variables: { sessionId: string }) => {
+      try {
+        // Re-fetch active session to confirm update
+        const activeSession = api.session.getActiveSession as unknown as {
+          sessionId: string;
+        };
+        const previousInput = { sessionId: _variables.sessionId }; // Declare and assign previousInput
+        if (!activeSession || activeSession.sessionId !== previousInput.sessionId) {
+          // Handle conflict (e.g., show error message)
+          console.error("Failed to set active session due to conflict");
+          // Revert UI change (optional)
+        }
+      } catch (error) {
+        console.error("Error fetching active session:", error);
+        // Revert UI change (optional)
+      } finally {
+        // Invalidate relevant queries to ensure data consistency
+        await utils.session.getSessions.invalidate();
+        await utils.session.getActiveSession.invalidate();
+      }
+    },
+  });
+
+  const handleSetActive = () => {
+    setActiveSession.mutate({ sessionId });
+  };
+
+  const tabs = [
     {
-      text: "User Registration",
-      color: "green",
-      dialogContent: (
-        <>
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold text-green-800">
-              Register Employee/Student
-            </DialogTitle>
-            <RegistrationCards />
-            <p className="text-gray-600">More information about the session can go here...</p>
-          </DialogHeader>
-        </>
+      id: "calendar",
+      label: "Calendar",
+      icon: CalendarDays,
+      content: session && (
+        <SessionCalendar
+          sessionStart={new Date(session.sessionFrom)}
+          sessionEnd={new Date(session.sessionTo)}
+        />
       ),
     },
     {
-      text: "View Classes",
-      color: "blue",
-      dialogContent: (
-        <>
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold text-green-800">
-              Classwise Details
-            </DialogTitle>
-            <ClassTable sessionId={sessionId} />
-            <p className="text-gray-600">More information about the session can go here...</p>
-          </DialogHeader>
-        </>
-      ),
+      id: "registration",
+      label: "Registration",
+      icon: Users,
+      content: <RegistrationCards />,
     },
     {
-      text: "Fee Collection",
-      color: "red",
-      dialogContent: (
-        <>
-          <DialogHeader>
-            <DialogTitle className="mb-4 text-2xl font-semibold text-gray-800">
-              Fee Details
-            </DialogTitle>
-            <p className="text-gray-600">More information about the session can go here...</p>
-          </DialogHeader>
-          <FeeManagementDialog />
-        </>
-      ),
+      id: "classes",
+      label: "Classes",
+      icon: BookOpen,
+      content: <ClassTable sessionId={sessionId} />,
+    },
+    {
+      id: "fees",
+      label: "Fees",
+      icon: Calculator,
+      content: <FeeTable />,
     },
   ];
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-gray-100 rounded-md">
-      {dialogButtons.map((button) => (
-        <Dialog key={button.text}>
-          <DialogTrigger asChild>
-            <Button className={`w-full md:w-auto transition duration-300 transform hover:scale-105 bg-${button.color}-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-${button.color}-600`}>
-              {button.text}
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="w-full lg:max-w-6xl rounded-md bg-white shadow-lg animate-fade-in">
-            {button.dialogContent}
-          </DialogContent>
-        </Dialog>
-      ))}
-    </div>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full justify-start gap-2">
+          <CalendarDays className="h-4 w-4" />
+          View Details
+          {isActive && (
+            <Badge variant="secondary" className="ml-auto">
+              Active
+            </Badge>
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-2xl">{session?.sessionName}</DialogTitle>
+            {!isActive && (
+              <Button
+                variant="outline"
+                onClick={handleSetActive}
+                disabled={setActiveSession.status === "pending"}
+              >
+                Set as Active
+              </Button>
+            )}
+          </div>
+        </DialogHeader>
+        <Tabs defaultValue="calendar" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            {tabs.map((tab) => (
+              <TabsTrigger
+                key={tab.id}
+                value={tab.id}
+                className="flex items-center gap-2"
+              >
+                <tab.icon className="h-4 w-4" />
+                {tab.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {tabs.map((tab) => (
+            <TabsContent
+              key={tab.id}
+              value={tab.id}
+              className="border-none p-0 pt-4"
+            >
+              {tab.content}
+            </TabsContent>
+          ))}
+        </Tabs>
+      </DialogContent>
+    </Dialog>
   );
-};
+}

@@ -93,6 +93,7 @@ model sessions {
   sessionName       String             @default("none")
   sessionFrom       String             @default("none")
   sessionTo         String             @default("none")
+  isActive          Boolean            @default(false)
   StudentClass      StudentClass[]
   SalaryAssignments SalaryAssignment[]
 }

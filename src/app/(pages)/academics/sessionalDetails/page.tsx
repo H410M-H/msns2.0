@@ -3,42 +3,53 @@
 import { SessionTable } from "~/app/_components/tables/SessionTable";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
-import { Separator } from "~/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { CalendarDays, Users, BookOpen, GraduationCap } from 'lucide-react';
 
-export default function sessionalDetail() {
+export default function SessionalDetail() {
   const breadcrumbs = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/academics", label: "Academics", current: true },
+    { href: "/academics", label: "Academics" },
+    { href: "/academics/sessionalDetails", label: "Sessional Details", current: true },
+  ];
+
+  const stats = [
+    { title: "Active Sessions", value: "3", icon: CalendarDays, color: "text-blue-600" },
+    { title: "Total Students", value: "1,234", icon: Users, color: "text-green-600" },
+    { title: "Courses Offered", value: "56", icon: BookOpen, color: "text-purple-600" },
+    { title: "Graduating Class", value: "120", icon: GraduationCap, color: "text-yellow-600" },
   ];
 
   return (
-    <ScrollArea className="flex flex-1 flex-col gap-6 pt-0">
+    <div className="space-y-6 p-6">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <div className="container mx-auto pt-16 px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden bg-white shadow-md rounded-lg">
-          {/* Decorative Header */}
-          <div className="relative bg-gradient-to-r from-green-600 to-yellow-500 p-6 rounded-t-lg">
-            <h1 className="text-center font-serif text-5xl font-bold tracking-tight text-white">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-green-100 to-yellow-300">
-                Session Details
-              </span>
-            </h1>
-          </div>
-          {/* Separator with animation */}
-          <Separator className="bg-green-900 my-4" />
-          {/* Content Section */}
-          <div className="px-6 py-4">
-            <p className="text-center text-gray-600 text-lg">
-              Manage and view student allotments seamlessly.
-            </p>
-            <div className="mt-6">
-              <SessionTable />
-            </div>
-          </div>
-          {/* Bottom Animated Border */}
-          <div className="absolute bottom-0 left-0 h-1 w-full origin-left transform scale-x-0 bg-gradient-to-r from-green-600 to-yellow-500 transition-transform duration-300 group-hover:scale-x-100"></div>
-        </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat, index) => (
+          <Card key={index} className="transition-all duration-300 hover:shadow-lg">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                {stat.title}
+              </CardTitle>
+              <stat.icon className={`h-4 w-4 ${stat.color}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stat.value}</div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
-    </ScrollArea>
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle>Session Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ScrollArea className="h-[calc(100vh-300px)]">
+            <SessionTable />
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
+

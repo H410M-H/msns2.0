@@ -1,10 +1,9 @@
-'use client'
+"use client"
 
+import { CalendarIcon as CalendarCog, type LucideIcon, NotebookPenIcon, Wallet } from 'lucide-react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import Link from "next/link"
-import { CldImage } from "next-cloudinary"
-import { NotebookPenIcon, BarChartIcon, Settings, type LucideIcon } from "lucide-react"
 
-// Since we're only using Lucide icons now, we can simplify the type
 type IconType = LucideIcon
 
 interface Services {
@@ -13,93 +12,59 @@ interface Services {
   icon: IconType
   href: string
   iconColor: string
-  gradientFrom: string
-  gradientTo: string
+  bgColor: string
 }
 
 const services: Services[] = [
   {
-    title: "Academics",
-    description: "Create and manage new classes or courses for the school",
+    title: "Session Management",
+    description: "Manage academic sessions, terms, and schedules",
+    icon: CalendarCog,
+    href: "/academics/sessionalDetails",
+    iconColor: "text-yellow-600",
+    bgColor: "bg-yellow-50",
+  },
+  {
+    title: "User Management",
+    description: "Manage students, teachers, and staff accounts",
     icon: NotebookPenIcon,
-    iconColor: "text-green-500",
-    gradientFrom: "from-green-400",
-    gradientTo: "to-green-700",
-    href: "/academics",
+    iconColor: "text-blue-600",
+    bgColor: "bg-blue-50",
+    href: "/userReg",
   },
   {
-    title: "Revenue & Finance",
-    description: "Generate comprehensive financial reports and analytics",
-    icon: BarChartIcon,
-    iconColor: "text-orange-500",
-    gradientFrom: "from-orange-400",
-    gradientTo: "to-orange-700",
+    title: "Fee Management",
+    description: "Track and manage student fees and payments",
+    icon: Wallet,
+    iconColor: "text-green-600",
+    bgColor: "bg-green-50",
     href: "/revenue",
-  },
-  {
-    title: "Settings",
-    description: "Customize Settings & Preferences for optimal system performance",
-    icon: Settings,
-    iconColor: "text-purple-500",
-    gradientFrom: "from-purple-400",
-    gradientTo: "to-purple-700",
-    href: "/admin/settings",
   },
 ]
 
 export default function AdminCards() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-4 py-6 rounded-md">
-      {/* Background Image */}
-      <CldImage
-        width="1920"
-        height="1080"
-        src="FrontView1_alaabu"
-        sizes="100vw"
-        alt="School view background"
-        className="absolute inset-0 object-cover w-full h-full"
-      />
-  
-      {/* Cards Grid */}
-      <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
-        {services.map((service, index) => {
-          const Icon = service.icon
-          return (
-            <Link
-              href={service.href}
-              key={index}
-              className="relative group gap-6 p-4 transform transition-all duration-500 
-                ease-in-out hover:scale-105 hover:z-20"
-              style={{ transitionDelay: `${index * 100}ms` }}
-            >
-              {/* Background Card Decoration */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-r ${service.gradientFrom} ${service.gradientTo} 
-                  shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl opacity-80 
-                  transition-transform duration-700 ease-in-out group-hover:rotate-0 
-                  group-hover:skew-y-0 group-hover:scale-105`}
-              />
-  
-              {/* Card Content */}
-              <div className="relative z-10 px-10 py-10 bg-yellow-100 backdrop-blur-lg shadow-xl 
-                rounded-3xl transition-transform duration-500 ease-in-out 
-                group-hover:scale-105 group-hover:rotate-1">
-                <div className="flex flex-col items-center text-center">
-                  <Icon className={`h-12 w-12 ${service.iconColor}`} />
-                  <h3 className="text-2xl font-semibold text-gray-900 
-                    group-hover:text-green-700 transition-colors duration-300">
-                    {service.title}
-                  </h3>
-                  <p className="mt-6 text-gray-700 group-hover:text-green-600 
-                    transition-colors duration-300">
-                    {service.description}
-                  </p>
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {services.map((service) => {
+        const Icon = service.icon
+        return (
+          <Link href={service.href} key={service.title}>
+            <Card className={`${service.bgColor} hover:shadow-lg transition-all duration-300 hover:scale-[1.02]`}>
+              <CardHeader>
+                <Icon className={`h-8 w-8 ${service.iconColor}`} />
+                <CardTitle className="mt-4">{service.title}</CardTitle>
+                <CardDescription>{service.description}</CardDescription>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="flex items-center text-sm text-muted-foreground">
+                  View details →
                 </div>
-              </div>
-            </Link>
-          )
-        })}
-      </div>
+              </CardContent>
+            </Card>
+          </Link>
+        )
+      })}
     </div>
   )
 }
+

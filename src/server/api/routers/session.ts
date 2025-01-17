@@ -1,104 +1,140 @@
-import { TRPCClientError } from "@trpc/client"
-import { createTRPCRouter, publicProcedure } from "../trpc"
-import { z } from "zod"
-import { TRPCError } from "@trpc/server"
+import { TRPCError } from "@trpc/server";
+import { createTRPCRouter, publicProcedure } from "../trpc";
+import { z } from "zod";
 
 export const SessionRouter = createTRPCRouter({
+  getActiveSession: publicProcedure.query(async ({ ctx }) => {
+    try {
+      return await ctx.db.sessions.findFirst({
+        where: {
+          isActive: true,
+        },
+      });
+    } catch (error) {
+      console.error("Error in getActiveSession:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to retrieve active session.",
+      });
+    }
+  }),
 
-    getSessions: publicProcedure.query(async ({ ctx }) => {
-        try {
-            const sessions: SessionProps[] = await ctx.db.sessions.findMany()
-            return sessions
-        } catch (error) {
-            if (error instanceof TRPCClientError) {
-                console.error(error.message)
-                throw new Error(error.message)
-            }
-            console.error(error)
-            throw new Error("Something went wrong.")
-        }
-    }),
+  getSessions: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const sessions = await ctx.db.sessions.findMany({
+        orderBy: { sessionFrom: "desc" },
+      });
+      return sessions;
+    } catch (error) {
+      console.error("Error in getSessions:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to retrieve sessions.",
+      });
+    }
+  }),
 
-    getGroupedSessions: publicProcedure.query(async ({ ctx }) => {
-        try {
-            const sessions: SessionProps[] = await ctx.db.sessions.findMany()
-            const groupedSessions = new Map<string,SessionProps[]>()
+  getGroupedSessions: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const sessions = await ctx.db.sessions.findMany({
+        orderBy: { sessionFrom: "desc" },
+      });
+      const groupedSessions = new Map<string, SessionProps[]>();
 
-            sessions.forEach((sessionData)=>{
-                const key = groupedSessions.has(sessionData.sessionFrom)
-                const data = groupedSessions.get(sessionData.sessionFrom)
-                if(key && data  && data.length!=0) {
-                    data.push(sessionData)
-                    groupedSessions.set(sessionData.sessionFrom,data)
-                }else{
-                    groupedSessions.set(sessionData.sessionFrom,[sessionData])
-                }
+      sessions.forEach((sessionData) => {
+        const key = new Date(sessionData.sessionFrom).getFullYear().toString();
+        const existingData = groupedSessions.get(key) ?? [];
+        groupedSessions.set(key, [...existingData, { ...sessionData, isActive: false }]);
+      });
 
-            })  
-            const groupedArray = Array.from(groupedSessions,(([key,value])=>({sessionFrom:key,sessions:value})))
-            return groupedArray
-        } catch (error) {
-            if (error instanceof TRPCClientError) {
-                console.error(error.message)
-                throw new Error(error.message)
-            }
-            console.error(error)
-            throw new Error("Something went wrong.")
-        }
-    }),
+      return Array.from(groupedSessions, ([year, sessions]) => ({
+        year,
+        sessions,
+      }));
+    } catch (error) {
+      console.error("Error in getGroupedSessions:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Failed to retrieve grouped sessions.",
+      });
+    }
+  }),
 
-    createSession: publicProcedure
+  createSession: publicProcedure
     .input(
-        z.object({
-          sessionName: z.string(),
-          sessionFrom: z.string({
-            required_error: "Session From date is required",
-          }),
-          sessionTo: z.string({
-            required_error: "Session To date is required",
-          }),
-        })
-      )
+      z.object({
+        sessionName: z.string(),
+        sessionFrom: z.string(),
+        sessionTo: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       try {
-        await ctx.db.sessions.create({
-            data: {
-              sessionName: input.sessionName,
-              sessionFrom: input.sessionFrom,
-              sessionTo: input.sessionTo,
-            }
-          });
-            } catch (error) {
-                if (error instanceof TRPCClientError) {
-                    console.error(error.message)
-                    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
-                }
-                console.error(error)
-                throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: "Something went wrong." })
-            }
-        }),
+        return await ctx.db.sessions.create({
+          data: {
+            sessionName: input.sessionName,
+            sessionFrom: input.sessionFrom,
+            sessionTo: input.sessionTo,
+          },
+        });
+      } catch (error) {
+        console.error("Error in createSession:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create session.",
+        });
+      }
+    }),
 
-    deleteSessionsByIds: publicProcedure
-        .input(z.object({
-            sessionIds: z.string().array(),
-        }))
-        .mutation(async ({ ctx, input }) => {
-            try {
+  deleteSessionsByIds: publicProcedure
+    .input(
+      z.object({
+        sessionIds: z.array(z.string()),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.sessions.deleteMany({
+          where: {
+            sessionId: {
+              in: input.sessionIds,
+            },
+          },
+        });
+      } catch (error) {
+        console.error("Error in deleteSessionsByIds:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete sessions.",
+        });
+      }
+    }),
 
-                await ctx.db.sessions.deleteMany({
-                    where: {
-                        sessionId: {
-                            in: input.sessionIds
-                        }
-                    }
-                })
-            } catch (error) {
-                if (error instanceof TRPCClientError) {
-                    console.error(error.message)
-                    throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: error.message })
-                }
-                console.error(error)
-                throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: "Something went wrong." })
-            }
-        })
-})
+  setActiveSession: publicProcedure
+    .input(
+      z.object({
+        sessionId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        // Deactivate all existing active sessions
+        await ctx.db.sessions.updateMany({
+          where: { isActive: true },
+          data: { isActive: false },
+        });
+
+        // Activate the specified session
+        return await ctx.db.sessions.update({
+          where: { sessionId: input.sessionId },
+          data: { isActive: true },
+        });
+      } catch (error) {
+        console.error("Error in setActiveSession:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to set active session.",
+        });
+      }
+    }),
+});

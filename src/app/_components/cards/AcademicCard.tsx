@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarCog, type LucideIcon, NotebookPenIcon } from "lucide-react";
+import { Boxes, CalendarCog, type LucideIcon, NotebookPenIcon, UserPlusIcon } from "lucide-react";
 import { CldImage } from "next-cloudinary";
   import Link from "next/link";
   
@@ -34,6 +34,24 @@ import { CldImage } from "next-cloudinary";
         gradientFrom: "from-blue-400",
         gradientTo: "to-blue-700",
         href: "/userReg",
+      },
+      {
+        title: "Classes Allottment",
+        description: "Easily enroll new Employees and manage their financial records.",
+        icon: UserPlusIcon,
+        href: "/academics/classDetails",
+        iconColor: "text-blue-500",
+        gradientFrom: "from-blue-400",
+        gradientTo: "to-blue-700",
+      },
+      {
+        title: "Section & Class Management",
+        description: "Easily enroll new students and manage their financial records.",
+        icon: Boxes,
+        href: "/academics/classwiseDetail",
+        iconColor: "text-purple-500",
+        gradientFrom: "from-purple-400",
+        gradientTo: "to-purple-700",
       },
       {
         title: "Fee Management",
