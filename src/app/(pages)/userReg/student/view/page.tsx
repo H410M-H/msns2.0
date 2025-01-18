@@ -1,15 +1,22 @@
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
 import { StudentTable } from "~/app/_components/tables/StudentTable";
-import { Separator } from "~/components/ui/separator";
 
 export default function StudentsTable() {
-
-    return (
-        <section className="grid mx-10 pt-20">
-            <Separator className="bg-green-900" />
-            <h1 className="text-center text-5xl p-4 font-serif font-semibold text-green-800">Student Credentials Detail</h1>
-            <Separator className="bg-green-900" />
-            <StudentTable />
-            <Separator className="bg-green-900" />
-        </section>
+    const breadcrumbs = [
+        { href: "/dashboard", label: "Dashboard", },
+        { href: "/academics", label: "Academics", },
+        { href: "/userReg/student", label: "Registered Students", current: true },
+      ]
+      
+      return (
+        <ScrollArea className="items-center ">
+          <PageHeader breadcrumbs={breadcrumbs} />
+          <div className="pt-16">
+            <div className="flex-1 p-4">
+                <StudentTable />
+            </div>
+            </div>
+        </ScrollArea>
     )
 }

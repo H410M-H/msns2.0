@@ -11,7 +11,7 @@ export default function AcademicsPage() {
   ];
 
   return (
-    <ScrollArea className="flex flex-1 flex-col gap-4 pt-0">
+    <ScrollArea className="flex flex-1 flex-col gap-4">
     <PageHeader breadcrumbs={breadcrumbs} />
       <AcademicCards />
     </ScrollArea>

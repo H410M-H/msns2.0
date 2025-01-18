@@ -8,20 +8,20 @@ export default function DashboardPage() {
   ]
   
   return (
-    <div className="flex flex-col gap-8">
+    <div className="items-center">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <div className="p-6">
+      <div className="pt-14">
       {/* Overview Section */}
-      <section className="mb-8">
-        <h2 className="text-lg font-semibold mb-4">Overview</h2>
+      <section className="mb-8 p-6">
+        <h2 className="text-lg font-semibold text-green-700">Overview</h2>
         <div className="overflow-y-auto max-h-[300px]">
           <StatsCards />
         </div>
       </section>
 
       {/* Quick Actions Section */}
-      <section>
-        <h2 className="text-lg font-semibold mb-4">Quick Actions</h2>
+      <section className="mb-8 p-6">
+        <h2 className="text-lg font-semibold text-green-700">Quick Actions</h2>
           <AdminCards />
       </section>
     </div>

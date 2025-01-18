@@ -21,11 +21,12 @@ export default function SessionPage() {
   ];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="items-center">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <div className="grid gap-4 pt-14 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, index) => (
-          <Card key={index} className="transition-all duration-300 hover:shadow-lg">
+      <div className="gap-4 pt-14">
+      <section className="flex flex-cols mb-8 p-6">
+      {stats.map((stat, index) => (
+          <Card key={index} className="flex-1 transition-all duration-300 hover:shadow-lg">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
                 {stat.title}
@@ -37,11 +38,12 @@ export default function SessionPage() {
             </CardContent>
           </Card>
         ))}
+        </section>
       </div>
-
+        <section className="mb-8 px-6">
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Session Management</CardTitle>
+          <CardTitle className="text-2xl text-green-700">Session Management</CardTitle>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-300px)]">
@@ -49,6 +51,7 @@ export default function SessionPage() {
           </ScrollArea>
         </CardContent>
       </Card>
+      </section>
     </div>
   )
 }

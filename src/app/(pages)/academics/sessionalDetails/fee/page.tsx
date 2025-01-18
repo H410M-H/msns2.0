@@ -9,7 +9,7 @@ type PageProps = {
 export default async function FeeDetailsPage({ searchParams }: PageProps) {
   const paramProps = await searchParams;
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>Fee details</CardTitle>

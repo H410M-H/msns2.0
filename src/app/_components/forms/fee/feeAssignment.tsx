@@ -225,7 +225,7 @@ export function FeeAssignmentDialog() {
                         <SelectContent>
                           {feeData.data?.map((fee) => (
                             <SelectItem key={fee.feeId} value={fee.feeId}>
-                              {fee.feeName}
+                              {fee.level}
                             </SelectItem>
                           ))}
                         </SelectContent>

@@ -84,21 +84,6 @@ const columns: ColumnDef<StudentProps>[] = [
     header: "Adm #",
     cell: ({ row }) => <span>{row.getValue("admissionNumber")}</span>,
   },
-  // {
-  //   accessorKey: "profilePic",
-  //   header: "Profile Picture",
-  //   cell: ({ row }) => (
-  //     <div className="flex items-center justify-center">
-  //       <Image
-  //         src={row.getValue("profilePic")}
-  //         alt="Profile"
-  //         className="w-10 h-10 rounded-full object-cover"
-  //         width={40}
-  //         height={40}
-  //       />
-  //     </div>
-  //   ),
-  // },
   {
     accessorKey: "studentName",
     header: "Student Name",
@@ -110,15 +95,29 @@ const columns: ColumnDef<StudentProps>[] = [
     cell: ({ row }) => <span>{row.getValue("fatherName")}</span>,
   },
   {
-    accessorKey: "gender",
-    header: "Gender",
-    cell: ({ row }) => <span>{row.getValue("gender")}</span>,
+    accessorKey: "fatherMobile",
+    header: "Father Mobile",
+    cell: ({ row }) => <span>{row.getValue("fatherMobile")}</span>
   },
   {
     accessorKey: "dateOfBirth",
     header: "Date of Birth",
     cell: ({ row }) => {
       const date = new Date(row.getValue("dateOfBirth"));
+      return <span>{date.toLocaleDateString()}</span>;
+    },
+  },
+  {
+    accessorKey: "gender",
+    header: "Gender",
+    cell: ({ row }) => <span>{row.getValue("gender")}</span>,
+  },
+
+  {
+    accessorKey: "createdAt",
+    header: "Admission Date",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("createdAt"));
       return <span>{date.toLocaleDateString()}</span>;
     },
   },
@@ -175,7 +174,7 @@ export const StudentTable = () => {
           }
           className="max-w-sm"
         />
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => refetch()}>
             Refresh
           </Button>
@@ -227,7 +226,7 @@ export const StudentTable = () => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between py-4">
         <span className="text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.

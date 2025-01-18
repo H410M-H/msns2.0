@@ -71,6 +71,30 @@ export const ClassCreationDialog = () => {
           >
             <FormField
               control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Montessori">MONTESSORI (Nursery and Prep)</SelectItem>
+                      <SelectItem value="Primary">PRIMARY (One to Five)</SelectItem>
+                      <SelectItem value="Middle">MIDDLE (Six and Seven)</SelectItem>
+                      <SelectItem value="SSC_I">SSC-I</SelectItem>
+                      <SelectItem value="SSC_II">SSC-II</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name="grade"
               render={({ field }) => (
                 <FormItem>
@@ -107,30 +131,7 @@ export const ClassCreationDialog = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Montessori">MONTESSORI (Nursery and Prep)</SelectItem>
-                      <SelectItem value="Primary">PRIMARY (One to Five)</SelectItem>
-                      <SelectItem value="Middle">MIDDLE (Six and Seven)</SelectItem>
-                      <SelectItem value="SSC_I">SSC-I</SelectItem>
-                      <SelectItem value="SSC_II">SSC-II</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
             <FormField
               control={form.control}
               name="fee"

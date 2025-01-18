@@ -194,7 +194,7 @@ export const ClassTable = ({ sessionId }: ComponentProps) => {
                       className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
                       asChild
                     >
-                      <Link href={`/academics/classDetails?classId=${row.classId}&sessionId=${sessionId}`}>
+                      <Link href={`/academics/classwiseDetail?classId=${row.classId}&sessionId=${sessionId}`}>
                         View Details
                       </Link>
                     </Button>

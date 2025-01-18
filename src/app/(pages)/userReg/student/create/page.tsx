@@ -1,13 +1,23 @@
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import StudentCreationDialog from "~/app/_components/forms/student/StudentCreation";
+import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
 
 export default function StudentRegistration(){
-
-    return (
-        <section className="w-screen gap-2">
-        <div className="min-h-screen pt-20 sm:px-6 bg-yellow-100/50">
-        <h1 className="text-4xl font-serif font-bold text-green-800 text-center p-6">Student Registration Portal</h1>
-        <StudentCreationDialog />
-    </div>
-        </section>
-    )
+    const breadcrumbs = [
+        { href: "/dashboard", label: "Dashboard", },
+        { href: "/academics", label: "Academics", },
+        { href: "/userReg/student", label: "Student Registration", current: true },
+      ]
+      
+      return (
+        <ScrollArea className="items-center ">
+          <PageHeader breadcrumbs={breadcrumbs} />
+          <div className="pt-14">
+            <div className="flex-1">
+              <StudentCreationDialog />
+            </div>
+          </div>
+        </ScrollArea>
+        )
 }
+    
