@@ -1,12 +1,12 @@
 "use client"
 
-import { SessionTable } from "~/app/_components/tables/SessionTable";
+import { SessionList } from "~/app/_components/tables/SessionList";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { CalendarDays, Users, BookOpen, GraduationCap } from 'lucide-react';
 
-export default function SessionalDetail() {
+export default function SessionPage() {
   const breadcrumbs = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/academics", label: "Academics" },
@@ -45,7 +45,7 @@ export default function SessionalDetail() {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-300px)]">
-            <SessionTable />
+            <SessionList />
           </ScrollArea>
         </CardContent>
       </Card>

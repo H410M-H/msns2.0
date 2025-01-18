@@ -88,7 +88,7 @@ export const feeRouter = createTRPCRouter({
       try {
         // Check if the studentClass and fee exist
         const studentClass = await ctx.db.studentClass.findFirst({
-          where: { studentId: input.studentId, classId: input.classId},
+          where: { studentId: input.studentId, classId: input.classId },
         });
         const fee = await ctx.db.fees.findUnique({
           where: { feeId: input.feeId },
@@ -190,10 +190,23 @@ export const feeRouter = createTRPCRouter({
     .input(z.object({ classId: z.string().min(1, "Class ID is required"), sessionId: z.string().min(1, "Session ID is required") }))
     .query(async ({ ctx, input }) => {
       try {
-        return await ctx.db.feeStudentClass.findMany({
-          where: { studentClass: { classId: input.classId, sessionId: input.sessionId } },
-          include: { fee: true, studentClass: { include: { student: true, class: true } } },
+
+
+        const data  =  await ctx.db.feeStudentClass.findMany({
+          where: {
+            studentClass: {
+              classId: input.classId, 
+              sessionId: input.sessionId
+            }
+          },
+          include: {
+            fee: true,
+            studentClass: {
+              include: { student: true, class: true }
+            }
+          },
         });
+        return data
       } catch (error) {
         console.error("Error in getFeesByClass:", error);
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the class." });

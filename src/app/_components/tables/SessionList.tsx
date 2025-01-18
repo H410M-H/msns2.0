@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Card } from "~/components/ui/card";
@@ -10,18 +10,19 @@ import { CalendarDays, Search, RefreshCcw } from "lucide-react";
 import { api } from "~/trpc/react";
 import { SessionCreationDialog } from "../forms/annualSession/SessionCreation";
 import SessionDeletionDialog from "../forms/annualSession/SessionDeletion";
-import { SessionDialog } from "../dialogs/SessionDetailDialog";
+import Link from "next/link";
 
-export const SessionTable = () => {
-  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(new Set());
+export const SessionList = () => {
+  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
+    new Set(),
+  );
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: sessionList = [], refetch } =
     api.session.getSessions.useQuery(); // Use more descriptive variable name
 
-  const filteredSessions = sessionList.filter(
-    (session) =>
-      session.sessionName.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredSessions = sessionList.filter((session) =>
+    session.sessionName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   const toggleSessionSelection = (sessionId: string) => {
@@ -40,7 +41,7 @@ export const SessionTable = () => {
     setSelectedSessions(
       selectedSessions.size === filteredSessions.length
         ? new Set()
-        : new Set(filteredSessions.map((s) => s.sessionId))
+        : new Set(filteredSessions.map((s) => s.sessionId)),
     );
   };
 
@@ -49,7 +50,7 @@ export const SessionTable = () => {
       {/* Header Controls */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-1 items-center gap-2">
-          <div className="relative flex-1 max-w-sm">
+          <div className="relative max-w-sm flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search sessions..."
@@ -101,7 +102,9 @@ export const SessionTable = () => {
             <div className="absolute right-2 top-2">
               <Checkbox
                 checked={selectedSessions.has(session.sessionId)}
-                onCheckedChange={() => toggleSessionSelection(session.sessionId)}
+                onCheckedChange={() =>
+                  toggleSessionSelection(session.sessionId)
+                }
               />
             </div>
 
@@ -109,31 +112,37 @@ export const SessionTable = () => {
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays className="h-5 w-5 text-primary" />
                 <h3 className="text-lg font-semibold">{session.sessionName}</h3>
-                {session.isActive !== undefined && session.isActive && (
+                {true !== undefined && true && (
                   <Badge className="bg-green-500">Active</Badge>
                 )}
               </div>
 
               <div className="mb-4 space-y-2 text-sm text-muted-foreground">
-                <div>Start: {new Date(session.sessionFrom).toLocaleDateString()}</div>
-                <div>End: {new Date(session.sessionTo).toLocaleDateString()}</div>
+                <div>
+                  Start: {new Date(session.sessionFrom).toLocaleDateString()}
+                </div>
+                <div>
+                  End: {new Date(session.sessionTo).toLocaleDateString()}
+                </div>
               </div>
 
-              <SessionDialog
-                sessionId={session.sessionId}
-                isActive={session.isActive ?? false}
-              />
+              {/* <SessionDialog sessionId={session.sessionId} isActive={true} /> */}
+              <Button asChild>
+                <Link href={`/academics/sessionalDetails/${session.sessionId}`}>Session detail</Link>
+              </Button>
             </div>
           </Card>
         ))}
       </div>
 
       {filteredSessions.length === 0 && (
-        <div className="text-center py-12">
+        <div className="py-12 text-center">
           <CalendarDays className="mx-auto h-12 w-12 text-muted-foreground/50" />
           <h3 className="mt-4 text-lg font-semibold">No sessions found</h3>
           <p className="text-muted-foreground">
-            {searchTerm ? "Try adjusting your search" : "Get started by creating a new session"}
+            {searchTerm
+              ? "Try adjusting your search"
+              : "Get started by creating a new session"}
           </p>
         </div>
       )}
