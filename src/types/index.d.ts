@@ -1,125 +1,128 @@
-
 type ClassProps = {
-  sessionId?: string
-  classId: string
-  grade: string
-  section: string
-  category: "Montessori" | "Primary" | "Middle" | "SSC_I" | "SSC_II"
-  fee: number
-}
+  sessionId?: string;
+  classId: string;
+  grade: string;
+  section: string;
+  category: "Montessori" | "Primary" | "Middle" | "SSC_I" | "SSC_II";
+  fee: number;
+};
 
 type StudentProps = {
-  studentId: string
-  registrationNumber: string
-  studentMobile: string
-  fatherMobile: string
-  admissionNumber: string
-  studentName: string
-  gender: "MALE" | "FEMALE" | "CUSTOM"
-  dateOfBirth: string
-  fatherName: string
-  studentCNIC: string
-  fatherCNIC: string
-  fatherProfession?: string
-  bloodGroup?: string | null
-  guardianName?: string | null
-  caste?: string
-  currentAddress: string
-  permanentAddress: string
-  medicalProblem?: string | null
-  profilePic?: string | null
-  isAssign: boolean
-  discount: number
-  discountbypercent: number
-}
+  studentId: string;
+  registrationNumber: string;
+  studentMobile: string;
+  fatherMobile: string;
+  admissionNumber: string;
+  studentName: string;
+  gender: "MALE" | "FEMALE" | "CUSTOM";
+  dateOfBirth: string;
+  fatherName: string;
+  studentCNIC: string;
+  fatherCNIC: string;
+  fatherProfession?: string;
+  bloodGroup?: string | null;
+  guardianName?: string | null;
+  caste?: string;
+  currentAddress: string;
+  permanentAddress: string;
+  medicalProblem?: string | null;
+  profilePic?: string | null;
+  isAssign: boolean;
+  discount: number;
+  discountByPercent: number;
+};
 
 type EmployeeProps = {
-  employeeId: string
-  employeeName: string
-  fatherName: string
-  gender: "MALE" | "FEMALE" | "CUSTOM"
-  dob: string
-  cnic: string
-  maritalStatus: 'Married' | 'Unmarried' | 'Widow' | 'Divorced'
-  doj: string
-  designation: 'Principal' | 'Admin' | 'Head' | 'Clerk' | 'Teacher' | 'Worker'
-  residentialAddress: string
-  mobileNo: string
-  additionalContact?: string | null
-  education: string
-  salaryAssignments?: SalaryAssignmentProps[]
-  salaryIncrements?: SalaryIncrementProps[]
-}
+  employeeId: string;
+  employeeName: string;
+  fatherName: string;
+  gender: "MALE" | "FEMALE" | "CUSTOM";
+  dob: string;
+  cnic: string;
+  maritalStatus: "Married" | "Unmarried" | "Widow" | "Divorced";
+  doj: string;
+  designation: "Principal" | "Admin" | "Head" | "Clerk" | "Teacher" | "Worker";
+  residentialAddress: string;
+  mobileNo: string;
+  additionalContact?: string | null;
+  education: string;
+  salaryAssignments?: SalaryAssignmentProps[];
+  salaryIncrements?: SalaryIncrementProps[];
+};
 
 type SessionProps = {
-  sessionId: string
-  sessionName: string
-  sessionFrom: string
-  sessionTo: string
-  isActive: boolean
-  salaryAssignments?: SalaryAssignmentProps[]
-}
+  sessionId: string;
+  sessionName: string;
+  sessionFrom: string;
+  sessionTo: string;
+  isActive: boolean;
+  salaryAssignments?: SalaryAssignmentProps[];
+};
 
 type FeeProps = {
-  feeId?: string
-  feeName: string
-  tuition: number
-  fee: number
-  type: "MonthlyFee" | "AnnualFee" 
-  createdAt?: Date
-  updatedAt?: Date
-}
+  feeId?: string;
+  level: string; // Level like PLAYGROUP, NURSERY, etc.
+  admissionFee: number; // Fixed admission fee
+  tuitionFee: number; // Monthly tuition fee
+  examFund: number; // Annual exam fund
+  computerLabFund?: number | null; // Optional for some levels
+  studentIdCardFee: number; // Fixed student ID card fee
+  infoAndCallsFee: number; // Fixed info and calls fee
+  type: "MonthlyFee" | "AnnualFee";
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 type ClassStudentProps = {
-  feeId: unknown
-  scId: string
-  classId: string
-  sessionId: string
-  student: StudentProps
-  class: ClassProps
-  session: SessionProps
-}
+  feeId: unknown;
+  scId: string;
+  classId: string;
+  sessionId: string;
+  student: StudentProps;
+  class: ClassProps;
+  session: SessionProps;
+};
 
 type ClassFeeProps = {
-  scId: string
-  feeId: string
-  classId: string
-  sessionId: string
-  class: ClassProps
-  fee: FeeProps
-  session: SessionProps
-}
+  scId: string;
+  feeId: string;
+  classId: string;
+  sessionId: string;
+  class: ClassProps;
+  fee: FeeProps;
+  session: SessionProps;
+};
 
 type FeeStudentClassProps = {
-  sfcId: string
-  studentClassId: string
-  feeId: string
-  discount: number
-  discountbypercent: number
-  discountDescription: string
-  createdAt: Date
-  updatedAt: Date
-  feeStudentClass: ClassStudentProps
-  fee: FeeProps
-}
+  sfcId: string;
+  studentClassId: string;
+  feeId: string;
+  discount: number;
+  discountByPercent: number;
+  discountDescription: string;
+  createdAt: Date;
+  updatedAt: Date;
+  feeStudentClass: ClassStudentProps;
+  fee: FeeProps;
+};
 
 type SalaryAssignmentProps = {
-  id: string
-  employeeId: string
-  employee: EmployeeProps
-  baseSalary: number
-  increment: number
-  totalSalary: number
-  assignedDate: Date
-  sessionId: string
-  session: SessionProps
-}
+  id: string;
+  employeeId: string;
+  employee: EmployeeProps;
+  baseSalary: number;
+  increment: number;
+  totalSalary: number;
+  assignedDate: Date;
+  sessionId: string;
+  session: SessionProps;
+};
 
 type SalaryIncrementProps = {
-  id: string
-  employeeId: string
-  employee: EmployeeProps
-  incrementAmount: number
-  reason: string
-  effectiveDate: Date
-}
+  id: string;
+  employeeId: string;
+  employee: EmployeeProps;
+  incrementAmount: number;
+  reason: string;
+  effectiveDate: Date;
+};

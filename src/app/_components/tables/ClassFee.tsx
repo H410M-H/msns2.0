@@ -36,9 +36,13 @@ type ClassFeeProps = {
   updatedAt: Date;
   fee: {
     feeId: string;
-    feeName: string;
-    tuition: number;
+    level: string;
     type: FeeCategory;
+    tuitionFee: number;
+    examFund: number;
+    computerLabFund: number | null;
+    studentIdCardFee: number;
+    infoAndCallsFee: number;
     createdAt: Date;
     updatedAt: Date;
   };
@@ -46,6 +50,7 @@ type ClassFeeProps = {
     scId: string;
     student: {
       studentId: string;
+      registrationNumber: string;
       studentName: string;
       studentMobile: string;
       fatherMobile: string;
@@ -79,17 +84,16 @@ type ClassFeeTableProps = {
 
 const columns: ColumnDef<ClassFeeProps>[] = [
   {
-    accessorKey: "studentClass.student.studentName",
-    header: "Student Name",
+    accessorKey: "studentClass.student.registrationNumber",
+    header: "Student ID",
   },
   {
-    accessorKey: "fee.feeName",
-    header: "Fee Name",
+    accessorKey: "studentClass.class.grade",
+    header: "Class",
   },
   {
-    accessorKey: "fee.tuition",
+    accessorKey: "studentClass.class.fee",
     header: "Tuition",
-    cell: ({ row }) => <div>{row.getValue<number>("fee.tuition").toFixed(2)}</div>,
   },
   {
     accessorKey: "discount",
@@ -128,30 +132,31 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
   
 
   const { data: classFees, refetch: refetchClassFees } = api.fee.getFeesByClassAndSession.useQuery(
-    { classId, sessionId },
-    {
-      select: (data) =>
-        data.map((item) => ({
-          ...item,
-          studentClass: {
-            ...item.studentClass,
-            student: {
-              ...item.studentClass.student,
-              dateOfBirth: item.studentClass.student.dateOfBirth || "",
-              fatherName: item.studentClass.student.fatherName || "",
-              studentCNIC: item.studentClass.student.studentCNIC || "",
-              fatherCNIC: item.studentClass.student.fatherCNIC || "",
-              fatherProfession: item.studentClass.student.fatherProfession || "",
-              address: "",
-              city: "",
-              country: "",
+      { classId, sessionId },
+      {
+        select: (data) =>
+          data.map((item) => ({
+            ...item,
+            studentClass: {
+              ...item.studentClass,
+              student: {
+                ...item.studentClass.student,
+                dateOfBirth: item.studentClass.student.dateOfBirth || "",
+                fatherName: item.studentClass.student.fatherName || "",
+                studentCNIC: item.studentClass.student.studentCNIC || "",
+                fatherCNIC: item.studentClass.student.fatherCNIC || "",
+                fatherProfession: item.studentClass.student.fatherProfession || "",
+                address: "",
+                city: "",
+                country: "",
+              },
             },
-          },
-        })),
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
+            discountbypercent: 0,
+          })),
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+      }
+    );
 
   const table = useReactTable<ClassFeeProps>({
     data: classFees ?? [],

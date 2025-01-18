@@ -16,15 +16,23 @@ export const feeRouter = createTRPCRouter({
   createFee: publicProcedure
     .input(
       z.object({
-        feeName: z.string().min(1, "Fee name is required"),
-        tuition: z.number().min(0, "Tuition must be a positive number"),
+        level: z.string().min(1, "Fee name is required"),
+        tuitionFee: z.number().min(0, "Tuition must be a positive number"),
+        examFund: z.number().min(0, "Exam Fund must be a positive number"),
+        computerLabFund: z.number().min(0, "Computer Lab Fund must be a positive number"),
+        studentIdCardFee: z.number().min(0, "Student ID Card Fee must be a positive number"),
+        infoAndCallsFee: z.number().min(0, "Info and Calls Fee must be a positive number"),
         type: z.enum(["MonthlyFee", "AnnualFee"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
       try {
         return await ctx.db.fees.create({
-          data: input,
+          data: {
+            ...input,
+            tuitionFee: 0,
+            examFund: 0,
+          },
         });
       } catch (error) {
         console.error("Error in createFee:", error);
@@ -36,8 +44,12 @@ export const feeRouter = createTRPCRouter({
     .input(
       z.object({
         feeId: z.string().min(1, "Fee ID is required"),
-        feeName: z.string().min(1, "Fee name is required").optional(),
-        tuition: z.number().min(0, "Tuition must be a positive number").optional(),
+        level: z.string().min(1, "Fee name is required").optional(),
+        tuitionFee: z.number().min(0, "Tuition Fee must be a positive number").optional(),
+        examFund: z.number().min(0, "Exam Fund must be a positive number").optional(),
+        computerLabFund: z.number().min(0, "Computer Lab Fund must be a positive number").optional(),
+        studentIdCardFee: z.number().min(0, "Student ID Card Fee must be a positive number").optional(),
+        infoAndCallsFee: z.number().min(0, "Info and Calls Fee must be a positive number").optional(),
         type: z.enum(["MonthlyFee", "AnnualFee"]).optional(),
       })
     )
@@ -106,7 +118,7 @@ export const feeRouter = createTRPCRouter({
             studentClassId: studentClass.scId,
             feeId: input.feeId,
             discount: input.discount,
-            discountbypercent: input.discountbypercent,
+            discountByPercent: input.discountbypercent,
             discountDescription: input.discountDescription,
           },
         });

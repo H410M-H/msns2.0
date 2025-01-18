@@ -99,13 +99,18 @@ model sessions {
 }
 
 model fees {
-  feeId           String            @id @default(uuid())
-  feeName         String
-  tuition         Float             @default(0)
-  type            FeeCategory       @default(MonthlyFee)
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  FeeStudentClass FeeStudentClass[]
+  feeId            String            @id @default(uuid())
+  level            String            // Level like PLAYGROUP, NURSERY, etc.
+  admissionFee     Float             @default(5000) // Fixed admission fee
+  tuitionFee       Float             // Monthly tuition fee
+  examFund         Float             // Annual exam fund
+  computerLabFund  Float?            // Annual computer lab fund, optional for some levels
+  studentIdCardFee Float             @default(500) // Fixed student ID card fee
+  infoAndCallsFee  Float             @default(500) // Fixed info and calls fee
+  type             FeeCategory       @default(MonthlyFee)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  FeeStudentClass  FeeStudentClass[]
 }
 
 model users {
@@ -144,7 +149,7 @@ model FeeStudentClass {
   studentClassId      String
   feeId               String
   discount            Float        @default(0)
-  discountbypercent   Float        @default(0)
+  discountByPercent   Float        @default(0)
   discountDescription String
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
