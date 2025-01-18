@@ -75,7 +75,9 @@ export const feeRouter = createTRPCRouter({
   assignFeeToStudent: publicProcedure
     .input(
       z.object({
-        studentClassId: z.string().min(1, "Student Class ID is required"),
+        studentId: z.string().min(1, "Student Class ID is required"),
+        classId: z.string().min(1, "Student Class ID is required"),
+        sessionId: z.string().min(1, "Student Class ID is required"),
         feeId: z.string().min(1, "Fee ID is required"),
         discount: z.number().min(0, "Discount must be a non-negative number"),
         discountbypercent: z.number().min(0).max(100, "Discount percentage must be between 0 and 100"),
@@ -85,8 +87,8 @@ export const feeRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       try {
         // Check if the studentClass and fee exist
-        const studentClass = await ctx.db.studentClass.findUnique({
-          where: { scId: input.studentClassId },
+        const studentClass = await ctx.db.studentClass.findFirst({
+          where: { studentId: input.studentId, classId: input.classId},
         });
         const fee = await ctx.db.fees.findUnique({
           where: { feeId: input.feeId },
@@ -101,8 +103,8 @@ export const feeRouter = createTRPCRouter({
 
         return await ctx.db.feeStudentClass.create({
           data: {
-            studentClass: { connect: { scId: input.studentClassId } },
-            fee: { connect: { feeId: input.feeId } },
+            studentClassId: studentClass.scId,
+            feeId: input.feeId,
             discount: input.discount,
             discountbypercent: input.discountbypercent,
             discountDescription: input.discountDescription,
@@ -184,12 +186,12 @@ export const feeRouter = createTRPCRouter({
       }
     }),
 
-  getFeesByClass: publicProcedure
-    .input(z.object({ classId: z.string().min(1, "Class ID is required") }))
+  getFeesByClassAndSession: publicProcedure
+    .input(z.object({ classId: z.string().min(1, "Class ID is required"), sessionId: z.string().min(1, "Session ID is required") }))
     .query(async ({ ctx, input }) => {
       try {
         return await ctx.db.feeStudentClass.findMany({
-          where: { studentClass: { classId: input.classId } },
+          where: { studentClass: { classId: input.classId, sessionId: input.sessionId } },
           include: { fee: true, studentClass: { include: { student: true, class: true } } },
         });
       } catch (error) {

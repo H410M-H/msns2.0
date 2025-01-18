@@ -122,12 +122,13 @@ const columns: ColumnDef<ClassFeeProps>[] = [
   },
 ];
 
-export function ClassFeeTable({ classId }: ClassFeeTableProps) {
+export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  
 
-  const { data: classFees, refetch: refetchClassFees } = api.fee.getFeesByClass.useQuery(
-    { classId },
+  const { data: classFees, refetch: refetchClassFees } = api.fee.getFeesByClassAndSession.useQuery(
+    { classId, sessionId },
     {
       select: (data) =>
         data.map((item) => ({

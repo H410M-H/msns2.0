@@ -32,7 +32,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { FeeAssignmentTable } from "../../tables/FeeAssignmentTable";
 
 const formSchema = z.object({
   sessionId: z.string().min(1, "Session is required"),
@@ -44,7 +43,7 @@ const formSchema = z.object({
 export function FeeAssignmentDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  // const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -77,10 +76,12 @@ export function FeeAssignmentDialog() {
   });
   
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const { classId, feeId } = values;
+    console.log(values);
     assignFee.mutate({
-      feeId,
-      studentClassId: classId,
+      feeId: values.feeId,
+      classId: values.classId,
+      studentId: values.studentId,
+      sessionId: values.sessionId,
       discount: 0,
       discountbypercent: 0,
       discountDescription: "",
@@ -117,7 +118,7 @@ export function FeeAssignmentDialog() {
                       <Select
                         onValueChange={(value) => {
                           field.onChange(value);
-                          setSelectedSessionId(value);
+                          // setSelectedSessionId(value);
                         }}
                         defaultValue={field.value}
                         disabled={sessionData.isPending}
@@ -243,7 +244,7 @@ export function FeeAssignmentDialog() {
             </Form>
           </TabsContent>
           <TabsContent value="view">
-            {selectedSessionId && <FeeAssignmentTable sessionId={selectedSessionId} feeId={selectedSessionId} />}
+            {/* {selectedSessionId && <FeeAssignmentTable sessionId={selectedSessionId} feeId={selectedSessionId} />} */}
           </TabsContent>
         </Tabs>
       </DialogContent>

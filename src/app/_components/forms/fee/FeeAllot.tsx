@@ -85,15 +85,15 @@ export function FeeAllotmentDialog({
       discountDescription,
     }
 
-    if (sfcId) {
-      updateFeeAssignment.mutate({ sfcId, ...data })
-    } else {
-      assignFeeToStudent.mutate({
-        studentClassId,
-        feeId,
-        ...data,
-      })
-    }
+    // if (sfcId) {
+    //   updateFeeAssignment.mutate({ sfcId, ...data })
+    // } else {
+    //   assignFeeToStudent.mutate({
+    //     studentClassId,
+    //     feeId,
+    //     ...data,
+    //   })
+    // }
   }
 
   return (
