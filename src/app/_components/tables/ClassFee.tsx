@@ -93,7 +93,7 @@ const columns: ColumnDef<ClassFeeProps>[] = [
   },
   {
     accessorKey: "studentClass.class.fee",
-    header: "Tuition",
+    header: "Monthly Fee",
   },
   {
     accessorKey: "discount",
@@ -104,10 +104,6 @@ const columns: ColumnDef<ClassFeeProps>[] = [
     accessorKey: "discountbypercent",
     header: "Discount %",
     cell: ({ row }) => <div>{row.getValue<number>("discountbypercent").toFixed(2)}%</div>,
-  },
-  {
-    accessorKey: "fee.type",
-    header: "Fee Type",
   },
   {
     id: "actions",

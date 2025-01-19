@@ -79,7 +79,7 @@ export function FeeCreationDialog() {
   const handleSubmit = () => {
     const numericData = {
       level: formData.level,
-      type: "MonthlyFee" as const, // Change the type to "MonthlyFee"
+      type: "MonthlyFee" as const,
       tuition: parseFloat(formData.tuitionFee),
       admissionFee: parseFloat(formData.admissionFee),
       tuitionFee: parseFloat(formData.tuitionFee),

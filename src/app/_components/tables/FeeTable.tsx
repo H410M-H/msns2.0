@@ -38,6 +38,7 @@ type Fee = {
   studentIdCardFee: number;
   infoAndCallsFee: number;
   createdAt: Date;
+  type: string;
 };
 
 const columns: ColumnDef<Fee>[] = [
@@ -145,18 +146,18 @@ export function FeeTable() {
     .rows.map((row) => row.original.feeId);
 
   const totals = useMemo(() => {
-    if (!fees) return { monthlyTotal: 0, annualTotal: 0 };
+    if (!fees) return { monthlyFee: 0, annualFee: 0 };
     return fees.reduce(
       (acc, fee) => {
-        acc.monthlyTotal += fee.tuitionFee;
-        acc.annualTotal +=
+        acc.monthlyFee += fee.tuitionFee;
+        acc.annualFee +=
           fee.examFund +
           (fee.computerLabFund ?? 0) +
           fee.studentIdCardFee +
           fee.infoAndCallsFee;
         return acc;
       },
-      { monthlyTotal: 0, annualTotal: 0 }
+      { monthlyFee: 0, annualFee: 0 }
     );
   }, [fees]);
 
@@ -240,9 +241,9 @@ export function FeeTable() {
               )}
               <TableRow className="font-bold bg-gray-100">
                 <TableCell colSpan={3}>Totals</TableCell>
-                <TableCell>Rs. {totals.monthlyTotal.toLocaleString()}</TableCell>
+                <TableCell>Rs. {totals.monthlyFee.toLocaleString()}</TableCell>
                 <TableCell colSpan={4}>
-                  Rs. {totals.annualTotal.toLocaleString()}
+                  Rs. {totals.annualFee.toLocaleString()}
                 </TableCell>
                 <TableCell />
               </TableRow>

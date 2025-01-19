@@ -109,7 +109,7 @@ export const ClassAlotmentTable = ({ classId }: { classId: string, sessionId: st
         ...item,
         student: {
           ...item.student,
-          guardianName: item.student.guardianName ?? "", // Ensure guardianName is a string
+          guardianName: item.student.guardianName ?? "",
         },
       }));
       setData(transformedData as unknown as ClassStudentProps[]);

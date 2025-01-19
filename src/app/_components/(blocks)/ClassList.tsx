@@ -18,6 +18,7 @@ import { ClassCreationDialog } from "../forms/class/ClassCreation";
 import { ClassDeletionDialog } from "~/app/_components/forms/class/ClassDeletion";
 import { Search, RefreshCw } from 'lucide-react';
 import { Checkbox } from "~/components/ui/checkbox";
+import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
 
 const categoryOrder = ["Montessori", "Primary", "Middle", "SSC_I", "SSC_II"];
 const categoryColors: Record<string, string> = {
@@ -132,6 +133,7 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <ClassCreationDialog />
+            <FeeAssignmentDialog />
             <Button
               variant="outline"
               className={`bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 ${
@@ -194,8 +196,18 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                       className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
                       asChild
                     >
-                      <Link href={`/academics/sessionalDetails/fee?classId=${row.classId}&sessionId=${sessionId}`}>
+                      <Link href={`/academics/classwiseDetail?classId=${row.classId}&sessionId=${sessionId}`}>
                         View Details
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="mt-4 w-full bg-gradient-to-r from-blue-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
+                      asChild
+                    >
+                      <Link href={`/academics/sessionalDetails/fee?classId=${row.classId}&sessionId=${sessionId}`}>
+                        Fee Details
                       </Link>
                     </Button>
                   </div>

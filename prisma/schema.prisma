@@ -100,13 +100,13 @@ model sessions {
 
 model fees {
   feeId            String            @id @default(uuid())
-  level            String            // Level like PLAYGROUP, NURSERY, etc.
-  admissionFee     Float             @default(5000) // Fixed admission fee
-  tuitionFee       Float             // Monthly tuition fee
-  examFund         Float             // Annual exam fund
-  computerLabFund  Float?            // Annual computer lab fund, optional for some levels
-  studentIdCardFee Float             @default(500) // Fixed student ID card fee
-  infoAndCallsFee  Float             @default(500) // Fixed info and calls fee
+  level            String            
+  admissionFee     Float             @default(5000)
+  tuitionFee       Float            
+  examFund         Float             
+  computerLabFund  Float?            
+  studentIdCardFee Float             @default(500)
+  infoAndCallsFee  Float             @default(500)
   type             FeeCategory       @default(MonthlyFee)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt

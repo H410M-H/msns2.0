@@ -13,7 +13,6 @@ import {
 } from "~/components/ui/dialog"
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
-import { api } from "~/trpc/react"
 import { useToast } from "~/hooks/use-toast"
 
 type FeeAllotmentDialogProps = {
@@ -28,62 +27,19 @@ type FeeAllotmentDialogProps = {
 
 export function FeeAllotmentDialog({
   sfcId,
-  studentClassId,
-  feeId,
   initialDiscount = 0,
   initialDiscountPercent = 0,
-  initialDiscountDescription = "",
-  onAllotmentSuccess
-}: FeeAllotmentDialogProps) {
+  initialDiscountDescription = ""}: FeeAllotmentDialogProps) {
   const [open, setOpen] = useState(false)
   const [discount, setDiscount] = useState(initialDiscount.toString())
   const [discountbypercent, setDiscountbypercent] = useState(initialDiscountPercent.toString())
   const [discountDescription, setDiscountDescription] = useState(initialDiscountDescription)
 
-  const { toast } = useToast()
+  useToast()
 
-  const assignFeeToStudent = api.fee.assignFeeToStudent.useMutation({
-    onSuccess: () => {
-      toast({
-        title: "Fee assigned successfully",
-        description: "The fee has been assigned to the student.",
-      })
-      setOpen(false)
-      onAllotmentSuccess()
-    },
-    onError: (error) => {
-      toast({
-        title: "Error assigning fee",
-        description: error.message,
-        variant: "destructive",
-      })
-    },
-  })
 
-  const updateFeeAssignment = api.fee.updateFeeAssignment.useMutation({
-    onSuccess: () => {
-      toast({
-        title: "Fee assignment updated successfully",
-        description: "The fee assignment has been updated.",
-      })
-      setOpen(false)
-      onAllotmentSuccess()
-    },
-    onError: (error) => {
-      toast({
-        title: "Error updating fee assignment",
-        description: error.message,
-        variant: "destructive",
-      })
-    },
-  })
 
   const handleSubmit = () => {
-    const data = {
-      discount: parseFloat(discount),
-      discountbypercent: parseFloat(discountbypercent),
-      discountDescription,
-    }
 
     // if (sfcId) {
     //   updateFeeAssignment.mutate({ sfcId, ...data })
