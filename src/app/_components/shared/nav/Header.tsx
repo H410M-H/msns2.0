@@ -91,7 +91,7 @@ export default function Header({ className, ...props }: HeaderProps) {
                 className="rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 transition-transform duration-300 ease-in-out"
               >
                 <DropdownMenuItem className="hover:bg-purple-100 focus:bg-purple-200">
-                  <Link href="/profile">Profile</Link>
+                  <Link href="/account">Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="hover:bg-purple-100 focus:bg-purple-200">
                   <Link href="/settings">Settings</Link>

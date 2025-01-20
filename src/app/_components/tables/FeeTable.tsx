@@ -24,11 +24,11 @@ import {
 } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { RefreshCw } from 'lucide-react';
-import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
 import { FeeCreationDialog } from "../forms/fee/FeeCreation";
+import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
 import { FeeDeletionDialog } from "../forms/fee/FeeDeletion";
 
-type Fee = {
+type FeeProps = {
   feeId: string;
   level: string;
   admissionFee: number;
@@ -41,7 +41,7 @@ type Fee = {
   type: string;
 };
 
-const columns: ColumnDef<Fee>[] = [
+const columns: ColumnDef<FeeProps>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -71,18 +71,20 @@ const columns: ColumnDef<Fee>[] = [
     cell: ({ getValue }) => `Rs. ${(getValue() as number).toLocaleString()}`,
   },
   {
-    accessorKey: "tuitionFee",
+    id: "tuitionFee",
     header: "Monthly Fee",
-    cell: ({ getValue }) => `Rs. ${(getValue() as number).toLocaleString()}`,
-  },
+    cell: ({ row }) => {
+      const monthlyFee = row.original.tuitionFee;
+      return `Rs. ${monthlyFee.toLocaleString()}`;
+    },  },
   {
     accessorKey: "examFund",
-    header: "Exam Fund (Annual)",
+    header: "Exam Fund",
     cell: ({ getValue }) => `Rs. ${(getValue() as number).toLocaleString()}`,
   },
   {
     accessorKey: "computerLabFund",
-    header: "Computer Lab Fund (Annual)",
+    header: "Computer Lab Fund",
     cell: ({ getValue }) => {
       const value = getValue() as number | null;
       return value ? `Rs. ${value.toLocaleString()}` : "N/A";
@@ -97,6 +99,31 @@ const columns: ColumnDef<Fee>[] = [
     accessorKey: "infoAndCallsFee",
     header: "Info & Calls Fee",
     cell: ({ getValue }) => `Rs. ${(getValue() as number).toLocaleString()}`,
+  },
+  {
+    id: "annualFee",
+    header: "Annual Fee",
+    cell: ({ row }) => {
+      const annualFee = row.original.admissionFee +
+        row.original.examFund +
+        (row.original.computerLabFund ?? 0) +
+        row.original.studentIdCardFee +
+        row.original.infoAndCallsFee;
+      return `Rs. ${annualFee.toLocaleString()}`;
+    },
+  },
+  {
+    id: "totalFee",
+    header: "Total Fee",
+    cell: ({ row }) => {
+      const annualFee = row.original.admissionFee +
+        row.original.examFund +
+        (row.original.computerLabFund ?? 0) +
+        row.original.studentIdCardFee +
+        row.original.infoAndCallsFee;
+      const totalFee = row.original.tuitionFee + annualFee;
+      return `Rs. ${totalFee.toLocaleString()}`;
+    },
   },
   {
     accessorKey: "createdAt",
@@ -145,25 +172,24 @@ export function FeeTable() {
     .getSelectedRowModel()
     .rows.map((row) => row.original.feeId);
 
-  const totals = useMemo(() => {
-    if (!fees) return { monthlyFee: 0, annualFee: 0 };
-    return fees.reduce(
-      (acc, fee) => {
-        acc.monthlyFee += fee.tuitionFee;
-        acc.annualFee +=
-          fee.examFund +
-          (fee.computerLabFund ?? 0) +
-          fee.studentIdCardFee +
-          fee.infoAndCallsFee;
-        return acc;
-      },
-      { monthlyFee: 0, annualFee: 0 }
-    );
+  const totalFeesByClass = useMemo(() => {
+    if (!fees) return {};
+    return fees.reduce((acc, fee) => {
+      const totalFee = fee.tuitionFee +
+        fee.admissionFee +
+        fee.examFund +
+        (fee.computerLabFund ?? 0) +
+        fee.studentIdCardFee +
+        fee.infoAndCallsFee;
+      acc[fee.level] = (acc[fee.level] ?? 0) + totalFee;
+      return acc;
+    }, {} as Record<string, number>);
   }, [fees]);
 
   return (
     <div className="space-y-4 p-4">
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <h3 className="text-lg font-semibold mb-2">Total Fees by Class</h3>
         <Input
           placeholder="Search fees..."
           value={globalFilter ?? ""}
@@ -191,10 +217,19 @@ export function FeeTable() {
           />
         </div>
       </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-12 gap-4">
+          {Object.entries(totalFeesByClass).map(([level, totalFee]) => (
+            <div key={level} className="bg-gray-100 p-4 rounded-md">
+              <h6 className="font-normal text-xs">{level}</h6>
+              <p className="text-sm">Rs. {totalFee.toLocaleString()}</p>
+            </div>
+          ))}
+      </div>
+
 
       <div className="rounded-md border shadow-md overflow-hidden">
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="bg-gray-50 w-full">
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
@@ -239,19 +274,10 @@ export function FeeTable() {
                   </TableCell>
                 </TableRow>
               )}
-              <TableRow className="font-bold bg-gray-100">
-                <TableCell colSpan={3}>Totals</TableCell>
-                <TableCell>Rs. {totals.monthlyFee.toLocaleString()}</TableCell>
-                <TableCell colSpan={4}>
-                  Rs. {totals.annualFee.toLocaleString()}
-                </TableCell>
-                <TableCell />
-              </TableRow>
             </TableBody>
           </Table>
         </div>
       </div>
-
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"

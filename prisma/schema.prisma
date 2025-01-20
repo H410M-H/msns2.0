@@ -60,7 +60,7 @@ model employees {
   education          String             @db.VarChar(100)
   salaryAssignments  SalaryAssignment[]
   salaryIncrements   SalaryIncrement[]
-  profilePicture     String?
+  profilePic     String?
   cv                 String?
 
   @@index([employeeName])

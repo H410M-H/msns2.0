@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { ClassTable } from "../tables/ClassTable";
+import { ClassList } from "../(blocks)/ClassList";
 
 
 type ComponentProps = {
@@ -26,7 +26,7 @@ export const ClasswiseDialog = ({sessionId}:ComponentProps) => {
             <DialogTitle className="mb-4 text-2xl font-semibold text-gray-800">
               Classwise Details
             </DialogTitle>
-            <ClassTable sessionId={sessionId}/>
+            <ClassList sessionId={sessionId}/>
             <p className="text-gray-600">More information about the session can go here...</p>
           </DialogHeader>
         </DialogContent>

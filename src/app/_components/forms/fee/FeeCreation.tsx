@@ -43,10 +43,11 @@ export function FeeCreationDialog() {
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
+    type: "",
     level: "",
     admissionFee: "5000",
     tuitionFee: "",
-    examFund: "",
+    examFund: "4000",
     computerLabFund: "",
     studentIdCardFee: "500",
     infoAndCallsFee: "500",
@@ -78,13 +79,12 @@ export function FeeCreationDialog() {
 
   const handleSubmit = () => {
     const numericData = {
+      type: formData.type as "MonthlyFee" | "AnnualFee",
       level: formData.level,
-      type: "MonthlyFee" as const,
-      tuition: parseFloat(formData.tuitionFee),
       admissionFee: parseFloat(formData.admissionFee),
       tuitionFee: parseFloat(formData.tuitionFee),
       examFund: parseFloat(formData.examFund),
-      computerLabFund: parseFloat(formData.computerLabFund ?? "0"), // Provide a default value of 0 when computerLabFund is null
+      computerLabFund: parseFloat(formData.computerLabFund ?? "0"),
       studentIdCardFee: parseFloat(formData.studentIdCardFee),
       infoAndCallsFee: parseFloat(formData.infoAndCallsFee),
     };
@@ -198,7 +198,7 @@ export function FeeCreationDialog() {
 
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="infoAndCallsFee" className="text-right">
-              Info & Calls
+              Info & Calls Fee
             </Label>
             <Input
               id="infoAndCallsFee"

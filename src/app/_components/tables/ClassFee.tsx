@@ -88,17 +88,40 @@ const columns: ColumnDef<ClassFeeProps>[] = [
     header: "Student ID",
   },
   {
+    accessorKey: "studentClass.student.studentName",
+    header: "Student Name",
+  },
+  {
     accessorKey: "studentClass.class.grade",
     header: "Class",
   },
   {
-    accessorKey: "studentClass.class.fee",
+    accessorKey: "studentClass.fee.tuitionFee",
     header: "Monthly Fee",
+    cell: ({ row }) => `Rs. ${row.original.fee.tuitionFee.toLocaleString()}`,
+  },
+  {
+    id: "annualFee",
+    header: "Annual Fee",
+    cell: ({ row }) => {
+      const fee = row.original.fee;
+      const annualFee = fee.examFund + (fee.computerLabFund ?? 0) + fee.studentIdCardFee + fee.infoAndCallsFee;
+      return `Rs. ${annualFee.toLocaleString()}`;
+    },
+  },
+  {
+    id: "totalFee",
+    header: "Total Fee",
+    cell: ({ row }) => {
+      const fee = row.original.fee;
+      const totalFee = fee.tuitionFee + fee.examFund + (fee.computerLabFund ?? 0) + fee.studentIdCardFee + fee.infoAndCallsFee;
+      return `Rs. ${totalFee.toLocaleString()}`;
+    },
   },
   {
     accessorKey: "discount",
     header: "Discount",
-    cell: ({ row }) => <div>{row.getValue<number>("discount").toFixed(2)}</div>,
+    cell: ({ row }) => <div>Rs. {row.getValue<number>("discount").toLocaleString()}</div>,
   },
   {
     accessorKey: "discountbypercent",
@@ -128,31 +151,31 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
   
 
   const { data: classFees, refetch: refetchClassFees } = api.fee.getFeesByClassAndSession.useQuery(
-      { classId, sessionId },
-      {
-        select: (data) =>
-          data.map((item) => ({
-            ...item,
-            studentClass: {
-              ...item.studentClass,
-              student: {
-                ...item.studentClass.student,
-                dateOfBirth: item.studentClass.student.dateOfBirth || "",
-                fatherName: item.studentClass.student.fatherName || "",
-                studentCNIC: item.studentClass.student.studentCNIC || "",
-                fatherCNIC: item.studentClass.student.fatherCNIC || "",
-                fatherProfession: item.studentClass.student.fatherProfession || "",
-                address: "",
-                city: "",
-                country: "",
-              },
+    { classId, sessionId },
+    {
+      select: (data) =>
+        data.map((item) => ({
+          ...item,
+          studentClass: {
+            ...item.studentClass,
+            student: {
+              ...item.studentClass.student,
+              dateOfBirth: item.studentClass.student.dateOfBirth || "",
+              fatherName: item.studentClass.student.fatherName || "",
+              studentCNIC: item.studentClass.student.studentCNIC || "",
+              fatherCNIC: item.studentClass.student.fatherCNIC || "",
+              fatherProfession: item.studentClass.student.fatherProfession || "",
+              address: "",
+              city: "",
+              country: "",
             },
-            discountbypercent: 0,
-          })),
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-      }
-    );
+          },
+          discountbypercent: 0, // Add the missing property
+        })),
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
+    }
+  );
 
   const table = useReactTable<ClassFeeProps>({
     data: classFees ?? [],
@@ -168,6 +191,11 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
     },
     onGlobalFilterChange: setGlobalFilter,
   });
+
+  const totalFeeForClass = classFees?.reduce((total, classFee) => {
+    const fee = classFee.fee;
+    return total + fee.tuitionFee + fee.examFund + (fee.computerLabFund ?? 0) + fee.studentIdCardFee + fee.infoAndCallsFee;
+  }, 0);
 
   return (
     <div className="space-y-4">
@@ -233,6 +261,11 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
           </TableBody>
         </Table>
       </div>
+      {totalFeeForClass !== undefined && (
+        <div className="text-right font-semibold">
+          Total Fee for Class: Rs. {totalFeeForClass.toLocaleString()}
+        </div>
+      )}
       <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
@@ -254,6 +287,7 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
     </div>
   );
 }
+
 function refetchClassFees(): void {
   throw new Error("Function not implemented.");
 }

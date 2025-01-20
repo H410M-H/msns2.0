@@ -17,8 +17,8 @@ import { CldImage, CldUploadWidget, type CloudinaryUploadWidgetResults } from "n
 import { Separator } from '~/components/ui/separator'
 
 const studentSchema = z.object({
-  studentMobile: z.string().min(11, "Invalid mobile number"),
-  fatherMobile: z.string().min(11, "Invalid mobile number"),
+  studentMobile: z.string().regex(/^(\+92|0)?3\d{9}$/, "Invalid Pakistani mobile number format"),
+  fatherMobile: z.string().regex(/^(\+92|0)?3\d{9}$/, "Invalid Pakistani mobile number format"),
   studentName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must not exceed 100 characters"),
   gender: z.enum(['MALE', 'FEMALE', 'CUSTOM']),
   dateOfBirth: z.string().min(1, "Date of Birth is required"),
@@ -106,15 +106,19 @@ export default function StudentRegistrationForm() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-7xl mx-auto"
+        className="max-w-8xl mx-auto"
       >
         <Card className="backdrop-blur-sm bg-white/90 shadow-xl rounded-2xl overflow-hidden border-0">
-          <CardHeader className="bg-gradient-to-r from-emerald-700 to-green-500 p-8">
-            <h2 className="text-3xl font-bold text-white flex items-center gap-2">
-              <User className="w-8 h-8" />
-              Student Registration Portal
-            </h2>
-            <p className="text-blue-100 mt-2">Enter Student Credentials to complete Registration Process</p>
+        <CardHeader className="relative min-h-[100px] items-center">
+            <CldImage
+              src="https://res.cloudinary.com/dvvbxrs55/image/upload/v1737374740/hex-one_cihfwh.jpg"
+              alt="School building"
+              fill
+              style={{ objectFit: "cover" }}
+              className="relative inset-0 w-full h-full object-fill filter brightness-75"
+            />
+            <div className="absolute inset-0" />
+            <h2 className="text-4xl items font-extrabold relative z-10 text-white">Student Registration Form</h2>
           </CardHeader>
 
           <CardContent className="p-8">

@@ -1,6 +1,6 @@
 "use client"
 
-import { Boxes, CalendarCog, type LucideIcon, NotebookPenIcon, UserPlusIcon } from "lucide-react";
+import { Boxes, CalendarCog, type LucideIcon, NotebookPenIcon } from "lucide-react";
 import { CldImage } from "next-cloudinary";
   import Link from "next/link";
   
@@ -36,15 +36,6 @@ import { CldImage } from "next-cloudinary";
         href: "/userReg",
       },
       {
-        title: "Classes Allottment",
-        description: "Easily enroll new Employees and manage their financial records.",
-        icon: UserPlusIcon,
-        href: "/academics/classDetails",
-        iconColor: "text-blue-500",
-        gradientFrom: "from-blue-400",
-        gradientTo: "to-blue-700",
-      },
-      {
         title: "Section & Class Management",
         description: "Easily enroll new students and manage their financial records.",
         icon: Boxes,
@@ -78,7 +69,7 @@ import { CldImage } from "next-cloudinary";
           />
       
           {/* Cards Grid */}
-          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
+          <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-16 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
             {services.map((service, index) => {
               const Icon = service.icon
               return (
