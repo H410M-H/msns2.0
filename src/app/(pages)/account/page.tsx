@@ -17,7 +17,7 @@ export default function AccountPage() {
   ]
 
   return (
-    <div className="flex flex-1 flex-col gap-4 pt-0">
+    <div className="flex flex-1 flex-col gap-4">
       <PageHeader breadcrumbs={breadcrumbs} />
         <Tabs tabs={tabs} />
     </div>
