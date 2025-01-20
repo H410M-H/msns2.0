@@ -46,6 +46,8 @@ type EmployeeProps = {
   mobileNo: string;
   additionalContact?: string | null;
   education: string;
+  profilePic?: string | null;
+  cv?: string | null;
   salaryAssignments?: SalaryAssignmentProps[];
   salaryIncrements?: SalaryIncrementProps[];
 };
@@ -61,13 +63,13 @@ type SessionProps = {
 
 type FeeProps = {
   feeId?: string;
-  level: string; // Level like PLAYGROUP, NURSERY, etc.
-  admissionFee: number; // Fixed admission fee
-  tuitionFee: number; // Monthly tuition fee
-  examFund: number; // Annual exam fund
-  computerLabFund?: number | null; // Optional for some levels
-  studentIdCardFee: number; // Fixed student ID card fee
-  infoAndCallsFee: number; // Fixed info and calls fee
+  level: string;
+  admissionFee: number;
+  tuitionFee: number;
+  examFund: number;
+  computerLabFund?: number | null;
+  studentIdCardFee: number;
+  infoAndCallsFee: number;
   type: "MonthlyFee" | "AnnualFee";
   createdAt?: Date;
   updatedAt?: Date;

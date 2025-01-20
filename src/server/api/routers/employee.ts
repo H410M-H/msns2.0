@@ -3,18 +3,21 @@ import { createTRPCRouter, publicProcedure } from "../trpc"
 import { z } from "zod"
 
 const employeeSchema = z.object({
-  employeeName: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must not exceed 100 characters"),
-  fatherName: z.string().min(2, "Father's name must be at least 2 characters").max(100, "Father's name must not exceed 100 characters"),
-  gender: z.enum(['MALE', 'FEMALE', 'CUSTOM']),
-  dob: z.string().min(1, "Date of Birth is required"),
-  cnic: z.string().regex(/^\d{5}-\d{7}-\d$/, "Invalid CNIC format"),
-  maritalStatus: z.enum(['Married', 'Unmarried', 'Widow', 'Divorced']),
-  doj: z.string().min(1, "Date of Joining is required"),
-  designation: z.enum(['Principal', 'Admin', 'Head', 'Clerk', 'Teacher', 'Worker']),
-  residentialAddress: z.string().min(5, "Residential Address must be at least 5 characters"),
-  mobileNo: z.string().regex(/^(\+92|0)?3\d{9}$/, "Invalid Pakistani mobile number format"),
-  additionalContact: z.string().regex(/^(\+92|0)?3\d{9}$/, "Invalid Pakistani mobile number format").optional(),
-  education: z.string().min(2, "Education must be at least 2 characters").max(100, "Education must not exceed 100 characters"),
+  employeeName: z.string(),
+  fatherName: z
+    .string(),
+  gender: z.enum(["MALE", "FEMALE"]),
+  dob: z.string(),
+  cnic: z.string(),
+  maritalStatus: z.enum(["Married", "Unmarried", "Widow", "Divorced"]),
+  doj: z.string(),
+  designation: z.enum(["Principal", "Admin", "Head", "Clerk", "Teacher", "Worker"]),
+  residentialAddress: z.string(),
+  mobileNo: z.string(),
+  additionalContact: z.string().optional(),
+  education: z.string(),
+  profilePic: z.string().optional(),
+  cv: z.string().optional(),
 })
 
 export const EmployeeRouter = createTRPCRouter({
@@ -25,32 +28,36 @@ export const EmployeeRouter = createTRPCRouter({
     } catch (error) {
       console.error(error)
       throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
+        code: "INTERNAL_SERVER_ERROR",
         message: "Something went wrong.",
       })
     }
   }),
 
-  createEmployee: publicProcedure
-    .input(employeeSchema)
-    .mutation(async ({ ctx, input }) => {
-      try {
-        await ctx.db.employees.create({
-          data: input
-        })
-      } catch (error) {
-        console.error(error)
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Something went wrong'
-        })
-      }
-    }),
+  createEmployee: publicProcedure.input(employeeSchema).mutation(async ({ ctx, input }) => {
+    try {
+      const newEmployee = await ctx.db.employees.create({
+        data: {
+          ...input,
+          additionalContact: input.additionalContact ?? null,
+        },
+      })
+      return newEmployee
+    } catch (error) {
+      console.error(error)
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong",
+      })
+    }
+  }),
 
   deleteEmployeesByIds: publicProcedure
-    .input(z.object({
-      employeeIds: z.string().array(),
-    }))
+    .input(
+      z.object({
+        employeeIds: z.string().array(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
       try {
         await ctx.db.employees.deleteMany({
@@ -62,10 +69,33 @@ export const EmployeeRouter = createTRPCRouter({
         })
       } catch (error) {
         console.error(error)
-        throw new TRPCError({ 
-          code: 'INTERNAL_SERVER_ERROR', 
-          message: "Something went wrong." 
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong.",
+        })
+      }
+    }),
+
+  getEmployeesByDesignation: publicProcedure
+    .input(
+      z.object({
+        designation: z.enum(["Principal", "Admin", "Head", "Clerk", "Teacher", "Worker"]),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        return await ctx.db.employees.findMany({
+          where: {
+            designation: input.designation,
+          },
+        })
+      } catch (error) {
+        console.error(error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong.",
         })
       }
     }),
 })
+

@@ -22,7 +22,6 @@ export const feeRouter = createTRPCRouter({
         computerLabFund: z.number().min(0, "Computer Lab Fund must be a positive number"),
         studentIdCardFee: z.number().min(0, "Student ID Card Fee must be a positive number"),
         infoAndCallsFee: z.number().min(0, "Info and Calls Fee must be a positive number"),
-        type: z.enum(["MonthlyFee", "AnnualFee"]),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -30,8 +29,7 @@ export const feeRouter = createTRPCRouter({
         return await ctx.db.fees.create({
           data: {
             ...input,
-            tuitionFee: 0,
-            examFund: 0,
+            type: "AnnualFee",          
           },
         });
       } catch (error) {
@@ -50,7 +48,7 @@ export const feeRouter = createTRPCRouter({
         computerLabFund: z.number().min(0, "Computer Lab Fund must be a positive number").optional(),
         studentIdCardFee: z.number().min(0, "Student ID Card Fee must be a positive number").optional(),
         infoAndCallsFee: z.number().min(0, "Info and Calls Fee must be a positive number").optional(),
-        type: z.enum(["MonthlyFee", "AnnualFee"]).optional(),
+        type: z.enum(['MonthlyFee', 'AnnualFee']).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

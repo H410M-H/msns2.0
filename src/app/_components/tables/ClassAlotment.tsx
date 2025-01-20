@@ -198,7 +198,7 @@ export const ClassAlotmentTable = ({ classId }: { classId: string, sessionId: st
                   className="bg-green-500 text-white hover:bg-green-600"
                   asChild
                 >
-                  <Link href={`/registration/students/${row.original.student.studentId}`}>View Student</Link>
+                  <Link href={`/userReg/student/view${row.original.student.studentId}`}>View Student</Link>
                 </Button>
                 <FeeAllotmentDialog studentClassId={classId} feeId={classId} onAllotmentSuccess={function (): void {
                   throw new Error("Function not implemented.");

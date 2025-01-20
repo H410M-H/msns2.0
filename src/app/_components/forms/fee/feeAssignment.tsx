@@ -43,7 +43,6 @@ const formSchema = z.object({
 export function FeeAssignmentDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
-  // const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,166 +88,174 @@ export function FeeAssignmentDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline">Fee Assignment</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[80%]">
-        <DialogHeader>
-          <DialogTitle>Fee Assignment</DialogTitle>
-          <DialogDescription>
-            Assign fees to students and view existing assignments.
-          </DialogDescription>
-        </DialogHeader>
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogTrigger asChild>
+    <Button variant="outline" className="flex items-center space-x-2">
+      <span>Fee Assignment</span>
+    </Button>
+  </DialogTrigger>
+  <DialogContent className="sm:max-w-[80%]">
+    <DialogHeader>
+      <DialogTitle className="text-xl font-bold">Fee Assignment</DialogTitle>
+      <DialogDescription className="text-sm text-muted-foreground">
+        Assign fees to students and view existing assignments.
+      </DialogDescription>
+    </DialogHeader>
 
-        <Tabs defaultValue="assign">
-          <TabsList>
-            <TabsTrigger value="assign">Assign Fee</TabsTrigger>
-            <TabsTrigger value="view">View Assignments</TabsTrigger>
-          </TabsList>
-          <TabsContent value="assign">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="sessionId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Session</FormLabel>
-                      <Select
-                        onValueChange={(value) => {
-                          field.onChange(value);
-                          // setSelectedSessionId(value);
-                        }}
-                        defaultValue={field.value}
-                        disabled={sessionData.isPending}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select session" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {sessionData.data?.map((session) => (
-                            <SelectItem
-                              key={session.sessionId}
-                              value={session.sessionId}
-                            >
-                              {session.sessionName} ({session.sessionFrom}-
-                              {session.sessionTo})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+    <Tabs defaultValue="assign">
+      <TabsList className="mt-4">
+        <TabsTrigger value="assign">Assign Fee</TabsTrigger>
+        <TabsTrigger value="view">View Assignments</TabsTrigger>
+      </TabsList>
 
-                <FormField
-                  control={form.control}
-                  name="classId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Class</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={!form.watch("sessionId") || classData.isPending}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select class" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {classData.data?.map((class_) => (
-                            <SelectItem key={class_.classId} value={class_.classId}>
-                              {class_.grade}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+      <TabsContent value="assign">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Session Field */}
+            <FormField
+              control={form.control}
+              name="sessionId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Session</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(value)}
+                    defaultValue={field.value}
+                    disabled={sessionData.isPending}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select session" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {sessionData.data?.map((session) => (
+                        <SelectItem
+                          key={session.sessionId}
+                          value={session.sessionId}
+                        >
+                          {session.sessionName} ({session.sessionFrom} - {session.sessionTo})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-                <FormField
-                  control={form.control}
-                  name="studentId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Student</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={!form.watch("classId") || studentData.isPending}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select student" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {studentData.data?.map((student) => (
-                            <SelectItem
-                              key={student.studentId}
-                              value={student.studentId}
-                            >
-                              {student.student.studentName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            {/* Class Field */}
+            <div className="border-t pt-4">
+              <FormField
+                control={form.control}
+                name="classId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Class</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={!form.watch("sessionId") || classData.isPending}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select class" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {classData.data?.map((class_) => (
+                          <SelectItem key={class_.classId} value={class_.classId}>
+                            {class_.grade}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                <FormField
-                  control={form.control}
-                  name="feeId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Fees</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={feeData.isPending}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select fee" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {feeData.data?.map((fee) => (
-                            <SelectItem key={fee.feeId} value={fee.feeId}>
-                              {fee.level}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            {/* Student Field */}
+            <div className="border-t pt-4">
+              <FormField
+                control={form.control}
+                name="studentId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Student</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={!form.watch("classId") || studentData.isPending}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select student" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {studentData.data?.map((student) => (
+                          <SelectItem
+                            key={student.studentId}
+                            value={student.studentId}
+                          >
+                            {student.student.studentName}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-                <DialogFooter>
-                  <Button type="submit" disabled={assignFee.isPending}>
-                    {assignFee.isPending ? "Assigning..." : "Assign Fee"}
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </TabsContent>
-          <TabsContent value="view">
-            {/* {selectedSessionId && <FeeAssignmentTable sessionId={selectedSessionId} feeId={selectedSessionId} />} */}
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+            {/* Fee Field */}
+            <div className="border-t pt-4">
+              <FormField
+                control={form.control}
+                name="feeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fees</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={feeData.isPending}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select fee" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {feeData.data?.map((fee) => (
+                          <SelectItem key={fee.feeId} value={fee.feeId}>
+                            {fee.level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Footer */}
+            <DialogFooter className="pt-6 border-t">
+              <Button type="submit" variant="default" disabled={assignFee.isPending}>
+                {assignFee.isPending ? "Assigning..." : "Assign Fee"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </TabsContent>
+    </Tabs>
+  </DialogContent>
+</Dialog>
+
   );
 }
 
