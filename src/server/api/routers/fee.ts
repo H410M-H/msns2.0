@@ -200,8 +200,6 @@ export const feeRouter = createTRPCRouter({
     .input(z.object({ classId: z.string().min(1, "Class ID is required"), sessionId: z.string().min(1, "Session ID is required") }))
     .query(async ({ ctx, input }) => {
       try {
-
-
         const data  =  await ctx.db.feeStudentClass.findMany({
           where: {
             studentClass: {

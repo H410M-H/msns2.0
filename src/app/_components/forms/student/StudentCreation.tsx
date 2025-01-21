@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "~/components/ui/form"
 import { Card, CardContent, CardFooter, CardHeader } from "~/components/ui/card"
 import { motion } from "framer-motion"
-import { Loader2, User, Upload } from 'lucide-react'
+import { Loader2, Upload, ImagePlus } from 'lucide-react'
 import { api } from "~/trpc/react"
 import { toast } from '~/hooks/use-toast'
 import { CldImage, CldUploadWidget, type CloudinaryUploadWidgetResults } from "next-cloudinary"
@@ -73,8 +73,41 @@ export default function StudentRegistrationForm() {
     },
   })
 
-  const onSubmit = (data: StudentSchema) => {
-    createStudent.mutate(data)
+  const onSubmit = async (data: StudentSchema) => {
+    try {
+      const { studentName, fatherName, ...rest } = data
+      const formData = new FormData()
+
+      formData.append("studentName", studentName)
+      formData.append("fatherName", fatherName)
+      formData.append("dateOfBirth", data.dateOfBirth)
+      formData.append("cnic", data.studentCNIC)
+      formData.append("doj", data.registrationDate)
+      formData.append("residentialAddress", data.currentAddress)
+      formData.append("mobileNo", data.studentMobile)
+      
+      
+      Object.entries(rest).forEach(([key, value]) => {
+        if (value) formData.append(key, String(value))
+      })
+
+      if (uploadedImageUrl) {
+        formData.append("profilePic", uploadedImageUrl as unknown as Blob)
+      }
+      const cv = formData.get("cv");
+      if (cv) {
+        formData.append("cv", cv)
+      }
+
+      await createStudent.mutateAsync({
+        studentName,
+        fatherName,
+        ...rest,
+        gender: "MALE",
+      })
+    } catch (error) {
+      console.error("Error submitting form:", error)
+    }
   }
 
   const renderFormField = (name: keyof StudentSchema, label: string, type = "text", placeholder = "") => (
@@ -142,8 +175,8 @@ export default function StudentRegistrationForm() {
                               className="rounded-full object-cover"
                             />
                           ) : (
-                            <div className="w-24 h-24 rounded-full bg-gray-100 flex items-center justify-center">
-                              <User className="w-12 h-12 text-gray-400" />
+                            <div className="w-28 h-28 rounded-full bg-green-100 flex items-center justify-center">
+                              <ImagePlus className="w-12 h-12 text-gray-400" />
                             </div>
                           )}
                           <CldUploadWidget
@@ -179,10 +212,11 @@ export default function StudentRegistrationForm() {
 
               <Separator />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {renderFormField("studentName", "Student Name", "text", "Enter full name")}
                 {renderFormField("studentCNIC", "B-Form #", "text", "xxxxx-xxxxxxx-x")}
-                {renderFormField("registrationDate", "Registration Date", "date")}
+                {renderFormField("fatherName", "Father's Name", "text", "Enter full name")}
+                {renderFormField("fatherCNIC", "Father CNIC", "text", "xxxxx-xxxxxxx-x")}
                 {renderFormField("dateOfBirth", "Date of Birth", "date")}
                 {renderFormField("studentMobile", "Mobile Number", "tel", "Enter 11-digit number")}
                 <FormField
@@ -211,34 +245,26 @@ export default function StudentRegistrationForm() {
                 {renderFormField("caste", "Caste", "text", "Enter caste")}
                 {renderFormField("medicalProblem", "Medical Conditions", "text", "Optional")}
               </div>
-
               <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {renderFormField("fatherName", "Father's Name", "text", "Enter full name")}
-                {renderFormField("fatherCNIC", "Father CNIC", "text", "xxxxx-xxxxxxx-x")}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {renderFormField("fatherMobile", "Father's Mobile", "tel", "Enter 11-digit number")}
                 {renderFormField("fatherProfession", "Father's Profession", "text", "Enter profession")}
                 {renderFormField("guardianName", "Guardian Name", "text", "Optional")}
               </div>
-
               <Separator />
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {renderFormField("currentAddress", "Current Address", "text", "Enter current residence")}
                 {renderFormField("permanentAddress", "Permanent Address", "text", "Enter permanent address")}
               </div>
-
               <Separator />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {renderFormField("registrationDate", "Registration Date", "date")}
                 {renderFormField("discount", "Discount Amount", "number", "Enter discount amount")}
                 {renderFormField("discountbypercent", "Discount Percentage", "number", "Enter discount percentage")}
               </div>
             </form>
           </Form>
           </CardContent>
-
           <CardFooter className="p-6 bg-gray-50 flex justify-end gap-4">
             <Button
               type="button"

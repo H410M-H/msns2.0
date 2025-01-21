@@ -1,122 +1,111 @@
-import { UserPlus, Users, BookOpenCheck, School } from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { UserPlus, Users, type LucideIcon } from "lucide-react";
+import { CldImage } from "next-cloudinary";
+  import Link from "next/link";
 
-export const RegistrationCards = () => {
-  const services = [
-    {
+type IconType = LucideIcon
+
+    interface Services {
+      title: string
+      description: string
+      icon: IconType
+      href: string
+      iconColor: string
+      gradientFrom: string
+      gradientTo: string
+    }
+    const services: Services[] = [
+      {
+        
       title: "Student Registration",
       description: "Register new students and manage their admission process with ease.",
-      icon: <UserPlus className="w-12 h-12 mb-4 text-emerald-500" />,
+      icon: UserPlus,
       href: "/userReg/student/create",
-      color: "from-emerald-400 to-green-600",
-      iconBg: "bg-emerald-100"
+      iconColor: "bg-emerald-100",
+      gradientFrom: "from-green-400",
+      gradientTo: "to-green-700",
     },
     {
       title: "Active Students",
       description: "View and manage currently enrolled students' information.",
-      icon: <Users className="w-12 h-12 mb-4 text-blue-500" />,
+      icon: Users,
       href: "/userReg/student/view",
-      color: "from-blue-400 to-indigo-600",
-      iconBg: "bg-blue-100"
+      iconColor: "bg-blue-100",
+      gradientFrom: "from-blue-400",
+      gradientTo: "to-blue-700",
     },
     {
       title: "Employee Registration",
       description: "Streamline the process of registering new faculty members.",
-      icon: <School className="w-12 h-12 mb-4 text-purple-500" />,
+      icon: UserPlus,
       href: "/userReg/faculty/create",
-      color: "from-purple-400 to-pink-600",
-      iconBg: "bg-purple-100"
+      iconColor: "bg-purple-100",
+      gradientFrom: "from-purple-400",
+      gradientTo: "to-purple-700",
     },
     {
       title: "Active Employees",
       description: "Access and manage current faculty member information.",
-      icon: <BookOpenCheck className="w-12 h-12 mb-4 text-orange-500" />,
+      icon: Users,
       href: "/userReg/faculty/view",
-      color: "from-orange-400 to-red-600",
-      iconBg: "bg-orange-100"
+      iconColor: "bg-orange-100",
+      gradientFrom: "from-orange-400",
+      gradientTo: "to-orange-700",
     },
-  ];
+];
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5
-      }
-    }
-  };
-
+export default function  RegistrationCards () {
   return (
-    <div className="relative min-h-[600px] w-full bg-[url('/jpg/Schoolview.jpg')] bg-cover bg-center bg-fixed">
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
-      
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="relative container mx-auto px-4 py-12"
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              variants={cardVariants}
-              whileHover={{ scale: 1.03, rotate: 0 }}
-              className="group"
-            >
-              <Link href={service.href}>
-                <div className="relative p-2">
-                  {/* Background gradient card with tilt effect */}
-                  <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r ${service.color} 
-                    opacity-80 transform transition-transform duration-300 
-                    group-hover:scale-105 group-hover:rotate-0 -rotate-2`} />
-                  
-                  {/* Content card */}
-                  <div className="relative bg-white/90 backdrop-blur-md rounded-xl p-6 shadow-xl">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      {/* Icon with background */}
-                      <div className={`p-3 rounded-xl ${service.iconBg} transform transition-transform duration-300 group-hover:scale-110`}>
-                        {service.icon}
-                      </div>
-                      
-                      {/* Title */}
-                      <h3 className="text-xl font-bold text-gray-800">
-                        {service.title}
-                      </h3>
-                      
-                      {/* Description */}
-                      <p className="text-gray-600">
-                        {service.description}
-                      </p>
-                      
-                      {/* Access button */}
-                      <span className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 opacity-0 transform translate-y-2 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                        Access {service.title.split(' ')[0]}
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+    <div className="relative min-h-screen flex items-center justify-center rounded-md">
+    {/* Background Image */}
+    <CldImage
+      width="1920"
+      height="1080"
+      src="FrontView1_alaabu"
+      sizes="100vw"
+      alt="School view background"
+      className="relative inset-0 object-cover w-full h-ful"
+    />
+
+    {/* Cards Grid */}
+    <div className="absolute z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 max-w-7xl w-full animate-slide-in-up">
+      {services.map((service, index) => {
+        const Icon = service.icon
+        return (
+          <Link
+            href={service.href}
+            key={index}
+            className="relative group gap-6 p-4 transform transition-all duration-500 
+              ease-in-out hover:scale-105 hover:z-20"
+            style={{ transitionDelay: `${index * 100}ms` }}
+          >
+            {/* Background Card Decoration */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-r ${service.gradientFrom} ${service.gradientTo} 
+                shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl opacity-80 
+                transition-transform duration-700 ease-in-out group-hover:rotate-0 
+                group-hover:skew-y-0 group-hover:scale-105`}
+            />
+
+            {/* Card Content */}
+            <div className="relative z-10 px-10 py-10 bg-yellow-100 backdrop-blur-lg shadow-xl 
+              rounded-3xl transition-transform duration-500 ease-in-out 
+              group-hover:scale-105 group-hover:rotate-1">
+              <div className="flex flex-col items-center text-center">
+                <Icon className={`h-12 w-12 ${service.iconColor}`} />
+                <h3 className="text-2xl font-semibold text-gray-900 
+                  group-hover:text-green-700 transition-colors duration-300">
+                  {service.title}
+                </h3>
+                <p className="mt-6 text-gray-700 group-hover:text-green-600 
+                  transition-colors duration-300">
+                  {service.description}
+                </p>
+              </div>
+            </div>
+          </Link>
+        )
+      })}
     </div>
-  );
-};
+  </div>
+  )
+}

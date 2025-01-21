@@ -55,7 +55,7 @@ const employeeSchema = z.object({
 type EmployeeSchema = z.infer<typeof employeeSchema>
 
 export default function EmployeeCreationDialog() {
-  const [profilePic, setProfilePic] = useState<File | null>(null)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<File | null>(null)
   const [cv, setCv] = useState<File | null>(null)
 
   const form = useForm<EmployeeSchema>({
@@ -74,7 +74,7 @@ export default function EmployeeCreationDialog() {
         description: "Employee registered successfully",
       })
       form.reset()
-      setProfilePic(null)
+      setUploadedImageUrl(null)
       setCv(null)
     },
     onError: (error) => {
@@ -87,7 +87,7 @@ export default function EmployeeCreationDialog() {
   })
 
   const handleProfilePicChange = (file: File) => {
-    setProfilePic(file)
+    setUploadedImageUrl(file)
   }
 
   const handleCvChange = (file: File) => {
@@ -111,8 +111,8 @@ export default function EmployeeCreationDialog() {
         if (value) formData.append(key, value)
       })
 
-      if (profilePic) {
-        formData.append("profilePic", profilePic)
+      if (uploadedImageUrl) {
+        formData.append("profilePic", uploadedImageUrl as unknown as Blob)
       }
       if (cv) {
         formData.append("cv", cv)

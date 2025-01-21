@@ -17,7 +17,7 @@ import {
 import { Input } from "~/components/ui/input"
 import { Switch } from "~/components/ui/switch"
 import { Separator } from "~/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs"
+import { Tabs, TabsContent } from "~/components/ui/tabs"
 import { useUser } from "~/lib/context/user-context"
 import { useToast } from "~/hooks/use-toast"
 import { Textarea } from '~/components/ui/textarea';
@@ -73,7 +73,7 @@ export default function AccountProfile() {
   if (!user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="w-full max-w-md p-8">
+        <div className="w-full max-w-md">
           <h2 className="mb-4 text-2xl font-bold">Create Your Profile</h2>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -112,7 +112,7 @@ export default function AccountProfile() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <div className="text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
@@ -129,11 +129,6 @@ export default function AccountProfile() {
 
         <div className="mx-auto max-w-3xl">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="profile">Profile</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
-
             <div className="mt-8 bg-white p-8 shadow-lg rounded-lg">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
