@@ -139,7 +139,6 @@ const columns: ColumnDef<ClassFeeProps>[] = [
         initialDiscount={row.original.discount}
         initialDiscountPercent={row.original.discountbypercent}
         initialDiscountDescription={row.original.discountDescription}
-        onAllotmentSuccess={refetchClassFees}
       />
     ),
   },
@@ -151,32 +150,61 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
   
 
   const { data: classFees, refetch: refetchClassFees } = api.fee.getFeesByClassAndSession.useQuery(
-    { classId, sessionId },
-    {
-      select: (data) =>
-        data.map((item) => ({
-          ...item,
-          studentClass: {
-            ...item.studentClass,
-            student: {
-              ...item.studentClass.student,
-              dateOfBirth: item.studentClass.student.dateOfBirth || "",
-              fatherName: item.studentClass.student.fatherName || "",
-              studentCNIC: item.studentClass.student.studentCNIC || "",
-              fatherCNIC: item.studentClass.student.fatherCNIC || "",
-              fatherProfession: item.studentClass.student.fatherProfession || "",
-              address: "",
-              city: "",
-              country: "",
+      { classId: classId, sessionId: sessionId },
+      {
+        select: (data) =>
+          data.map((item) => ({
+            ...item,
+            studentClass: {
+              ...item.studentClass,
+              class: {
+                ...item.studentClass.class,
+                grade: item.studentClass.class.grade,
+                section: item.studentClass.class.section,
+                category: item.studentClass.class.category,
+                fee: item.studentClass.class.fee,
+              },
+              student: {
+                ...item.studentClass.student,
+                classId: item.studentClass.class.classId,
+                registrationNumber: item.studentClass.student.registrationNumber,
+                studentName: item.studentClass.student.studentName,
+                fatherName: item.studentClass.student.fatherName,
+                fatherMobile: item.studentClass.student.fatherMobile,
+                studentMobile: item.studentClass.student.studentMobile,
+                fatherProfession: item.studentClass.student.fatherProfession,
+                studentCNIC: item.studentClass.student.studentCNIC,
+                fatherCNIC: item.studentClass.student.fatherCNIC,
+                address: "", // Add the missing properties
+                city: "",
+                country: "",
+                createdAt: new Date(item.studentClass.student.createdAt),
+                updatedAt: new Date(item.studentClass.student.updatedAt),
+              },
             },
-          },
-          discountbypercent: 0, // Add the missing property
-        })),
-      refetchOnWindowFocus: false,
-      refetchOnReconnect: false,
-    }
-  );
-
+            fee: {
+              ...item.fee,
+              tuitionFee: item.fee.tuitionFee,
+              examFund: item.fee.examFund,
+              computerLabFund: item.fee.computerLabFund,
+              studentIdCardFee: item.fee.studentIdCardFee,
+              infoAndCallsFee: item.fee.infoAndCallsFee,
+              type: item.fee.type,
+            },
+            sfcId: item.sfcId,
+            studentClassId: item.studentClass.scId,
+            feeId: item.fee.feeId,
+            discount: item.discount,
+            discountbypercent: 0,
+            discountDescription: item.discountDescription,
+            createdAt: new Date(item.createdAt),
+            updatedAt: new Date(item.updatedAt),
+          })),
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+      }
+    );
+          // Add the missing property
   const table = useReactTable<ClassFeeProps>({
     data: classFees ?? [],
     columns,
@@ -286,9 +314,5 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
       </div>
     </div>
   );
-}
-
-function refetchClassFees(): void {
-  throw new Error("Function not implemented.");
 }
 

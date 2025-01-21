@@ -22,7 +22,6 @@ type FeeAllotmentDialogProps = {
   initialDiscount?: number
   initialDiscountPercent?: number
   initialDiscountDescription?: string
-  onAllotmentSuccess: () => void
 }
 
 export function FeeAllotmentDialog({

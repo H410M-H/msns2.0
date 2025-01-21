@@ -105,7 +105,7 @@ export function FeeAssignmentDialog() {
     <Tabs defaultValue="assign">
       <TabsList className="mt-4">
         <TabsTrigger value="assign">Assign Fee</TabsTrigger>
-        <TabsTrigger value="view">View Assignments</TabsTrigger>
+        {/* <TabsTrigger value="view">View Assignments</TabsTrigger> */}
       </TabsList>
 
       <TabsContent value="assign">

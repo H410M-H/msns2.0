@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bot, School, Settings2, SquareTerminal, User } from 'lucide-react'
+import { Bot, School, SquareTerminal, User } from 'lucide-react'
 
 import {
   Sidebar,
@@ -44,16 +44,6 @@ const data = {
         { title: "Session", url: "/academics/sessionalDetails" },
         { title: "Classes", url: "/academics/classwiseDetail" },
         { title: "Students", url: "/userReg/student/view" },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: Settings2,
-      items: [
-        { title: "General", url: "/settings/general" },
-        { title: "Security", url: "/settings/security" },
-        { title: "Notifications", url: "/settings/notifications" },
       ],
     },
     {
