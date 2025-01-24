@@ -42,6 +42,7 @@ type ClassProps = {
 };
 
 type ComponentProps = {
+  classId: string;
   sessionId: string;
 };
 
@@ -152,12 +153,12 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
       </div>
 
       <Tabs defaultValue={categoryOrder[0]} className="w-full">
-        <TabsList className="mb-4 flex space-x-2">
+        <TabsList className="mb-4 flex space-x-6">
           {categoryOrder.map((category) => (
             <TabsTrigger
               key={category}
               value={category}
-              className={`px-4 py-2 font-medium ${categoryColors[category]}`}
+              className={`px-4 py-4 font-semibold ${categoryColors[category]}`}
             >
               {category}
             </TabsTrigger>
@@ -196,7 +197,7 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                       className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
                       asChild
                     >
-                      <Link href={`/academics/classwiseDetail?classId=${row.classId}&sessionId=${sessionId}`}>
+                      <Link href={`/academics/sessionalDetails/class/?classId=${row.classId}&sessionId=${sessionId}`}>
                         View Details
                       </Link>
                     </Button>
@@ -206,7 +207,7 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                       className="mt-4 w-full bg-gradient-to-r from-blue-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
                       asChild
                     >
-                      <Link href={`/academics/sessionalDetails/fee?classId=${row.classId}&sessionId=${sessionId}`}>
+                      <Link href={`/academics/sessionalDetails/fee/?classId=${row.classId}&sessionId=${sessionId}`}>
                         Fee Details
                       </Link>
                     </Button>

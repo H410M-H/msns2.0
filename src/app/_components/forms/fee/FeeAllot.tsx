@@ -14,54 +14,92 @@ import {
 import { Input } from "~/components/ui/input"
 import { Label } from "~/components/ui/label"
 import { useToast } from "~/hooks/use-toast"
+import { api } from "~/trpc/react"
 
 type FeeAllotmentDialogProps = {
-  sfcId?: string
+  sfcId: string
   studentClassId: string
   feeId: string
-  initialDiscount?: number
-  initialDiscountPercent?: number
-  initialDiscountDescription?: string
+  initialDiscount: number
+  initialDiscountPercent: number
+  initialDiscountDescription: string
+  onUpdate: () => void
+  onRemove: () => void
 }
 
-export function FeeAllotmentDialog({
+export default function FeeAllotmentDialog({
   sfcId,
   initialDiscount = 0,
   initialDiscountPercent = 0,
-  initialDiscountDescription = ""}: FeeAllotmentDialogProps) {
+  initialDiscountDescription = "",
+  onUpdate,
+  onRemove,
+}: FeeAllotmentDialogProps) {
   const [open, setOpen] = useState(false)
   const [discount, setDiscount] = useState(initialDiscount.toString())
   const [discountbypercent, setDiscountbypercent] = useState(initialDiscountPercent.toString())
   const [discountDescription, setDiscountDescription] = useState(initialDiscountDescription)
 
-  useToast()
+  const { toast } = useToast()
 
+  const updateFeeAssignment = api.fee.updateFeeAssignment.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Fee assignment updated successfully",
+        description: "The fee assignment has been updated.",
+      })
+      setOpen(false)
+      onUpdate()
+    },
+    onError: (error) => {
+      toast({
+        title: "Error updating fee assignment",
+        description: error.message,
+        variant: "destructive",
+      })
+    },
+  })
 
+  const removeFeeAssignment = api.fee.removeFeeAssignment.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "Fee assignment removed successfully",
+        description: "The fee assignment has been removed.",
+      })
+      setOpen(false)
+      onRemove()
+    },
+    onError: (error) => {
+      toast({
+        title: "Error removing fee assignment",
+        description: error.message,
+        variant: "destructive",
+      })
+    },
+  })
 
   const handleSubmit = () => {
+    updateFeeAssignment.mutate({
+      sfcId,
+      discount: Number.parseFloat(discount),
+      discountbypercent: Number.parseFloat(discountbypercent),
+      discountDescription,
+    })
+  }
 
-    // if (sfcId) {
-    //   updateFeeAssignment.mutate({ sfcId, ...data })
-    // } else {
-    //   assignFeeToStudent.mutate({
-    //     studentClassId,
-    //     feeId,
-    //     ...data,
-    //   })
-    // }
+  const handleRemove = () => {
+    removeFeeAssignment.mutate({ sfcId })
   }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">{sfcId ? "Edit Fee Assignment" : "Assign Fee"}</Button>
+        <Button variant="outline">Edit Fee Assignment</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{sfcId ? "Edit Fee Assignment" : "Assign Fee to Student"}</DialogTitle>
-          <DialogDescription>
-            {sfcId ? "Modify the fee assignment details." : "Assign a fee to a student with optional discounts."}
-          </DialogDescription>
+          <DialogTitle>Edit Fee Assignment</DialogTitle>
+          <DialogDescription>Modify the fee assignment details or remove the assignment.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">
@@ -101,8 +139,11 @@ export function FeeAllotmentDialog({
           </div>
         </div>
         <DialogFooter>
+          <Button variant="destructive" onClick={handleRemove}>
+            Remove Assignment
+          </Button>
           <Button type="submit" onClick={handleSubmit}>
-            {sfcId ? "Update Assignment" : "Assign Fee"}
+            Update Assignment
           </Button>
         </DialogFooter>
       </DialogContent>
