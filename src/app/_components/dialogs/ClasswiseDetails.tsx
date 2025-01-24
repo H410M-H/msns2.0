@@ -10,9 +10,10 @@ import { ClassList } from "../(blocks)/ClassList";
 
 
 type ComponentProps = {
+  classId: string;
   sessionId:string
 }
-export const ClasswiseDialog = ({sessionId}:ComponentProps) => {
+export const ClasswiseDialog = ({classId, sessionId}:ComponentProps) => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-4 p-4 bg-gray-100 rounded-md">
       <Dialog>
@@ -26,7 +27,7 @@ export const ClasswiseDialog = ({sessionId}:ComponentProps) => {
             <DialogTitle className="mb-4 text-2xl font-semibold text-gray-800">
               Classwise Details
             </DialogTitle>
-            <ClassList sessionId={sessionId}/>
+            <ClassList classId={classId} sessionId={sessionId}/>
             <p className="text-gray-600">More information about the session can go here...</p>
           </DialogHeader>
         </DialogContent>

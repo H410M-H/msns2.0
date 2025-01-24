@@ -15,7 +15,7 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { api } from "~/trpc/react";
 import Link from "next/link";
 import { StudentAllotmentDialog } from "../forms/class/StudentAlotment";
-import { FeeAllotmentDialog } from "../forms/fee/FeeAllot";
+import FeeAllotmentDialog from "../forms/fee/FeeAllot";
 
 type ClassStudentProps = {
   student: {
@@ -198,9 +198,11 @@ export const ClassAlotmentTable = ({ classId }: { classId: string, sessionId: st
                   className="bg-green-500 text-white hover:bg-green-600"
                   asChild
                 >
-                  <Link href={`/userReg/student/view${row.original.student.studentId}`}>View Student</Link>
+                  <Link href={`/academics/sessionalDetails/fee/?${row.original.student.studentId}`}>View Student</Link>
                 </Button>
-                <FeeAllotmentDialog studentClassId={classId} feeId={classId} onAllotmentSuccess={function (): void {
+                <FeeAllotmentDialog studentClassId={classId} feeId={classId} sfcId={""} initialDiscount={0} initialDiscountPercent={0} initialDiscountDescription={""} onUpdate={function (): void {
+                  throw new Error("Function not implemented.");
+                } } onRemove={function (): void {
                   throw new Error("Function not implemented.");
                 } } />
                 <Button

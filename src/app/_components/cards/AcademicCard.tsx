@@ -39,7 +39,7 @@ import { CldImage } from "next-cloudinary";
         title: "Section & Class Management",
         description: "Easily enroll new students and manage their financial records.",
         icon: Boxes,
-        href: "/academics/classwiseDetail",
+        href: "/academics/sessionalDetails/class",
         iconColor: "text-purple-500",
         gradientFrom: "from-purple-400",
         gradientTo: "to-purple-700",
