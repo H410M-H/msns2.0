@@ -41,6 +41,7 @@ type ClassStudentProps = {
     updatedAt: Date
   }
   studentClass: {
+    class: unknown
     student: {
       studentId: string
       registrationNumber: string
@@ -59,27 +60,7 @@ type ClassStudentProps = {
       isAssign: boolean
       createdAt?: Date
       updatedAt?: Date
-    } & {    class: {
-      classId: string
-      grade: string
-      section: string
-      category: ClassCategory
-      fee: number
-    } & {  fee: {
-      feeId: string
-      level: string
-      type: FeeCategory
-      tuitionFee: number
-      examFund: number
-      computerLabFund: number | null
-      studentIdCardFee: number
-      infoAndCallsFee: number
-      admissionFee: number
-      createdAt: Date
-      updatedAt: Date
-    }
-  }
-
+    } 
     }
     class: {
       classId: string
@@ -89,7 +70,6 @@ type ClassStudentProps = {
       fee: number
     }
   }
-}
 
 interface ClassFeeTableProps {
   classId: string
@@ -125,7 +105,7 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
       header: "Student Name",
     },
     {
-      accessorFn: (row) => row.studentClass.class.grade,
+      accessorFn: (row) => row.class.grade,
       id: "class",
       header: "Class",
     },

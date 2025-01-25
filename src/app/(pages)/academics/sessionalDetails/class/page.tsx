@@ -6,11 +6,11 @@ import { LoadingSpinner } from "~/app/_components/(blocks)/loading-spinner"
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader"
 
 type PageProps = {
-  params: Promise<{ classId: string; sessionId: string }>;
+  searchParams: Promise<{ classId: string; sessionId: string }>;
 };
 
-export default async function ClassDetailsPage({ params }: PageProps) {
-  const searchProps = await params;
+export default async function ClassDetailsPage({ searchParams }: PageProps) {
+  const searchProps = await searchParams;
   const breadcrumbs = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/academics", label: "Academics" },
@@ -19,7 +19,7 @@ export default async function ClassDetailsPage({ params }: PageProps) {
   return (
     <div className="space-y-6">
       <PageHeader breadcrumbs={breadcrumbs}/>
-      <Card className="mt-6">
+      <Card className="mt-6 pt-20">
         <CardHeader>
           <CardTitle>Class Details</CardTitle>
         </CardHeader>

@@ -3,13 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { ClassFeeTable } from "~/app/_components/tables/ClassFee";
 
 type PageProps = {
-  params: Promise<{ classId: string; sessionId: string }>;
+  searchParams: Promise<{ classId: string; sessionId: string }>;
 };
 
-export default async function FeeDetailsPage({ params }: PageProps) {
-  const searchProps = await params;
+export default async function FeeDetailsPage({ searchParams }: PageProps) {
+  const searchProps = await searchParams;
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-20">
       <Card className="mt-6">
         <CardHeader>
           <CardTitle>Fee details</CardTitle>

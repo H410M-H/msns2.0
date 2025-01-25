@@ -197,7 +197,7 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                       className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
                       asChild
                     >
-                      <Link href={`/academics/sessionalDetails/class/?classId=${row.classId}&sessionId=${sessionId}`}>
+                      <Link href={`/academics/sessionalDetails/class?classId=${row.classId}&sessionId=${sessionId}`}>
                         View Details
                       </Link>
                     </Button>
@@ -207,7 +207,7 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                       className="mt-4 w-full bg-gradient-to-r from-blue-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
                       asChild
                     >
-                      <Link href={`/academics/sessionalDetails/fee/?classId=${row.classId}&sessionId=${sessionId}`}>
+                      <Link href={`/academics/sessionalDetails/fee?classId=${row.classId}&sessionId=${sessionId}`}>
                         Fee Details
                       </Link>
                     </Button>

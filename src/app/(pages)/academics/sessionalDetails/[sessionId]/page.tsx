@@ -4,7 +4,7 @@ import { ClassList } from "~/app/_components/(blocks)/ClassList";
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
 
 type PageProps = {
-  params: Promise<{ sessionId: string }>;
+  params: Promise<{ sessionId: string, classId: string }>;
 };
 
 export default async function SessionDetailPage({ params }: PageProps) {
@@ -23,7 +23,7 @@ export default async function SessionDetailPage({ params }: PageProps) {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-300px)]">
-            <ClassList sessionId={searchProps.sessionId} />
+            <ClassList sessionId={searchProps.sessionId} classId={searchProps.classId} />
           </ScrollArea>
         </CardContent>
       </Card>
