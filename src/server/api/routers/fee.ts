@@ -196,28 +196,17 @@ export const feeRouter = createTRPCRouter({
       }
     }),
 
-  getFeesByClassAndSession: publicProcedure
-    .input(z.object({ classId: z.string().min(1, "Class ID is required"), sessionId: z.string().min(1, "Session ID is required") }))
+    getFeesByClass: publicProcedure
+    .input(z.object({ classId: z.string().min(1, "Class ID is required") }))
     .query(async ({ ctx, input }) => {
       try {
-        const data  =  await ctx.db.feeStudentClass.findMany({
-          where: {
-            studentClass: {
-              classId: input.classId, 
-              sessionId: input.sessionId
-            }
-          },
-          include: {
-            fee: true,
-            studentClass: {
-              include: { student: true, class: true }
-            }
-          },
-        });
-        return data
+        return await ctx.db.feeStudentClass.findMany({
+          where: { studentClass: { classId: input.classId } },
+          include: { fee: true, studentClass: { include: { student: true, class: true } } },
+        })
       } catch (error) {
-        console.error("Error in getFeesByClass:", error);
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the class." });
+        console.error("Error in getFeesByClass:", error)
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the class." })
       }
     }),
 
@@ -228,11 +217,47 @@ export const feeRouter = createTRPCRouter({
         return await ctx.db.feeStudentClass.findMany({
           where: { studentClass: { sessionId: input.sessionId } },
           include: { fee: true, studentClass: { include: { student: true, class: true } } },
-        });
+        })
       } catch (error) {
-        console.error("Error in getFeesBySession:", error);
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the session." });
+        console.error("Error in getFeesBySession:", error)
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve fees for the session." })
       }
     }),
-});
 
+  getFeeAssignmentsByClassAndSession: publicProcedure
+    .input(
+      z.object({
+        classId: z.string().min(1, "Class ID is required"),
+        sessionId: z.string().min(1, "Session ID is required"),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      try {
+        const feeAssignments = await ctx.db.feeStudentClass.findMany({
+          where: {
+            studentClass: {
+              classId: input.classId,
+              sessionId: input.sessionId,
+            },
+          },
+          include: {
+            fee: true,
+            studentClass: {
+              include: {
+                student: true,
+                class: true,
+              },
+            },
+          },
+        })
+
+        return feeAssignments
+      } catch (error) {
+        console.error("Error in getFeeAssignmentsByClassAndSession:", error)
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to retrieve fee assignments for the class and session.",
+        })
+      }
+    }),
+})

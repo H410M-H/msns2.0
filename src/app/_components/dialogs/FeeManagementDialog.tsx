@@ -13,9 +13,9 @@ import {
 } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useToast } from "~/hooks/use-toast";
-import { ClassFeeTable } from "../tables/ClassFee";
 import { FeeTable } from "../tables/FeeTable";
 import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
+import { ClassFeeTable } from "../tables/ClassFee";
 
 type FeeManagementDialogProps = {
   classId?: string;

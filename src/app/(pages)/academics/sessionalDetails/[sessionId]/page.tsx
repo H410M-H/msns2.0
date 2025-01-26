@@ -23,7 +23,7 @@ export default async function SessionDetailPage({ params }: PageProps) {
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[calc(100vh-300px)]">
-            <ClassList sessionId={searchProps.sessionId} />
+            <ClassList sessionId={searchProps.sessionId} classId={searchProps.sessionId} />
           </ScrollArea>
         </CardContent>
       </Card>

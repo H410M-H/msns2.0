@@ -33,7 +33,7 @@ const services: Services[] = [
     href: "/userReg",
   },
   {
-    title: "Fee Management",
+    title: "Revenue Management",
     description: "Track and manage student fees and payments",
     icon: Wallet,
     iconColor: "text-green-600",
