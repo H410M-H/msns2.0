@@ -35,6 +35,7 @@ import {
 } from "@tanstack/react-table";
 import { CSVUploadDialog } from "../forms/student/FileInput";
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion";
+import { RefreshCcw } from "lucide-react";
 
 type StudentProps = {
   studentId: string;
@@ -164,7 +165,7 @@ export const StudentTable = () => {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between p-4">
+      <div className="flex items-center justify-between py-4">
         <Input
           placeholder="Search name"
           value={(table.getColumn("studentName")?.getFilterValue() as string) ?? ""}
@@ -174,8 +175,13 @@ export const StudentTable = () => {
           className="max-w-sm"
         />
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => refetch()}>
-            Refresh
+        <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="shrink-0"
+          >
+            <RefreshCcw className="h-4 w-4" />
           </Button>
           <StudentDeletionDialog
             studentIds={table
@@ -190,7 +196,7 @@ export const StudentTable = () => {
         </div>
       </div>
       <div className="p-4 border rounded-md">
-        <Table>
+      <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>

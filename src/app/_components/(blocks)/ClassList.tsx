@@ -129,25 +129,23 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                   column.setFilterValue(event.target.value);
                 }
               }}
-              className="pl-10 border-2 border-blue-200 focus:border-blue-400 focus:ring focus:ring-blue-200 transition-all duration-300"
+              className="pl-10 border-2 border-green-800 focus:border-green-400 focus:ring focus:ring-blue-200 transition-all duration-300"
             />
           </div>
           <div className="flex flex-wrap items-center gap-3">
-            <ClassCreationDialog />
-            <FeeAssignmentDialog />
             <Button
               variant="outline"
-              className={`bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 ${
-                isRefreshing ? 'animate-pulse' : ''
-              }`}
+              className={`bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 ${isRefreshing ? 'animate-pulse' : ''
+                }`}
               onClick={handleRefresh}
             >
-              <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Refresh
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
             </Button>
             <ClassDeletionDialog
               classIds={Array.from(selectedClasses)}
             />
+            <FeeAssignmentDialog />
+            <ClassCreationDialog />
           </div>
         </div>
       </div>
@@ -183,8 +181,7 @@ export const ClassList = ({ sessionId }: ComponentProps) => {
                       />
                       <h3 className="text-lg font-bold text-gray-800">{row.grade}</h3>
                     </div>
-                    <span className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                      sectionColors[row.section] ?? 'bg-blue-100 text-blue-800'}
+                    <span className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${sectionColors[row.section] ?? 'bg-blue-100 text-blue-800'}
                     `}>
                       {row.section}
                     </span>

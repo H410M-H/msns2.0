@@ -9,14 +9,14 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { ClassTable } from "../tables/ClassTable";
-import { RegistrationCards } from "../cards/RegistrationCard";
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
 import { CalendarDays, Users, BookOpen, Calculator } from "lucide-react";
 import { FeeTable } from "../tables/FeeTable";
 import { SessionCalendar } from "./SessionCalender";
+import { ClassList } from "../(blocks)/ClassList";
+import RegistrationCards from "../cards/RegistrationCard";
 
 interface SessionDetailDialogProps {
   sessionId: string;
@@ -81,7 +81,7 @@ export function SessionDialog({ sessionId, isActive }: SessionDetailDialogProps)
       id: "classes",
       label: "Classes",
       icon: BookOpen,
-      content: <ClassTable sessionId={sessionId} />,
+      content: <ClassList sessionId={sessionId} classId={sessionId} />,
     },
     {
       id: "fees",

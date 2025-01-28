@@ -13,16 +13,13 @@ import SessionDeletionDialog from "../forms/annualSession/SessionDeletion";
 import Link from "next/link";
 
 export const SessionList = () => {
-  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(
-    new Set(),
-  );
+  const [selectedSessions, setSelectedSessions] = useState<Set<string>>(new Set());
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: sessionList = [], refetch } =
-    api.session.getSessions.useQuery(); // Use more descriptive variable name
+  const { data: sessionList = [], refetch } = api.session.getSessions.useQuery();
 
   const filteredSessions = sessionList.filter((session) =>
-    session.sessionName.toLowerCase().includes(searchTerm.toLowerCase()),
+    session.sessionName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const toggleSessionSelection = (sessionId: string) => {
@@ -41,34 +38,33 @@ export const SessionList = () => {
     setSelectedSessions(
       selectedSessions.size === filteredSessions.length
         ? new Set()
-        : new Set(filteredSessions.map((s) => s.sessionId)),
+        : new Set(filteredSessions.map((s) => s.sessionId))
     );
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gradient-to-b from-gray-50 to-gray-100 p-6 rounded-lg shadow-lg">
       {/* Header Controls */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-1 items-center gap-2">
           <div className="relative max-w-sm flex-1">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <Input
               placeholder="Search sessions..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9"
+              className="pl-10 shadow-sm focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <Button
             variant="outline"
             size="icon"
             onClick={() => refetch()}
-            className="shrink-0"
+            className="shrink-0 hover:bg-blue-100"
           >
-            <RefreshCcw className="h-4 w-4" />
+            <RefreshCcw className="h-5 w-5 text-blue-600" />
           </Button>
         </div>
-
         <div className="flex items-center gap-2">
           <SessionCreationDialog />
           <SessionDeletionDialog
@@ -79,70 +75,72 @@ export const SessionList = () => {
       </div>
 
       {/* Selection Controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between bg-white p-4 rounded-lg shadow-sm">
         <Button
           variant="outline"
           size="sm"
           onClick={toggleAllSessions}
-          className="text-sm"
+          className="text-sm hover:bg-gray-100"
         >
-          {selectedSessions.size === filteredSessions.length
-            ? "Deselect All"
-            : "Select All"}
+          {selectedSessions.size === filteredSessions.length ? "Deselect All" : "Select All"}
         </Button>
-        <span className="text-sm text-muted-foreground">
+        <span className="text-sm text-gray-600">
           {selectedSessions.size} of {filteredSessions.length} selected
         </span>
       </div>
 
       {/* Sessions Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {filteredSessions.map((session) => (
-          <Card key={session.sessionId} className="relative overflow-hidden">
-            <div className="absolute right-2 top-2">
+          <Card
+            key={session.sessionId}
+            className="relative overflow-hidden bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+          >
+            <div className="absolute right-3 top-3">
               <Checkbox
                 checked={selectedSessions.has(session.sessionId)}
-                onCheckedChange={() =>
-                  toggleSessionSelection(session.sessionId)
-                }
+                onCheckedChange={() => toggleSessionSelection(session.sessionId)}
+                className="ring-2 ring-blue-500"
               />
             </div>
 
             <div className="p-6">
               <div className="mb-4 flex items-center gap-2">
-                <CalendarDays className="h-5 w-5 text-primary" />
-                <h3 className="text-lg font-semibold">{session.sessionName}</h3>
-                {true !== undefined && true && (
-                  <Badge className="bg-green-500">Active</Badge>
-                )}
+                <CalendarDays className="h-6 w-6 text-blue-600" />
+                <h3 className="text-lg font-semibold text-gray-800">{session.sessionName}</h3>
+                <Badge className="bg-green-100 text-green-600">Active</Badge>
               </div>
 
-              <div className="mb-4 space-y-2 text-sm text-muted-foreground">
+              <div className="mb-4 space-y-2 text-sm text-gray-600">
                 <div>
-                  Start: {new Date(session.sessionFrom).toLocaleDateString()}
+                  <span className="font-medium">Start:</span>{" "}
+                  {new Date(session.sessionFrom).toLocaleDateString()}
                 </div>
                 <div>
-                  End: {new Date(session.sessionTo).toLocaleDateString()}
+                  <span className="font-medium">End:</span>{" "}
+                  {new Date(session.sessionTo).toLocaleDateString()}
                 </div>
               </div>
 
-              {/* <SessionDialog sessionId={session.sessionId} isActive={true} /> */}
-              <Button asChild>
-                <Link href={`/academics/sessionalDetails/${session.sessionId}`}>Session detail</Link>
+              <Button asChild variant="outline" className="w-full">
+                <Link href={`/academics/sessionalDetails/${session.sessionId}`}>
+                  View Session Details
+                </Link>
               </Button>
             </div>
           </Card>
         ))}
       </div>
 
+      {/* No Sessions Found */}
       {filteredSessions.length === 0 && (
         <div className="py-12 text-center">
-          <CalendarDays className="mx-auto h-12 w-12 text-muted-foreground/50" />
-          <h3 className="mt-4 text-lg font-semibold">No sessions found</h3>
-          <p className="text-muted-foreground">
+          <CalendarDays className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-4 text-lg font-semibold text-gray-800">No sessions found</h3>
+          <p className="text-gray-600">
             {searchTerm
-              ? "Try adjusting your search"
-              : "Get started by creating a new session"}
+              ? "Try adjusting your search."
+              : "Get started by creating a new session."}
           </p>
         </div>
       )}

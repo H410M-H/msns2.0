@@ -17,9 +17,9 @@ import {
   type SortingState,
 } from "@tanstack/react-table"
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { StudentAllotmentDialog } from "../forms/class/StudentAlotment"
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion"
 import { FeeManagementDialog } from "../dialogs/FeeManagementDialog"
+import { AllotmentDialog } from "../forms/class/StudentAlotment"
 
 type StudentAllotmentProps = {
   registrationNumber: string
@@ -27,6 +27,7 @@ type StudentAllotmentProps = {
   studentName: string
   fatherName: string
   grade: string
+  employeeName: string
   sessionName: string
   sessionId: string
 }
@@ -53,6 +54,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
         studentName: item.student.studentName,
         fatherName: item.student.fatherName,
         grade: item.class.grade,
+        employeeName: item.employee.employeeName,
         sessionName: item.session.sessionName,
         sessionId: item.session.sessionId,
       }))
@@ -103,6 +105,10 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
     {
       accessorKey: "fatherName",
       header: "Father Name",
+    },
+    {
+      accessorKey: "employeeName",
+      header: "Teacher",
     },
     {
       accessorKey: "grade",
@@ -157,7 +163,7 @@ export function StudentAllotmentTable({ classId, sessionId }: { classId: string,
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-        <StudentAllotmentDialog classId={classId} />
+        <AllotmentDialog classId={classId} />
           <Input
             placeholder="Search students..."
             value={globalFilter ?? ""}

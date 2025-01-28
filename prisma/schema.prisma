@@ -48,7 +48,7 @@ model employees {
   employeeId         String             @id @default(uuid())
   registrationNumber String         @unique
   employeeName       String             @default("none")
-  fatherName         String             @default("none")
+  fatherName         String             @db.VarChar(100)
   admissionNumber    String         @unique
   gender             Gender
   dob                String             @default("none")

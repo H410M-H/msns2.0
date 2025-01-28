@@ -12,17 +12,17 @@ export default async function SessionDetailPage({ params }: PageProps) {
   const breadcrumbs = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/academics", label: "Academics" },
-    { href: "/academics/sessionalDetails", label: "Session Details", current: true },
+    { href: "/academics/sessionalDetails/class", label: "Class Details", current: true },
   ];
   return (
     <div className="flex">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <Card className="mt-2">
+      <Card>
         <CardHeader>
           <CardTitle>Session Detail</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[calc(100vh-300px)]">
+          <ScrollArea className="h-screen w-auto">
             <ClassList sessionId={searchProps.sessionId} classId={searchProps.sessionId} />
           </ScrollArea>
         </CardContent>

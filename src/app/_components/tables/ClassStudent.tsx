@@ -16,6 +16,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { type ClassCategory, type FeeCategory } from "@prisma/client";
+import { RefreshCcw } from "lucide-react";
 
 type StudentClassProps = {
     sfcId: string
@@ -147,9 +148,13 @@ export function ClassStudentTable({ classId, sessionId }: ClassStudentTableProps
           onChange={(event) => setGlobalFilter(event.target.value)}
           className="max-w-sm"
         />
-        <Button onClick={() => void refetchClassStudents()} variant="outline">
-          Refresh
-        </Button>
+                  <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetchClassStudents()}
+          >
+            <RefreshCcw className="h-4 w-4" />
+          </Button>
       </div>
       <div className="rounded-md border">
         <Table>

@@ -84,7 +84,6 @@ export const AlotmentRouter = createTRPCRouter({
     .input(
       z.object({
         studentId: z.string(),
-        employeeId: z.string(),
         classId: z.string(),
       })
     )
@@ -94,7 +93,6 @@ export const AlotmentRouter = createTRPCRouter({
         await ctx.db.studentClass.deleteMany({
           where: {
             studentId: input.studentId,
-            employeeId: input.employeeId,
             classId: input.classId,
           },
         });
@@ -106,13 +104,6 @@ export const AlotmentRouter = createTRPCRouter({
             isAssign: false,
           },
         });
-        await ctx.db.employees.update({
-          where: { employeeId: input.employeeId },
-          data: {
-            isAssign: false,
-          },
-        });
-
         return { success: true, message: "Student removed from class successfully." };
       } catch (error) {
         console.error("Error removing student from class:", error);
