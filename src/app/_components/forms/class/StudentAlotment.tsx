@@ -34,10 +34,11 @@ import {
 
 const formSchema = z.object({
   studentId: z.string({ required_error: "Student is required." }),
+  employeeId: z.string({ required_error: "Student is required." }),
   sessionId: z.string({ required_error: "Session is required." }),
 });
 
-export const StudentAllotmentDialog = ({ classId }: { classId: string }) => {
+export const AllotmentDialog = ({ classId }: { classId: string }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,6 +46,7 @@ export const StudentAllotmentDialog = ({ classId }: { classId: string }) => {
 
   const sessionYears = api.session.getSessions.useQuery();
   const students = api.student.getUnAllocateStudents.useQuery();
+  const employees = api.employee.getUnAllocateEmployees.useQuery();
 
   const allotStudent = api.alotment.addToClass.useMutation({
     onSuccess:()=>{
@@ -55,7 +57,8 @@ export const StudentAllotmentDialog = ({ classId }: { classId: string }) => {
     allotStudent.mutate({
         classId:classId,
         sessionId:values.sessionId,
-        studentId:values.studentId
+        studentId:values.studentId,
+        employeeId:values.employeeId
     })
   };
 
@@ -64,11 +67,15 @@ export const StudentAllotmentDialog = ({ classId }: { classId: string }) => {
       student.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()),
   );
-
+  const filteredEmployees = employees.data?.filter(
+    (employee) =>
+      employee.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      employee.fatherName.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add student</Button>
+        <Button>Add to Class</Button>
       </DialogTrigger>
       <DialogContent className="w-full sm:max-w-md">
         <DialogHeader>
@@ -107,6 +114,44 @@ export const StudentAllotmentDialog = ({ classId }: { classId: string }) => {
                               value={student.studentId}
                             >
                               {student.studentName} | {student.fatherName}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="employeeId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Select Teacher</FormLabel>
+                  <FormControl>
+                    <div>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a Teacher" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <Input
+                            type="text"
+                            placeholder="Search employees..."
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="mb-2"
+                          />
+                          {filteredEmployees?.map((employee) => (
+                            <SelectItem
+                              key={employee.employeeId}
+                              value={employee.employeeId}
+                            >
+                              {employee.employeeName} | {employee.fatherName}
                             </SelectItem>
                           ))}
                         </SelectContent>

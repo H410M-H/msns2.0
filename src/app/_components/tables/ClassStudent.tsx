@@ -18,13 +18,6 @@ import {
 import { type ClassCategory, type FeeCategory } from "@prisma/client";
 
 type StudentClassProps = {
-    registrationNumber: unknown;
-    studentName: unknown;
-    gender: unknown;
-    studentMobile: unknown;
-    fatherMobile: unknown;
-    fatherName: unknown;
-    address: unknown;
     sfcId: string
     studentClassId: string
     feeId: string
@@ -60,12 +53,10 @@ type StudentClassProps = {
         fatherCNIC: string
         fatherProfession: string
         address: string
-        city: string
-        country: string
         isAssign: boolean
         createdAt?: Date
         updatedAt?: Date
-      }  
+      }
       }
       class: {
         classId: string

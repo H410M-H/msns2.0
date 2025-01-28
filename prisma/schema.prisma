@@ -46,25 +46,26 @@ model students {
 
 model employees {
   employeeId         String             @id @default(uuid())
-  employeeName       String             @db.VarChar(100)
-  fatherName         String             @db.VarChar(100)
+  registrationNumber String         @unique
+  employeeName       String             @default("none")
+  fatherName         String             @default("none")
+  admissionNumber    String         @unique
   gender             Gender
   dob                String             @default("none")
-  cnic               String             @db.Char(15)
+  cnic               String             @default("0000-0000000-0")
   maritalStatus      MaritalStatus
   doj                String             @default("none")
   designation        Designation
   residentialAddress String
-  mobileNo           String             @db.VarChar(13)
-  additionalContact  String?            @db.VarChar(13)
-  education          String             @db.VarChar(100)
+  mobileNo           String             @default("none")
+  additionalContact  String?            @default("none")
+  education          String             @default("none")
+  isAssign           Boolean        @default(false)
   salaryAssignments  SalaryAssignment[]
   salaryIncrements   SalaryIncrement[]
-  profilePic     String?
+  profilePic     String?         @default("/user.jpg")
   cv                 String?
-
-  @@index([employeeName])
-  @@index([cnic])
+  StudentClass       StudentClass[]
 }
 
 model SalaryAssignment {
@@ -136,11 +137,13 @@ model User {
 model StudentClass {
   scId            String            @id @default(uuid())
   studentId       String
+  employeeId       String
   classId         String
   sessionId       String
   class           classes           @relation(fields: [classId], references: [classId])
   session         sessions          @relation(fields: [sessionId], references: [sessionId])
   student         students          @relation(fields: [studentId], references: [studentId])
+  employee         employees          @relation(fields: [employeeId], references: [employeeId])
   FeeStudentClass FeeStudentClass[]
 }
 

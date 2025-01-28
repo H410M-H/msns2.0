@@ -91,7 +91,7 @@ export const StudentRouter = createTRPCRouter({
           const latestNumber = parseInt(latestAdmission.admissionNumber.slice(-5))
           newAdmissionNumber = `${currentYear}${(latestNumber + 1).toString().padStart(5, '0')}`
         } else {
-          newAdmissionNumber = `${currentYear}00001`
+          newAdmissionNumber = `S${currentYear}001`
         }
 
         const newStudent = await ctx.db.students.create({

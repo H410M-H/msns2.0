@@ -14,8 +14,8 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { api } from "~/trpc/react";
 import Link from "next/link";
-import { StudentAllotmentDialog } from "../forms/class/StudentAlotment";
 import FeeAllotmentDialog from "../forms/fee/FeeAllot";
+import { AllotmentDialog } from "../forms/class/StudentAlotment";
 
 type ClassStudentProps = {
   student: {
@@ -26,6 +26,13 @@ type ClassStudentProps = {
     guardianName?: string | null; // Can be string, null, or undefined
     studentName: string;
     fatherName: string;
+    // Add other properties as needed...
+  };
+  employee: {
+    employeeId: string;
+    registrationNumber: string;
+    designation: string;
+    cnic: string;
     // Add other properties as needed...
   };
   class: {
@@ -70,6 +77,11 @@ const columns: ColumnDef<ClassStudentProps>[] = [
     cell: ({ row }) => <div>{row.getValue("scid")}</div>,
   },
   {
+    accessorKey: "employee.employeeName",
+    header: "Employee Name",
+    cell: ({ row }) => <div>{row.getValue("employee.employeeName")}</div>,
+  },
+  {
     accessorKey: "student.studentName",
     header: "Student Name",
     cell: ({ row }) => <div>{row.getValue("student.studentName")}</div>,
@@ -110,6 +122,10 @@ export const ClassAlotmentTable = ({ classId }: { classId: string, sessionId: st
         student: {
           ...item.student,
           guardianName: item.student.guardianName ?? "",
+        },
+        employee: {
+          ...item.employee,
+          employeeName: item.employee.employeeName ?? "",
         },
       }));
       setData(transformedData as unknown as ClassStudentProps[]);
@@ -154,7 +170,7 @@ export const ClassAlotmentTable = ({ classId }: { classId: string, sessionId: st
           /> */}
         </div>
         <div className="flex items-center gap-2">
-          <StudentAllotmentDialog classId={classId}/>
+          <AllotmentDialog classId={classId}/>
           <Button
             variant="outline"
             className="bg-blue-500 text-white hover:bg-blue-600"

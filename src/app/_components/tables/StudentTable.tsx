@@ -50,7 +50,6 @@ type StudentProps = {
   profilePic: string;
 };
 
-// Define table columns
 const columns: ColumnDef<StudentProps>[] = [
   {
     id: "select",

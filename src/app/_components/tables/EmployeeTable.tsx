@@ -1,10 +1,11 @@
-'use client'
+"use client"
 
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Button } from "~/components/ui/button"
-import { Checkbox } from "~/components/ui/checkbox"
+import { Input } from "~/components/ui/input"
 import { api } from "~/trpc/react"
 import Link from "next/link"
+import { DotsHorizontalIcon } from "@radix-ui/react-icons"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,25 +14,32 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu"
-import { Input } from "~/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table"
-import { type ColumnDef, type SortingState, useReactTable, getCoreRowModel, getPaginationRowModel, getSortedRowModel, getFilteredRowModel, flexRender } from "@tanstack/react-table"
+import {
+  type ColumnDef,
+  type SortingState,
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
+} from "@tanstack/react-table"
+import { Checkbox } from "~/components/ui/checkbox"
 import { EmployeeDeletionDialog } from "../forms/employee/EmployeeDeletion"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import { CSVUploadDialog } from "../forms/student/FileInput"
+import { RefreshCcw } from "lucide-react"
 
 type EmployeeProps = {
   employeeId: string
+  registrationNumber: string
+  admissionNumber: string;
   employeeName: string
   fatherName: string
-  gender: "Male" | "Female"
-  dob: Date
-  cnic: string
-  maritalStatus: "Married" | "Unmarried" | "Widow" | "Divorced"
-  doj: Date
+  gender: "MALE" | "FEMALE" | "CUSTOM"
+  dob: string
   designation: "Principal" | "Admin" | "Head" | "Clerk" | "Teacher" | "Worker"
-  residentialAddress: string
   mobileNo: string
-  additionalContact: string | null
   education: string
 }
 
@@ -40,7 +48,10 @@ const columns: ColumnDef<EmployeeProps>[] = [
     id: "select",
     header: ({ table }) => (
       <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
@@ -56,96 +67,83 @@ const columns: ColumnDef<EmployeeProps>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "registrationNumber",
+    header: "Reg #",
+    cell: ({ row }) => <div className="font-medium">{row.getValue("registrationNumber")}</div>,
+  },
+  {
     accessorKey: "employeeName",
-    header: "Employee Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("employeeName")}</div>,
+    header: "Name",
+    cell: ({ row }) => <div className="font-bold">{row.getValue("employeeName")}</div>,
   },
   {
     accessorKey: "fatherName",
     header: "Father Name",
-    cell: ({ row }) => <div className="capitalize">{row.getValue("fatherName")}</div>,
-  },
-  {
-    accessorKey: "cnic",
-    header: "CNIC",
-    cell: ({ row }) => <div>{row.getValue("cnic")}</div>,
-  },
-  {
-    accessorKey: "dob",
-    header: "Date of Birth",
-    cell: ({ row }) => <div>{row.getValue<Date>("dob").toLocaleDateString()}</div>,
-  },
-  {
-    accessorKey: "doj",
-    header: "Date of Joining",
-    cell: ({ row }) => <div>{row.getValue<Date>("doj").toLocaleDateString()}</div>,
+    cell: ({ row }) => <span>{row.getValue("fatherName")}</span>,
   },
   {
     accessorKey: "gender",
     header: "Gender",
-    cell: ({ row }) => <div>{row.getValue("gender")}</div>,
+    cell: ({ row }) => <span>{row.getValue("gender")}</span>,
   },
   {
-    accessorKey: "education",
-    header: "Education",
-    cell: ({ row }) => <div>{row.getValue("education")}</div>,
+    accessorKey: "dob",
+    header: "Date of Birth",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("dob"))
+      return <span>{date.toLocaleDateString()}</span>
+    },
+  },
+  {
+    accessorKey: "designation",
+    header: "Designation",
+    cell: ({ row }) => <span>{row.getValue("designation")}</span>,
   },
   {
     accessorKey: "mobileNo",
-    header: "Mobile No",
-    cell: ({ row }) => <div>{row.getValue("mobileNo")}</div>,
+    header: "Mobile",
+    cell: ({ row }) => <span>{row.getValue("mobileNo")}</span>,
+  },
+  {
+    accessorKey: "doj",
+    header: "Date of Joining",
+    cell: ({ row }) => {
+      const date = new Date(row.getValue("doj"))
+      return <span>{date.toLocaleDateString()}</span>
+    },
   },
   {
     id: "actions",
     header: "Actions",
     enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="w-8 h-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <DotsHorizontalIcon className="w-4 h-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href={`/dashboard/faculty/edit/${row.original.employeeId}`}>
-                Edit
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
+    cell: ({ row }) => (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="w-8 h-8 p-0">
+            <DotsHorizontalIcon className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <Link href={`/dashboard/student/edit/${row.original.employeeId}`}>
+              Edit
+            </Link>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    ),
   },
-]
+];
 
-export const EmployeeTable = () => {
-  const [sorting, setSorting] = useState<SortingState>([])
-  const [rowSelection, setRowSelection] = useState({})
-  const [data, setData] = useState<EmployeeProps[]>([])
-
-  const employeesData = api.employee.getEmployees.useQuery()
-
-  useMemo(() => {
-    if (employeesData.data) {
-      const formattedData: EmployeeProps[] = employeesData.data.map(employee => ({
-        ...employee,
-        dob: new Date(employee.dob),
-        doj: new Date(employee.doj),
-        gender: employee.gender === "MALE" ? "Male" : "Female",
-        maritalStatus: employee.maritalStatus.charAt(0).toUpperCase() + employee.maritalStatus.slice(1).toLowerCase() as EmployeeProps['maritalStatus'],
-        designation: employee.designation.charAt(0).toUpperCase() + employee.designation.slice(1).toLowerCase() as EmployeeProps['designation']
-      }))
-      setData(formattedData)
-    }
-  }, [employeesData.data])
+export function EmployeeTable() {
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [rowSelection, setRowSelection] = useState({});
+  const { data: employees, refetch } = api.employee.getEmployees.useQuery();
 
   const table = useReactTable({
-    data,
+    data: employees ?? [],
     columns,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -153,37 +151,46 @@ export const EmployeeTable = () => {
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      rowSelection,
-    },
-  })
+    state: { sorting, rowSelection },
+  });
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between m-2">
+      <div className="flex items-center justify-between p-4">
         <Input
           placeholder="Search name"
           value={(table.getColumn("employeeName")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("employeeName")?.setFilterValue(event.target.value)
+          onChange={(e) =>
+            table.getColumn("employeeName")?.setFilterValue(e.target.value)
           }
           className="max-w-sm"
         />
-        <div className="flex items-center gap-3">
-          <Button variant={'outline'} type="button" onClick={() => employeesData.refetch()}>
-            Refresh
+        <div className="flex items-center gap-2">
+        <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            className="shrink-0"
+          >
+            <RefreshCcw className="h-4 w-4" />
           </Button>
-          <EmployeeDeletionDialog employeeIds={table.getSelectedRowModel().rows.map(
-            (row) => row.original.employeeId
-          )} />
-          <Button type="button" asChild>
-            <Link href={'userReg/faculty/create'}>Create</Link>
+          <EmployeeDeletionDialog
+            employeeIds={table
+              .getSelectedRowModel()
+              .rows.map((row) => row.original.employeeId)
+              .filter(Boolean)}
+          />
+          <CSVUploadDialog />
+          <Button asChild>
+            <Link href="/userReg/faculty/create">Create</Link>
+          </Button>
+          <Button asChild>
+            <Link href="/userReg/faculty/edit">View Cards</Link>
           </Button>
         </div>
       </div>
-      <div className="m-2 border rounded-md">
-        <Table>
+      <div className="p-4 border rounded-md">        
+      <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -191,38 +198,26 @@ export const EmployeeTable = () => {
                   <TableHead key={header.id}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
+                      : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
               </TableRow>
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
+                <TableCell colSpan={columns.length} className="text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -230,12 +225,12 @@ export const EmployeeTable = () => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end m-6 space-x-2">
-        <div className="flex-1 text-sm text-muted-foreground">
+      <div className="flex items-center justify-between py-4">
+        <span className="text-sm">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
+        </span>
+        <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -255,5 +250,6 @@ export const EmployeeTable = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
+

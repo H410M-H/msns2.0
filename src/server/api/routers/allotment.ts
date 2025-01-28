@@ -7,6 +7,7 @@ export const AlotmentRouter = createTRPCRouter({
       z.object({
         classId: z.string(),
         studentId: z.string(),
+        employeeId: z.string(),
         sessionId: z.string(),
       })
     )
@@ -18,11 +19,17 @@ export const AlotmentRouter = createTRPCRouter({
             isAssign: true,
           },
         });
-
+        await ctx.db.employees.update({
+          where: { employeeId: input.employeeId },
+          data: {
+            isAssign: true,
+          },
+        });
         await ctx.db.studentClass.create({
           data: {
             classId: input.classId,
             studentId: input.studentId,
+            employeeId: input.employeeId,
             sessionId: input.sessionId,
           },
         });
@@ -41,6 +48,7 @@ export const AlotmentRouter = createTRPCRouter({
           include: {
             class: true,
             student: true,
+            employee: true,
             session: true,
           },
         });
@@ -60,6 +68,7 @@ export const AlotmentRouter = createTRPCRouter({
           include: {
             class: true,
             student: true,
+            employee: true,
             session: true,
           },
         });
@@ -75,6 +84,7 @@ export const AlotmentRouter = createTRPCRouter({
     .input(
       z.object({
         studentId: z.string(),
+        employeeId: z.string(),
         classId: z.string(),
       })
     )
@@ -84,6 +94,7 @@ export const AlotmentRouter = createTRPCRouter({
         await ctx.db.studentClass.deleteMany({
           where: {
             studentId: input.studentId,
+            employeeId: input.employeeId,
             classId: input.classId,
           },
         });
@@ -91,6 +102,12 @@ export const AlotmentRouter = createTRPCRouter({
         // Update the student's isAssign status if needed
         await ctx.db.students.update({
           where: { studentId: input.studentId },
+          data: {
+            isAssign: false,
+          },
+        });
+        await ctx.db.employees.update({
+          where: { employeeId: input.employeeId },
           data: {
             isAssign: false,
           },

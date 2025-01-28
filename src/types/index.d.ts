@@ -34,6 +34,8 @@ type StudentProps = {
 
 type EmployeeProps = {
   employeeId: string;
+  registrationNumber: string;
+  admissionNumber: string;
   employeeName: string;
   fatherName: string;
   gender: "MALE" | "FEMALE" | "CUSTOM";
@@ -48,6 +50,7 @@ type EmployeeProps = {
   education: string;
   profilePic?: string | null;
   cv?: string | null;
+  isAssign: boolean;
   salaryAssignments?: SalaryAssignmentProps[];
   salaryIncrements?: SalaryIncrementProps[];
 };
@@ -78,9 +81,11 @@ type FeeProps = {
 type ClassStudentProps = {
   feeId: unknown;
   scId: string;
+  employeeId: string;
   classId: string;
   sessionId: string;
   student: StudentProps;
+  employee: EmployeeProps;
   class: ClassProps;
   session: SessionProps;
 };
