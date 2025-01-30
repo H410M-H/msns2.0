@@ -69,6 +69,10 @@ export const SubjectRouter = createTRPCRouter({
         });
       }
     }),
+    
+    
+    //Remove SubjectFromClass
+
 
   assignSubjectToClass: publicProcedure
     .input(
