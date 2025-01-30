@@ -15,11 +15,22 @@ import {
 } from "~/components/ui/alert-dialog";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-export const SubjectDeletionDialog = ({ subjectId }: { subjectId: string }) => {
+export const SubjectDeletionDialog = ({
+  csId,
+  classId,
+  sessionId,
+}: {
+  csId: string;
+  classId: string;
+  sessionId: string;
+}) => {
   const utils = api.useUtils();
-  const deleteSubject = api.subject.deleteSubject.useMutation({
+  const removeSubject = api.subject.removeSubjectFromClass.useMutation({
     onSuccess: async () => {
-      await utils.subject.getAllSubjects.invalidate();
+      await utils.subject.getSubjectsByClass.invalidate({
+        classId,
+        sessionId,
+      });
     },
   });
 
@@ -27,15 +38,15 @@ export const SubjectDeletionDialog = ({ subjectId }: { subjectId: string }) => {
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <Button variant="destructive" size="sm">
-          Delete
+          Remove
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+          <AlertDialogTitle>Confirm Removal</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this subject? This action cannot be
-            undone and will permanently remove the subject from the system.
+            Are you sure you want to remove this subject from the class? This
+            action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -43,16 +54,16 @@ export const SubjectDeletionDialog = ({ subjectId }: { subjectId: string }) => {
           <AlertDialogAction asChild>
             <Button
               variant="destructive"
-              onClick={() => deleteSubject.mutate({ subjectId })}
-              disabled={deleteSubject.isPending}
+              onClick={() => removeSubject.mutate({ csId })}
+              disabled={removeSubject.isPending}
             >
-              {deleteSubject.isPending ? (
+              {removeSubject.isPending ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  Deleting...
+                  Removing...
                 </>
               ) : (
-                "Confirm Delete"
+                "Confirm Remove"
               )}
             </Button>
           </AlertDialogAction>

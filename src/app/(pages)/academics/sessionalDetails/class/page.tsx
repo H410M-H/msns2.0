@@ -1,4 +1,3 @@
-import { ScrollArea } from "~/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Suspense } from "react"
 import { LoadingSpinner } from "~/app/_components/(blocks)/loading-spinner"
@@ -17,19 +16,17 @@ export default async function ClassDetailsPage({ searchParams }: PageProps) {
     { href: "/academics/sessionalDetails", label: "Session Details", current: true },
   ];
   return (
-    <div className="space-y-6">
+    <div className="w-full">
       <PageHeader breadcrumbs={breadcrumbs}/>
-      <Card className="mt-6">
+      <Card>
         <CardHeader>
           <CardTitle>Class Details</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-[calc(100vh-300px)]">
             <Suspense fallback={<LoadingSpinner />}>
             {/* <StudentAllotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} /> */}
             <ClassAlotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} />
               </Suspense>
-          </ScrollArea>
         </CardContent>
       </Card>
     </div>

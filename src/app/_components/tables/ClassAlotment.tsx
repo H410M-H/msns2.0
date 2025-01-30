@@ -19,6 +19,7 @@ import { AllotmentDialog } from "../forms/class/StudentAlotment";
 import { SubjectAssignmentDialog } from "../forms/class/SubjectAssignment";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { SubjectDeletionDialog } from "../forms/class/SubjectDeletion";
+import { SubjectCreationDialog } from "../forms/class/SubjectCreation";
 
 type ClassStudentProps = {
   student: {
@@ -173,7 +174,7 @@ export const ClassAlotmentTable = ({
       <div className="flex items-center justify-between gap-4 border-b pb-4">
         <div>
           <h2 className="text-2xl font-bold">Class Management</h2>
-          <p className="text-gray-600">Class ID: {""}</p>
+          <p className="text-gray-600">Class ID: {classId}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button onClick={refreshData} variant="outline">
@@ -187,6 +188,7 @@ export const ClassAlotmentTable = ({
       <div className="my-6 rounded-lg border p-4 shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Class Subjects</h3>
+          <SubjectCreationDialog classId={classId} />
           <SubjectAssignmentDialog classId={classId} />
         </div>
         
@@ -210,7 +212,7 @@ export const ClassAlotmentTable = ({
                   <Button variant="outline" size="sm">
                     Edit
                   </Button>
-                  <SubjectDeletionDialog subjectId={subject.subjectId} />
+                  <SubjectDeletionDialog csId={subject.csId} classId={subject.classId} sessionId={subject.sessionId} />
 
                 </div>
               </div>

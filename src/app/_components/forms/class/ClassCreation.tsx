@@ -23,7 +23,6 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
-import { SubjectCreationDialog } from "./SubjectCreation";
 
 const formSchema = z.object({
   grade: z.string({ required_error: "Field is required" }),
@@ -151,7 +150,6 @@ export const ClassCreationDialog = () => {
                 </FormItem>
               )}
             />
-            <SubjectCreationDialog />
             <Button
               type="submit"
               disabled={createClass.isPending}

@@ -131,4 +131,26 @@ export const SubjectRouter = createTRPCRouter({
         });
       }
     }),
+    removeSubjectFromClass: publicProcedure
+    .input(
+      z.object({
+        csId: z.string().min(1, "Assignment ID is required"),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        await ctx.db.classSubject.delete({
+          where: {
+            csId: input.csId,
+          },
+        });
+        return { success: true, message: "Subject removed from class successfully" };
+      } catch (error) {
+        console.error("Error removing subject from class:", error);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to remove subject from class",
+        });
+      }
+    }),
 });
