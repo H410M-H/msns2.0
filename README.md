@@ -83,7 +83,3 @@ MSNS2.0 is a web-based application built using modern web technologies, includin
 - Develop a staff portal for managing school resources
 - Integrate a calendar system for school events and schedules
 - Create a photo gallery showcasing school activities and achievements
-
-### 7. Conclusion
-
-This SRS document outlines the key features and functions for the MSNS2.0 project. It serves as a guide for development and can be updated as the project evolves.
