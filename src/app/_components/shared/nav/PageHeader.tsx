@@ -19,7 +19,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ breadcrumbs }: PageHeaderProps) {
   return (
-    <header className="absolute flex left-auto z-10 h-16 w-full items-center bg-emerald-200 px-4 shadow-md">
+    <header className="absolute flex left-auto z-10 h-16 w-full items-center bg-gradient-to-r from-emerald-200 via-emerald-400 to-green-700 px-4 shadow-md">
       <SidebarTrigger className="px-4 mr-4" />
       <Breadcrumb>
         <BreadcrumbList className="flex items-center gap-2">

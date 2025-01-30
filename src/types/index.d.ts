@@ -78,6 +78,25 @@ type FeeProps = {
   updatedAt?: Date;
 };
 
+type SubjectProps = {
+  subjectId: string;
+  subjectName: string;
+  book?: string;
+  description?: string;
+};
+
+type ClassSubjectProps = {
+  csId: string;
+  classId: string;
+  subjectId: string;
+  employeeId: string;
+  sessionId: string;
+  subject: SubjectProps;
+  employee: EmployeeProps;
+  class: ClassProps;
+  session: SessionProps;
+};
+
 type ClassStudentProps = {
   feeId: unknown;
   scId: string;

@@ -83,7 +83,7 @@ export const EmployeeRouter = createTRPCRouter({
         const latestNumber = Number.parseInt(latestAdmission.admissionNumber.slice(-3))
         newAdmissionNumber = `${currentYear}${(latestNumber + 1).toString().padStart(3, "0")}`
       } else {
-        newAdmissionNumber = `F${currentYear}001`
+        newAdmissionNumber = `${currentYear}001`
       }
 
       const newEmployee = await ctx.db.employees.create({

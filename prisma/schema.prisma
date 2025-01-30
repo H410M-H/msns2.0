@@ -14,8 +14,15 @@ model classes {
   category     ClassCategory  @default(Montessori)
   fee          Float          @default(0)
   StudentClass StudentClass[]
-
-  @@index([grade])
+  ClassSubject ClassSubject[]
+    @@index([grade])
+}
+model Subject {
+  subjectId   String        @id @default(uuid())
+  subjectName String
+  book String?
+  description String?
+  classes     ClassSubject[]
 }
 
 model students {
@@ -66,6 +73,7 @@ model employees {
   profilePic     String?         @default("/user.jpg")
   cv                 String?
   StudentClass       StudentClass[]
+  ClassSubject ClassSubject[]
 }
 
 model SalaryAssignment {
@@ -97,6 +105,7 @@ model sessions {
   isActive          Boolean            @default(false)
   StudentClass      StudentClass[]
   SalaryAssignments SalaryAssignment[]
+  ClassSubject ClassSubject[]
 }
 
 model fees {
@@ -145,6 +154,18 @@ model StudentClass {
   student         students          @relation(fields: [studentId], references: [studentId])
   employee         employees          @relation(fields: [employeeId], references: [employeeId])
   FeeStudentClass FeeStudentClass[]
+}
+
+model ClassSubject {
+  csId       String   @id @default(uuid()) // Auto-generate UUID
+  classId    String
+  subjectId  String
+  employeeId String
+  sessionId  String
+  class      classes    @relation(fields: [classId], references: [classId])
+  subject    Subject  @relation(fields: [subjectId], references: [subjectId])
+  employee   employees @relation(fields: [employeeId], references: [employeeId])
+  session    sessions  @relation(fields: [sessionId], references: [sessionId])
 }
 
 model FeeStudentClass {

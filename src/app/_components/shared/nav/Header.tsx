@@ -97,7 +97,7 @@ export default function Header({ className, ...props }: HeaderProps) {
                   <Link href="/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="hover:bg-purple-100 focus:bg-purple-200">
-                  <Link href="/logout">Logout</Link>
+                  <Link href="/login">Logout</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -42,7 +42,7 @@ const data = {
       icon: Book,
       items: [
         { title: "Session", url: "/academics/sessionalDetails" },
-        { title: "Classes", url: "/academics/classwiseDetail" },
+        { title: "Classes", url: "/academics/sessionalDetails/[sessionId]" },
         { title: "Students", url: "/userReg/student/view" },
       ],
     },
@@ -73,7 +73,7 @@ export function AppSidebar({ className }: { className?: string }) {
   return (
     <Sidebar 
       collapsible={isMobile ? "offcanvas" : "icon"} 
-      className={cn("flex h-screen top-16", className)}
+      className={cn("flex h-auto top-16", className)}
     >
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />

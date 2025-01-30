@@ -12,6 +12,10 @@ export const AlotmentRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      await ctx.db.classes.findUniqueOrThrow({ where: { classId: input.classId }});
+      await ctx.db.students.findUniqueOrThrow({ where: { studentId: input.studentId }});
+      await ctx.db.employees.findUniqueOrThrow({ where: { employeeId: input.employeeId }});
+      await ctx.db.sessions.findUniqueOrThrow({ where: { sessionId: input.sessionId }});
       try {
         await ctx.db.students.update({
           where: { studentId: input.studentId },

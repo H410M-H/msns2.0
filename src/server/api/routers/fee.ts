@@ -98,7 +98,11 @@ export const feeRouter = createTRPCRouter({
       try {
         // Check if the studentClass and fee exist
         const studentClass = await ctx.db.studentClass.findFirst({
-          where: { studentId: input.studentId, classId: input.classId },
+          where: { 
+            studentId: input.studentId, 
+            classId: input.classId,
+            sessionId: input.sessionId // Add session ID check
+          },
         });
         const fee = await ctx.db.fees.findUnique({
           where: { feeId: input.feeId },
