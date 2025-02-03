@@ -20,6 +20,7 @@ import { SubjectAssignmentDialog } from "../forms/class/SubjectAssignment";
 import { SubjectDeletionDialog } from "../forms/class/SubjectDeletion";
 import { AllotmentDialog } from "../forms/class/StudentAlotment";
 import FeeAllotmentDialog from "../forms/fee/FeeAllot";
+import { toast } from "~/hooks/use-toast";
 
 interface ClassStudentProps {
   student: {
@@ -137,6 +138,23 @@ export const ClassAllotmentTable = ({
     api.alotment.getStudentsInClass.useQuery({ classId });
   const { data: subjects, isLoading: subjectsLoading } = 
     api.subject.getSubjectsByClass.useQuery({ classId, sessionId });
+    const deleteStudents = api.alotment.deleteStudentsFromClass.useMutation({
+      onSuccess: async () => {
+        toast({
+          title: "Success",
+          description: "Students removed successfully",
+        });
+        await refreshData();
+        table.resetRowSelection();
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
 
   const utils = api.useUtils();
   const refreshData = async () => {
@@ -249,13 +267,28 @@ export const ClassAllotmentTable = ({
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h2 className="text-xl font-semibold text-gray-800">Enrolled Students</h2>
           <div className="flex flex-wrap gap-2">
-            <Button
-              variant="destructive"
-              disabled={!table.getFilteredSelectedRowModel().rows.length}
-              className="gap-2"
-            >
-              🗑️ Remove Selected
-            </Button>
+          <Button
+  variant="destructive"
+  disabled={!table.getFilteredSelectedRowModel().rows.length || deleteStudents.isPending}
+  onClick={() => {
+    const selectedStudents = table.getFilteredSelectedRowModel().rows.map(
+      row => row.original.student.studentId
+    );
+    
+    deleteStudents.mutate({
+      studentIds: selectedStudents,
+      classId: classId,
+      sessionId: sessionId
+    });
+  }}
+  className="gap-2"
+>
+  {deleteStudents.isPending ? (
+    <ReloadIcon className="h-4 w-4 animate-spin" />
+  ) : (
+    '🗑️ Remove Selected'
+  )}
+</Button>
           </div>
         </div>
 

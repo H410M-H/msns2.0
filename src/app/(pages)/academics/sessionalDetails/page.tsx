@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { CalendarDays, Users, BookOpen, GraduationCap } from "lucide-react";
 import { SessionList } from "~/app/_components/(blocks)/SessionList";
 
-export default function SessionPage() {
+export default function SessionFeePage() {
   const breadcrumbs = [
     { href: "/dashboard", label: "Dashboard" },
     { href: "/academics", label: "Academics" },

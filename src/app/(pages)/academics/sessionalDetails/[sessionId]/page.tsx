@@ -1,4 +1,3 @@
-import { ScrollArea } from "~/components/ui/scroll-area";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { ClassList } from "~/app/_components/(blocks)/ClassList";
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
@@ -15,16 +14,14 @@ export default async function SessionDetailPage({ params }: PageProps) {
     { href: "/academics/sessionalDetails/class", label: "Class Details", current: true },
   ];
   return (
-    <div className="flex">
+    <div className="flex-col">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <Card>
+      <Card className="h-screen border mx-4 py-6 mb-6">
         <CardHeader>
           <CardTitle>Session Detail</CardTitle>
         </CardHeader>
         <CardContent>
-          <ScrollArea className="h-screen w-auto">
-            <ClassList sessionId={searchProps.sessionId} classId={searchProps.sessionId} />
-          </ScrollArea>
+            <ClassList sessionId={searchProps.sessionId} />
         </CardContent>
       </Card>
     </div>

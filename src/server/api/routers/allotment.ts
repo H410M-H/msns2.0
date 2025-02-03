@@ -72,7 +72,6 @@ export const AlotmentRouter = createTRPCRouter({
           include: {
             class: true,
             student: true,
-            employee: true,
             session: true,
           },
         });
@@ -84,34 +83,39 @@ export const AlotmentRouter = createTRPCRouter({
     }),
     
 
-  deleteFromClass: publicProcedure
-    .input(
-      z.object({
-        studentId: z.string(),
-        classId: z.string(),
-      })
-    )
+    deleteStudentsFromClass: publicProcedure
+    .input(z.object({
+      studentIds: z.array(z.string()),
+      classId: z.string(),
+      sessionId: z.string(),
+    }))
     .mutation(async ({ ctx, input }) => {
       try {
-        // Remove the student from the studentClass table
-        await ctx.db.studentClass.deleteMany({
-          where: {
-            studentId: input.studentId,
-            classId: input.classId,
-          },
-        });
+        return ctx.db.$transaction(async (tx) => {
+          // Remove student-class associations
+          await tx.studentClass.deleteMany({
+            where: {
+              studentId: { in: input.studentIds },
+              classId: input.classId,
+              sessionId: input.sessionId,
+            },
+          });
 
-        // Update the student's isAssign status if needed
-        await ctx.db.students.update({
-          where: { studentId: input.studentId },
-          data: {
-            isAssign: false,
-          },
+          // Update student assignment status
+          await tx.students.updateMany({
+            where: { studentId: { in: input.studentIds } },
+            data: { isAssign: false },
+          });
+
+          return { 
+            success: true, 
+            message: `Successfully removed ${input.studentIds.length} students from class` 
+          };
         });
-        return { success: true, message: "Student removed from class successfully." };
+        
       } catch (error) {
-        console.error("Error removing student from class:", error);
-        throw new Error("Unable to remove student from class.");
+        console.error("Error removing students:", error);
+        throw new Error("Failed to remove students from class. Please verify the provided information.");
       }
     }),
 });

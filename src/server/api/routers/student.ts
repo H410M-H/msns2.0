@@ -89,8 +89,8 @@ export const StudentRouter = createTRPCRouter({
         })
         let newAdmissionNumber
         if (latestAdmission) {
-          const latestNumber = parseInt(latestAdmission.admissionNumber.slice(-5))
-          newAdmissionNumber = `${currentYear}${(latestNumber + 1).toString().padStart(5, '0')}`
+          const latestNumber = parseInt(latestAdmission.admissionNumber.slice(-3))
+          newAdmissionNumber = `S${currentYear}${(latestNumber + 1).toString().padStart(3, '0')}`
         } else {
           newAdmissionNumber = `S${currentYear}001`
         }
@@ -184,14 +184,14 @@ generateStudentReport: publicProcedure.query(async ({ ctx }) => {
 
     // Define headers and map data accordingly
     const headers = [
-      'ID', 'Name', 'Registration', 'Admission', 'Date of Birth', 
+      'studentId', 'studentName', 'registrationNumber', 'admissionNumber', 'Date of Birth', 
       'Gender', 'Father Name', 'Student CNIC', 'Father CNIC'
     ];
     const studentData = students.map(s => ({
-      ID: s.studentId,
-      Name: s.studentName,
-      Registration: s.registrationNumber,
-      Admission: s.admissionNumber,
+      studentId: s.studentId,
+      studentName: s.studentName,
+      registrationNumber: s.registrationNumber,
+      admissionNumber: s.admissionNumber,
       'Date of Birth': s.dateOfBirth,
       Gender: s.gender,
       'Father Name': s.fatherName,
@@ -202,7 +202,7 @@ generateStudentReport: publicProcedure.query(async ({ ctx }) => {
     const pdfBuffer = await generatePdf(studentData, headers, 'Student Directory Report');
 
     return {
-      pdf: Buffer.from(pdfBuffer).toString('base64'), // Convert to base64 for API response
+      pdf: Buffer.from(pdfBuffer).toString('base64'),
       message: 'PDF report generated successfully'
     };
   } catch (error) {

@@ -32,6 +32,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { WalletCards } from "lucide-react";
 
 const formSchema = z.object({
   sessionId: z.string().min(1, "Session is required"),
@@ -88,12 +89,17 @@ export function FeeAssignmentDialog() {
   };
 
   return (
-<Dialog open={open} onOpenChange={setOpen}>
-  <DialogTrigger asChild>
-    <Button variant="outline" className="flex items-center space-x-2">
-      <span>Fee Assignment</span>
-    </Button>
-  </DialogTrigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {/* Moved the button styling here */}
+        <Button 
+          size="sm" 
+          className="h-11 px-4 rounded-xl gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:shadow-md"
+        >
+          <WalletCards className="w-4 h-4" />
+          Assign Fee
+        </Button>
+      </DialogTrigger>
   <DialogContent className="sm:max-w-[80%]">
     <DialogHeader>
       <DialogTitle className="text-xl font-bold">Fee Assignment</DialogTitle>

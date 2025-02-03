@@ -23,6 +23,8 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { PlusCircle } from "lucide-react";
+import { useState } from "react";
 
 const formSchema = z.object({
   grade: z.string({ required_error: "Field is required" }),
@@ -36,6 +38,7 @@ const formSchema = z.object({
 });
 
 export const ClassCreationDialog = () => {
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -46,6 +49,7 @@ export const ClassCreationDialog = () => {
   const createClass = api.class.createClass.useMutation({
     onSuccess: () => {
       form.reset();
+      setOpen(false);
     },
   });
 
@@ -54,10 +58,14 @@ export const ClassCreationDialog = () => {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          Add class
+        <Button 
+          size="sm" 
+          className="h-11 px-4 rounded-xl gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-md"
+        >
+          <PlusCircle className="w-4 h-4" />
+          Create Class
         </Button>
       </DialogTrigger>
       <DialogContent className="w-full sm:max-w-md">

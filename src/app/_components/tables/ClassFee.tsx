@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
@@ -22,8 +22,11 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table";
-import { RefreshCw } from "lucide-react";
+import { ArrowUpDown, Download, RefreshCw } from "lucide-react";
 import FeeAllotmentDialog from "../forms/fee/FeeAllot";
+import { toast } from "sonner";
+import { Skeleton } from "~/components/ui/skeleton";
+import { Badge } from "~/components/ui/badge";
 
 // Define the structure of the data
 type ClassFeeProps = {
@@ -38,7 +41,7 @@ type ClassFeeProps = {
   fee: {
     tuitionFee: number;
     examFund: number;
-    computerLabFund: number | null;
+    computerLabFund?: number | null;
     studentIdCardFee: number;
     infoAndCallsFee: number;
     admissionFee: number;
@@ -66,10 +69,16 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const { data: classFees, refetch } = api.fee.getFeeAssignmentsByClassAndSession.useQuery(
+  const { data: classFees, isLoading, isError, refetch } = 
+  api.fee.getFeeAssignmentsByClassAndSession.useQuery(
     { classId, sessionId },
     { refetchOnWindowFocus: false }
   );
+  useEffect(() => {
+    if (isError) {
+      toast.error("Failed to load fee assignments");
+    }
+  }, [isError]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -80,34 +89,58 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
   const columns: ColumnDef<ClassFeeProps>[] = [
     {
       accessorKey: "studentClass.student.registrationNumber",
-      header: "Registration No.",
+      header: "Reg. No.",
+      cell: ({ row }) => (
+        <Badge variant="secondary">
+          {row.original.studentClass.student.registrationNumber}
+        </Badge>
+      ),
     },
     {
       accessorKey: "studentClass.student.studentName",
-      header: "Student Name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Student Name
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
     },
     {
       accessorKey: "studentClass.class.grade",
       header: "Class",
-      cell: ({ row }) =>
-        `${row.original.studentClass.class.grade} - ${row.original.studentClass.class.section}`,
+      cell: ({ row }) => (
+        <div className="font-medium">
+          {row.original.studentClass.class.grade} -{" "}
+          {row.original.studentClass.class.section}
+        </div>
+      ),
     },
     {
-      accessorKey: "fee.tuitionFee",
-      header: "Tuition Fee",
-      cell: ({ getValue }) => `Rs. ${getValue<number>().toLocaleString()}`,
-    },
-    {
-      id: "annualFee",
-      header: "Annual Fee",
+      id: "feeBreakdown",
+      header: "Fee Breakdown",
       cell: ({ row }) => {
         const fee = row.original.fee;
-        const annualFee =
-          fee.examFund +
-          (fee.computerLabFund ?? 0) +
-          fee.studentIdCardFee +
-          fee.infoAndCallsFee;
-        return `Rs. ${annualFee.toLocaleString()}`;
+        return (
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Tuition:</span>
+              <span>Rs. {fee.tuitionFee.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Annual:</span>
+              <span>
+                Rs.{" "}
+                {(fee.examFund +
+                  (fee.computerLabFund ?? 0) +
+                  fee.studentIdCardFee +
+                  fee.infoAndCallsFee).toLocaleString()}
+              </span>
+            </div>
+          </div>
+        );
       },
     },
     {
@@ -115,25 +148,32 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
       header: "Total Fee",
       cell: ({ row }) => {
         const fee = row.original.fee;
-        const totalFee =
-          fee.tuitionFee +
-          fee.examFund +
-          (fee.computerLabFund ?? 0) +
-          fee.studentIdCardFee +
-          fee.infoAndCallsFee +
-          fee.admissionFee;
-        return `Rs. ${totalFee.toLocaleString()}`;
+        const total = calculateTotalFee(fee);
+        return (
+          <div className="font-semibold">
+            Rs. {total.toLocaleString()}
+            {row.original.discount > 0 && (
+              <span className="block text-xs text-red-500">
+                - Rs. {row.original.discount.toLocaleString()}
+              </span>
+            )}
+          </div>
+        );
       },
     },
     {
-      accessorKey: "discount",
+      id: "discount",
       header: "Discount",
-      cell: ({ getValue }) => `Rs. ${getValue<number>().toLocaleString()}`,
-    },
-    {
-      accessorKey: "discountByPercent",
-      header: "Discount %",
-      cell: ({ getValue }) => `${getValue<number>().toFixed(2)}%`,
+      cell: ({ row }) => (
+        <div className="space-y-1">
+          <div className="font-medium">
+            {row.original.discountByPercent}%
+          </div>
+          <div className="text-xs text-muted-foreground">
+            {row.original.discountDescription}
+          </div>
+        </div>
+      ),
     },
     {
       id: "actions",
@@ -148,7 +188,7 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
           initialDiscountDescription={row.original.discountDescription}
           onUpdate={handleRefresh}
           onRemove={handleRefresh}
-                  />
+        />
       ),
     },
   ];
@@ -167,49 +207,71 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
 
   const totalFeeForClass = useMemo(() => {
     return classFees?.reduce((total, classFee) => {
-      const fee = classFee.fee;
-      return (
-        total +
-        fee.tuitionFee +
-        fee.examFund +
-        (fee.computerLabFund ?? 0) +
-        fee.studentIdCardFee +
-        fee.infoAndCallsFee +
-        fee.admissionFee
-      );
+      return total + calculateTotalFee(classFee.fee) - classFee.discount;
     }, 0);
   }, [classFees]);
 
+  function calculateTotalFee(fee: FeeProps) {
+    return (
+      fee.tuitionFee +
+      fee.examFund +
+      (fee.computerLabFund ?? 0) +
+      fee.studentIdCardFee +
+      fee.infoAndCallsFee +
+      fee.admissionFee
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-4 text-center text-red-500 bg-red-50 rounded-lg">
+        Failed to load fee data. Please try refreshing the page.
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-4 p-4">
-      {/* Search and Refresh */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 p-4 bg-white rounded-lg shadow-sm">
+      {/* Header Section */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Input
-          placeholder="Search fees..."
+          placeholder="Search students..."
           value={globalFilter ?? ""}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
-        <Button
-          variant="outline"
-          className={`bg-blue-500 text-white hover:bg-blue-600 ${
-            isRefreshing ? "animate-pulse" : ""
-          }`}
-          onClick={handleRefresh}
-        >
-          <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-          Refresh
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleRefresh}
+            variant="outline"
+            className="gap-2"
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => toast.promise(generateFeeReport(), {
+              loading: "Generating report...",
+              success: "Report generated!",
+              error: "Failed to generate report"
+            })}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export PDF
+          </Button>
+        </div>
       </div>
 
-      {/* Fee Table */}
-      <div className="rounded-md border shadow-md overflow-hidden">
-        <Table className="bg-gray-50 w-full">
-          <TableHeader>
+      {/* Table Section */}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="whitespace-nowrap">
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -219,11 +281,21 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {isLoading || isRefreshing ? (
+              Array(5).fill(0).map((_, i) => (
+                <TableRow key={i}>
+                  {columns.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="hover:bg-gray-50">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-3">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -231,8 +303,8 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center">
-                  No fees assigned to students in this class.
+                <TableCell colSpan={columns.length} className="text-center h-24">
+                  No fee assignments found
                 </TableCell>
               </TableRow>
             )}
@@ -240,22 +312,55 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
         </Table>
       </div>
 
-      {/* Total Fee */}
-      {totalFeeForClass !== undefined && (
-        <div className="text-right font-semibold">
-          Total Fee for Class: Rs. {totalFeeForClass.toLocaleString()}
+      {/* Summary Section */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+        <div className="text-sm text-muted-foreground">
+          Showing {table.getRowModel().rows.length} of{" "}
+          {classFees?.length} students
         </div>
-      )}
+        {totalFeeForClass !== undefined && (
+          <div className="space-y-1 text-right">
+            <div className="font-semibold">
+              Total Net Fee: Rs. {totalFeeForClass.toLocaleString()}
+            </div>
+            <div className="text-sm text-muted-foreground">
+              (After applying all discounts)
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+      <div className="flex items-center justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
           Previous
         </Button>
-        <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
           Next
         </Button>
       </div>
     </div>
   );
+}
+
+// Helper function to generate report
+async function generateFeeReport() {
+  const response = api.fee.generateFeeReport.useQuery();
+  if (response.data?.pdf) {
+    const blob = new Blob([Uint8Array.from(response.data.pdf)], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = 'fee-report.pdf';
+    link.click();
+  }
 }
