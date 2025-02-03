@@ -1,4 +1,3 @@
-
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { RegisterRouter } from "./routers/register";
 import { ClassRouter } from "./routers/class";
@@ -9,20 +8,20 @@ import { AlotmentRouter } from "./routers/allotment";
 import { SalaryRouter } from "./routers/salary";
 import { feeRouter } from "./routers/fee";
 import { SubjectRouter } from "./routers/subject";
-
+import { ReportRouter } from "./routers/report"; 
 
 export const appRouter = createTRPCRouter({
-    register:RegisterRouter,
+    register: RegisterRouter,
     class: ClassRouter,
     subject: SubjectRouter,
-    student:StudentRouter,
-    employee:EmployeeRouter,
-    salary:SalaryRouter,
-    session:SessionRouter,
-    fee:feeRouter,
-    alotment:AlotmentRouter
+    student: StudentRouter,
+    employee: EmployeeRouter,
+    salary: SalaryRouter,
+    session: SessionRouter,
+    fee: feeRouter,
+    alotment: AlotmentRouter,
+    report: ReportRouter
 });
-
 
 export type AppRouter = typeof appRouter;
 export const createCaller = createCallerFactory(appRouter);

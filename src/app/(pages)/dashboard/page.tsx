@@ -10,22 +10,25 @@ export default function DashboardPage() {
   return (
     <div className="items-center">
       <PageHeader breadcrumbs={breadcrumbs} />
-      <div className="pt-14">
-      {/* Overview Section */}
-      <section className="mb-8 p-6">
-        <h2 className="text-lg font-semibold text-green-700">Overview</h2>
-        <div className="overflow-y-auto max-h-[300px]">
-          <StatsCards />
-        </div>
-      </section>
+      <div className="pt-8 px-4 sm:px-6 lg:px-8">
+        {/* Overview Section */}
+        <section className="mb-10">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 pb-2 border-b border-slate-100">
+            Institutional Overview
+          </h2>
+          <div className="grid gap-6">
+            <StatsCards />
+          </div>
+        </section>
 
-      {/* Quick Actions Section */}
-      <section className="mb-8 p-6">
-        <h2 className="text-lg font-semibold text-green-700">Quick Actions</h2>
+        {/* Quick Actions Section */}
+        <section className="mb-8">
+          <h2 className="text-2xl font-bold text-slate-800 mb-6 pb-2 border-b border-slate-100">
+            Quick Management
+          </h2>
           <AdminCards />
-      </section>
-    </div>
+        </section>
+      </div>
     </div>
   )
 }
-

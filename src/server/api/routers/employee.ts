@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { createTRPCRouter, publicProcedure } from "../trpc"
 import { z } from "zod"
+import { generatePdf } from "~/lib/utils/pdf-reports"
 
 const employeeSchema = z.object({
   employeeName: z.string().min(2).max(100),
@@ -148,6 +149,18 @@ export const EmployeeRouter = createTRPCRouter({
         })
       }
     }),
+
+    generateEmployeeReport: publicProcedure
+  .query(async ({ ctx }) => {
+    const employees = await ctx.db.employees.findMany()
+    return {
+      pdf: await generatePdf(
+        employees,
+        ['EmployeeId', 'EmployeeName', 'Designation', 'RegistrationNumber'],
+        'Employee Report'
+      )
+    }
+  }),
 })
 
 

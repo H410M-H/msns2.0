@@ -1,18 +1,25 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { useDropzone, type Accept } from "react-dropzone";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
-import { FileText, FileType, X } from "lucide-react";
+import { FileText, File, X } from "lucide-react";
 
 interface BookUploaderProps {
   onUploadSuccess: (url: string) => void;
   initialFile?: string;
 }
 
+interface CloudinaryUploadResponse {
+  secure_url: string;
+  error?: {
+    message?: string;
+  };
+}
+
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ACCEPTED_FILE_TYPES = {
+const ACCEPTED_FILE_TYPES: Accept = {
   "application/pdf": [".pdf"],
   "application/msword": [".doc"],
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
@@ -33,23 +40,22 @@ export const BookUploader = ({ onUploadSuccess, initialFile }: BookUploaderProps
       setProgress(0);
 
       const formData = new FormData();
-      formData.append('file', fileToUpload);
-      formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
-      
+      formData.append("file", fileToUpload);
+      formData.append("upload_preset", process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!);
+
       const response = await fetch(
         `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`,
         {
-          method: 'POST',
+          method: "POST",
           body: formData,
         }
       );
 
-      const data = await response.json();
+      const data = await response.json() as CloudinaryUploadResponse;
 
       if (!response.ok) {
-        throw new Error(data.error?.message || 'Upload failed');
+        throw new Error(data.error?.message ?? "Upload failed");
       }
-
       setPreviewUrl(data.secure_url);
       onUploadSuccess(data.secure_url);
       setProgress(100);
@@ -63,20 +69,31 @@ export const BookUploader = ({ onUploadSuccess, initialFile }: BookUploaderProps
     }
   }, [onUploadSuccess]);
 
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const handleFile = async () => {
+        try {
+          const selectedFile = acceptedFiles[0];
+          if (!selectedFile) return;
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    const selectedFile = acceptedFiles[0];
-    if (!selectedFile) return;
+          if (selectedFile.size > MAX_FILE_SIZE) {
+            setError("File size exceeds 10MB limit");
+            return;
+          }
 
-    if (selectedFile.size > MAX_FILE_SIZE) {
-      setError("File size exceeds 10MB limit");
-      return;
-    }
+          setFile(selectedFile);
+          setError(null);
+          await handleUpload(selectedFile);
+        } catch (err) {
+          console.error("Upload error:", err);
+          setError("Failed to process file upload");
+        }
+      };
 
-    setFile(selectedFile);
-    setError(null);
-    await handleUpload(selectedFile);
-  }, [handleUpload]);
+      void handleFile(); // Explicitly void the promise
+    },
+    [handleUpload]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -102,7 +119,7 @@ export const BookUploader = ({ onUploadSuccess, initialFile }: BookUploaderProps
         <input {...getInputProps()} />
         
         <div className="flex flex-col items-center gap-4">
-          <FileType className="h-8 w-8 text-gray-500" />
+          <File className="h-8 w-8 text-gray-500" />
           
           <div>
             <p className="font-medium">

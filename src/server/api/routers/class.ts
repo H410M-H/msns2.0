@@ -2,6 +2,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { ClassCategory, type classes as PrismaClass } from "@prisma/client";
+import { generatePdf } from "~/lib/utils/pdf-reports";
 
 type ClassProps = PrismaClass;
 
@@ -69,4 +70,17 @@ export const ClassRouter = createTRPCRouter({
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to delete classes." });
       }
     }),
+
+    // Add to ClassRouter
+generateClassReport: publicProcedure
+.query(async ({ ctx }) => {
+  const classes = await ctx.db.classes.findMany()
+  return {
+    pdf: await generatePdf(
+      classes,
+      ['ClassId', 'Grade', 'Section', 'Category', 'Fee'],
+      'Class Report'
+    )
+  }
+}),
 });

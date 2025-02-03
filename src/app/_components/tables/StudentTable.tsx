@@ -36,6 +36,7 @@ import {
 import { CSVUploadDialog } from "../forms/student/FileInput";
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion";
 import { RefreshCcw } from "lucide-react";
+import { DownloadPdfButton } from "../(blocks)/DownloadPdfButton";
 
 type StudentProps = {
   studentId: string;
@@ -190,6 +191,7 @@ export const StudentTable = () => {
               .filter(Boolean)}
           />
           <CSVUploadDialog />
+          <DownloadPdfButton reportType={'students'} />
           <Button asChild>
             <Link href="/userReg/student/create">Create</Link>
           </Button>

@@ -2,6 +2,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import { TRPCError } from "@trpc/server";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { generatePdf } from "~/lib/utils/pdf-reports";
 
 export const feeRouter = createTRPCRouter({
   getAllFees: publicProcedure.query(async ({ ctx }) => {
@@ -264,4 +265,16 @@ export const feeRouter = createTRPCRouter({
         })
       }
     }),
+
+    generateFeeReport: publicProcedure
+  .query(async ({ ctx }) => {
+    const fees = await ctx.db.fees.findMany()
+    return {
+      pdf: await generatePdf(
+        fees,
+        ['FeeId', 'Level', 'TuitionFee', 'Type'],
+        'Fee Structure Report'
+      )
+    }
+  }),
 })

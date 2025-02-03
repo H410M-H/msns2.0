@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server"
 import { createTRPCRouter, publicProcedure } from "../trpc"
 import { z } from "zod"
+import { generatePdf } from "~/lib/utils/pdf-reports"
 
 const studentSchema = z.object({
   studentMobile: z.string(),
@@ -158,5 +159,59 @@ export const StudentRouter = createTRPCRouter({
       }
     }),
 
-})
+generateStudentReport: publicProcedure.query(async ({ ctx }) => {
+  try {
+    const students = await ctx.db.students.findMany({
+      select: {
+        studentId: true,
+        studentName: true,
+        registrationNumber: true,
+        admissionNumber: true,
+        dateOfBirth: true,
+        gender: true,
+        fatherName: true,
+        studentCNIC: true,
+        fatherCNIC: true,
+      }
+    });
 
+    if (!students.length) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No student records found.',
+      });
+    }
+
+    // Define headers and map data accordingly
+    const headers = [
+      'ID', 'Name', 'Registration', 'Admission', 'Date of Birth', 
+      'Gender', 'Father Name', 'Student CNIC', 'Father CNIC'
+    ];
+    const studentData = students.map(s => ({
+      ID: s.studentId,
+      Name: s.studentName,
+      Registration: s.registrationNumber,
+      Admission: s.admissionNumber,
+      'Date of Birth': s.dateOfBirth,
+      Gender: s.gender,
+      'Father Name': s.fatherName,
+      'Student CNIC': s.studentCNIC,
+      'Father CNIC': s.fatherCNIC
+    }));
+
+    const pdfBuffer = await generatePdf(studentData, headers, 'Student Directory Report');
+
+    return {
+      pdf: Buffer.from(pdfBuffer).toString('base64'), // Convert to base64 for API response
+      message: 'PDF report generated successfully'
+    };
+  } catch (error) {
+    console.error('Error generating student report:', error);
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Failed to generate student report'
+    });
+  }
+}),
+
+});

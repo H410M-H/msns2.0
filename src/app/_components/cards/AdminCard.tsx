@@ -1,6 +1,6 @@
 "use client"
 
-import { CalendarIcon as CalendarCog, type LucideIcon, NotebookPenIcon, Wallet } from 'lucide-react'
+import { ArrowRight, CalendarIcon as CalendarCog, type LucideIcon, NotebookPenIcon, Wallet } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import Link from "next/link"
 
@@ -44,20 +44,30 @@ const services: Services[] = [
 
 export default function AdminCards() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {services.map((service) => {
         const Icon = service.icon
         return (
-          <Link href={service.href} key={service.title}>
-            <Card className={`${service.bgColor} hover:shadow-lg transition-all duration-300 hover:scale-[1.02]`}>
-              <CardHeader>
-                <Icon className={`h-8 w-8 ${service.iconColor}`} />
-                <CardTitle className="mt-4">{service.title}</CardTitle>
-                <CardDescription>{service.description}</CardDescription>
+          <Link href={service.href} key={service.title} className="group">
+            <Card className={`relative overflow-hidden transition-all duration-300 hover:-translate-y-1.5 shadow-sm hover:shadow-lg ${service.bgColor} hover:bg-opacity-90`}>
+              <div className="absolute inset-0 bg-gradient-to-br from-white/30 to-transparent" />
+              <CardHeader className="relative z-10">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl ${service.bgColor} bg-opacity-20`}>
+                    <Icon className={`h-8 w-8 ${service.iconColor}`} />
+                  </div>
+                  <CardTitle className="text-xl font-semibold text-slate-800">
+                    {service.title}
+                  </CardTitle>
+                </div>
+                <CardDescription className="text-slate-600 mt-2">
+                  {service.description}
+                </CardDescription>
               </CardHeader>
-              <CardContent className="pt-4">
-                <div className="flex items-center text-sm text-muted-foreground">
-                  View details →
+              <CardContent className="relative z-10 pt-4">
+                <div className="flex items-center text-sm font-medium text-blue-600 group-hover:text-blue-700 transition-colors">
+                  Access Panel
+                  <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
                 </div>
               </CardContent>
             </Card>
@@ -67,4 +77,5 @@ export default function AdminCards() {
     </div>
   )
 }
+
 

@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Suspense } from "react"
 import { LoadingSpinner } from "~/app/_components/(blocks)/loading-spinner"
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader"
-import { ClassAlotmentTable } from "~/app/_components/tables/ClassAlotment"
+import { ClassAllotmentTable } from "~/app/_components/tables/ClassAlotment";
 
 type PageProps = {
-  searchParams: Promise<{ classId: string; sessionId: string }>;
+  searchParams: Promise<{ classId: string; sessionId: string; }>;
 };
 
 export default async function ClassDetailsPage({ searchParams }: PageProps) {
@@ -25,7 +25,7 @@ export default async function ClassDetailsPage({ searchParams }: PageProps) {
         <CardContent>
             <Suspense fallback={<LoadingSpinner />}>
             {/* <StudentAllotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} /> */}
-            <ClassAlotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} />
+            <ClassAllotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} />
               </Suspense>
         </CardContent>
       </Card>

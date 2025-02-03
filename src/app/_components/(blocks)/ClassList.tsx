@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  type SortingState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -16,201 +8,173 @@ import { api } from "~/trpc/react";
 import Link from "next/link";
 import { ClassCreationDialog } from "../forms/class/ClassCreation";
 import { ClassDeletionDialog } from "~/app/_components/forms/class/ClassDeletion";
-import { Search, RefreshCw } from 'lucide-react';
+import { Search, RefreshCw, PlusCircle, WalletCards } from 'lucide-react';
 import { Checkbox } from "~/components/ui/checkbox";
+import { Skeleton } from "~/components/ui/skeleton";
+import { cn } from "~/lib/utils";
 import { FeeAssignmentDialog } from "../forms/fee/feeAssignment";
 
 const categoryOrder = ["Montessori", "Primary", "Middle", "SSC_I", "SSC_II"];
 const categoryColors: Record<string, string> = {
-  Montessori: "text-red-800",
-  Primary: "text-pink-800",
-  Middle: "text-green-800",
-  SSC_I: "text-yellow-800",
-  SSC_II: "text-purple-800",
+  Montessori: "from-rose-100/60 to-rose-200/40",
+  Primary: "from-indigo-100/60 to-indigo-200/40",
+  Middle: "from-emerald-100/60 to-emerald-200/40",
+  SSC_I: "from-amber-100/60 to-amber-200/40",
+  SSC_II: "from-violet-100/60 to-violet-200/40",
 };
 const sectionColors: Record<string, string> = {
-  ROSE: "bg-pink-100 text-pink-800",
-  TULIP: "bg-yellow-100 text-yellow-800",
+  ROSE: "bg-rose-100/90 text-rose-900",
+  TULIP: "bg-amber-100/90 text-amber-900",
 };
 
-type ClassProps = {
-  classId: string;
-  grade: string;
-  section: string;
-  category: string;
-  fee: number;
-};
-
-type ComponentProps = {
-  classId: string;
-  sessionId: string;
-};
-
-export const ClassList = ({ sessionId }: ComponentProps) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [data, setData] = useState<ClassProps[]>([]);
+export const ClassList = ({ sessionId }: { sessionId: string }) => {
   const [selectedClasses, setSelectedClasses] = useState<Set<string>>(new Set());
-
-  const classesData = api.class.getClasses.useQuery();
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const { data: classesData, isLoading, refetch } = api.class.getClasses.useQuery();
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
-    await classesData.refetch();
-    setTimeout(() => setIsRefreshing(false), 1000);
+    await refetch();
   };
 
-  useMemo(() => {
-    if (classesData.data) {
-      setData(classesData.data as ClassProps[]);
-    }
-  }, [classesData.data]);
-
   const groupedData = useMemo(() => {
-    const grouped: Record<string, ClassProps[]> = {};
-    data.forEach((item) => {
+    const grouped: Record<string, typeof classesData> = {};
+    classesData?.forEach((item) => {
       if (!grouped[item.category]) {
         grouped[item.category] = [];
       }
       grouped[item.category]?.push(item);
     });
     return grouped;
-  }, [data]);
+  }, [classesData]);
 
   const handleClassSelect = (classId: string) => {
-    const newSelectedClasses = new Set(selectedClasses);
-    if (selectedClasses.has(classId)) {
-      newSelectedClasses.delete(classId);
-    } else {
-      newSelectedClasses.add(classId);
-    }
-    setSelectedClasses(newSelectedClasses);
+    setSelectedClasses(prev => new Set(prev.has(classId) 
+      ? [...prev].filter(id => id !== classId) 
+      : [...prev, classId]));
   };
 
-  const table = useReactTable({
-    data,
-    columns: [
-      {
-        accessorKey: "grade",
-        header: "Grade",
-        cell: ({ row }) => <div>{row.getValue("grade")}</div>,
-      },
-      {
-        accessorKey: "section",
-        header: "Section",
-        cell: ({ row }) => <div>{row.getValue("section")}</div>,
-      },
-      {
-        accessorKey: "fee",
-        header: "Fee",
-        cell: ({ row }) => <div>{row.getValue<number>("fee").toFixed(2)}</div>,
-      },
-    ],
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: { sorting },
-  });
-
   return (
-    <div className="w-full px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mb-2 rounded-lg bg-gradient-to-r from-blue-50 to-indigo-50 p-6 shadow-lg">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="relative flex-grow max-w-md">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+    <div className="w-full p-4 sm:p-6 lg:p-8">
+      {/* Header Section */}
+      <div className="mb-8 rounded-2xl bg-gradient-to-r from-slate-50/80 to-blue-50/80 p-6 shadow-sm backdrop-blur-sm border border-slate-100/80">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="relative flex-grow max-w-xl">
+            <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
             <Input
-              placeholder="Search grade..."
-              value={(table.getColumn("section")?.getFilterValue() as string) ?? ""}
-              onChange={(event) => {
-                const column = table.getColumn("section");
-                if (column) {
-                  column.setFilterValue(event.target.value);
-                }
-              }}
-              className="pl-10 border-2 border-green-800 focus:border-green-400 focus:ring focus:ring-blue-200 transition-all duration-300"
+              placeholder="Search classes..."
+              className="pl-11 h-12 text-base border-2 border-slate-200/50 focus:border-blue-300 focus:ring-2 focus:ring-blue-100/50 rounded-xl bg-white/90 backdrop-blur-sm placeholder:text-slate-400"
             />
           </div>
-          <div className="flex flex-wrap items-center gap-3">
+          
+          <div className="flex items-center gap-3 flex-wrap">
             <Button
-              variant="outline"
-              className={`bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 ${isRefreshing ? 'animate-pulse' : ''
-                }`}
+              size="sm"
               onClick={handleRefresh}
+              className="gap-2 h-11 px-4 rounded-xl bg-white/95 text-slate-600 hover:bg-white shadow-sm border border-slate-200/60 hover:border-slate-300/50"
             >
-              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              Refresh
             </Button>
-            <ClassDeletionDialog
-              classIds={Array.from(selectedClasses)}
-            />
-            <FeeAssignmentDialog />
-            <ClassCreationDialog />
+            <ClassDeletionDialog classIds={Array.from(selectedClasses)} />
+              <Button size="sm" className="h-11 px-4 rounded-xl gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:shadow-md">
+                <WalletCards className="w-4 h-4" />
+                <FeeAssignmentDialog />
+                </Button>
+              <Button size="sm" className="h-11 px-4 rounded-xl gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-md">
+                <PlusCircle className="w-4 h-4" />
+                <ClassCreationDialog/>
+                </Button>
           </div>
         </div>
       </div>
 
-      <Tabs defaultValue={categoryOrder[0]} className="w-full">
-        <TabsList className="mb-4 flex space-x-6">
+      {/* Tabs Section */}
+      <Tabs defaultValue={categoryOrder[0]}>
+        <TabsList className="mb-6 flex w-full overflow-x-auto pb-2 gap-1.5">
           {categoryOrder.map((category) => (
             <TabsTrigger
               key={category}
               value={category}
-              className={`px-4 py-4 font-semibold ${categoryColors[category]}`}
+              className={cn(
+                "px-4 py-2.5 text-sm font-semibold rounded-lg transition-all",
+                "data-[state=active]:bg-gradient-to-r data-[state=active]:text-white",
+                "border data-[state=active]:border-transparent border-slate-200/60",
+                categoryColors[category]
+              )}
             >
               {category}
             </TabsTrigger>
           ))}
         </TabsList>
 
+        {/* Content Sections */}
         {categoryOrder.map((category) => (
-          <TabsContent key={category} value={category} className="space-y-4">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
-              {(groupedData[category] ?? []).map((row) => (
-                <div
-                  key={row.classId}
-                  className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-white to-gray-50 p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-100 to-indigo-100 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <div className="relative">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Checkbox
-                        checked={selectedClasses.has(row.classId)}
-                        onCheckedChange={() => handleClassSelect(row.classId)}
-                        className="h-4 w-4"
-                      />
-                      <h3 className="text-lg font-bold text-gray-800">{row.grade}</h3>
+          <TabsContent key={category} value={category} className="mt-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
+              {isLoading ? (
+                Array(6).fill(0).map((_, i) => (
+                  <Skeleton key={i} className="h-44 rounded-xl bg-slate-100/50" />
+                ))
+              ) : (
+                groupedData[category]?.map((classItem) => (
+                  <div
+                    key={classItem.classId}
+                    className="group relative rounded-xl bg-white/90 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 border border-slate-100/80 hover:border-blue-100/50"
+                  >
+                    <div className="p-5">
+                      <div className="flex items-start justify-between mb-4 gap-3">
+                        <Checkbox
+                          checked={selectedClasses.has(classItem.classId)}
+                          onCheckedChange={() => handleClassSelect(classItem.classId)}
+                          className="h-5 w-5 border-2 border-slate-300/80 data-[state=checked]:border-blue-500 mt-1.5"
+                        />
+                        <div className="space-y-1.5">
+                          <h3 className="text-2xl font-bold text-slate-800">{classItem.grade}</h3>
+                          <span className={cn(
+                            "inline-block px-3 py-1 rounded-full text-xs font-medium tracking-wide",
+                            sectionColors[classItem.section]
+                          )}>
+                            {classItem.section}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-5 space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-slate-500">Monthly Fee:</span>
+                          <span className="font-medium text-emerald-700">
+                            {classItem.fee.toFixed(2)} PKR
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-6 grid gap-2.5">
+                        <Button
+                          asChild
+                          size="sm"
+                          className="w-full rounded-lg bg-blue-100/50 text-blue-700 hover:bg-blue-200/50 transition-all hover:text-blue-800"
+                        >
+                          <Link 
+                            href={`/academics/sessionalDetails/class/?classId=${classItem.classId}&sessionId=${sessionId}`}
+                          >
+                            View Class
+                          </Link>
+                        </Button>
+                        <Button
+                          asChild
+                          size="sm"
+                          className="w-full rounded-lg bg-emerald-100/50 text-emerald-700 hover:bg-emerald-200/50 hover:text-emerald-800"
+                        >
+                          <Link
+                            href={`/academics/sessionalDetails/fee/?classId=${classItem.classId}&sessionId=${sessionId}`}
+                          >
+                            Fee Details
+                          </Link>
+                        </Button>
+                      </div>
                     </div>
-                    <span className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-medium ${sectionColors[row.section] ?? 'bg-blue-100 text-blue-800'}
-                    `}>
-                      {row.section}
-                    </span>
-                    <p className="mt-3 text-xs font-medium text-gray-600">
-                      Fee: <span className="text-red-600">{row.fee.toFixed(2)}/-PKR</span>
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-4 w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
-                      asChild
-                    >
-                      <Link href={`/academics/sessionalDetails/class/?classId=${row.classId}&sessionId=${sessionId}`}>
-                        View Details
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="mt-4 w-full bg-gradient-to-r from-blue-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 transition-all duration-300"
-                      asChild
-                    >
-                      <Link href={`/academics/sessionalDetails/fee/?classId=${row.classId}&sessionId=${sessionId}`}>
-                        Fee Details
-                      </Link>
-                    </Button>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </TabsContent>
         ))}
