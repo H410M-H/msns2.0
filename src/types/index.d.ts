@@ -28,6 +28,7 @@ type StudentProps = {
   medicalProblem?: string | null;
   profilePic?: string | null;
   isAssign: boolean;
+  createdAt: string;
   discount: number;
   discountByPercent: number;
 };
@@ -100,11 +101,9 @@ type ClassSubjectProps = {
 type ClassStudentProps = {
   feeId: unknown;
   scId: string;
-  employeeId: string;
   classId: string;
   sessionId: string;
   student: StudentProps;
-  employee: EmployeeProps;
   class: ClassProps;
   session: SessionProps;
 };

@@ -73,18 +73,22 @@ export function AppSidebar({ className }: { className?: string }) {
   return (
     <Sidebar 
       collapsible={isMobile ? "offcanvas" : "icon"} 
-      className={cn("flex h-auto top-16", className)}
+      variant="inset"
+      className={cn("flex h-auto top-16 z-40 shadow-lg", className)}
     >
-      <SidebarHeader>
+      <SidebarHeader className="pb-2">
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
-      <SidebarContent>
+      
+      <SidebarContent className="flex-1 overflow-y-auto">
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarFooter>
+      
+      <SidebarFooter className="border-t bg-sidebar-accent/10">
         <NavUser />
       </SidebarFooter>
-      <SidebarRail />
+      
+      <SidebarRail className="hover:after:bg-primary/50" />
     </Sidebar>
   )
 }

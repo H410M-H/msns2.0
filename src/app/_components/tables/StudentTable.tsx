@@ -50,7 +50,7 @@ type StudentProps = {
   studentCNIC: string;
   fatherCNIC: string;
   fatherMobile: string;
-  profilePic: string;
+  profilePic?: string | null;
 };
 
 const columns: ColumnDef<StudentProps>[] = [
@@ -142,7 +142,7 @@ const columns: ColumnDef<StudentProps>[] = [
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <Link href={`/dashboard/student/edit/${row.original.studentId}`}>
+            <Link href={`/userReg/student/edit/${row.original.studentId}`}>
               Edit
             </Link>
           </DropdownMenuItem>
@@ -185,7 +185,7 @@ export const StudentTable = () => {
               className="pl-8"
             />
           </div>
-          
+
           <div className="flex items-center gap-2 flex-wrap">
             <Button
               variant="outline"
@@ -203,26 +203,29 @@ export const StudentTable = () => {
                 .filter(Boolean)}
             />
             <CSVUploadDialog />
-            <DownloadPdfButton 
-  reportType={'students'}
-  data={students || []}
-  headers={[
-    'ID',
-    'Student Name',
-    'Reg Number',
-    'Adm Number',
-    'Birth Date',
-    'Gender',
-    'Father Name',
-    'Contact',
-    'Status'
-  ]}
-/>            <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+            <DownloadPdfButton
+              reportType={'students'}
+              data={students ?? []}
+              headers={[
+                'studentId',
+                'studentName',
+                'registrationNumber',
+                'admissionNumber',
+                'dateOfBirth',
+                'gender',
+                'fatherName',
+                'fatherMobile',
+                'isAssign'
+              ]}
+            />          <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
               <Link href="/userReg/student/create" className="flex items-center gap-2">
                 <PlusCircle className="h-4 w-4" />
                 New Student
               </Link>
             </Button>
+            <Button asChild>
+            <Link href="/userReg/student/edit">View Cards</Link>
+          </Button>
           </div>
         </div>
       </div>
@@ -256,8 +259,8 @@ export const StudentTable = () => {
               ))
             ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow 
-                  key={row.id} 
+                <TableRow
+                  key={row.id}
                   className="hover:bg-gray-50 transition-colors"
                   data-state={row.getIsSelected() ? "selected" : ""}
                 >
@@ -289,7 +292,7 @@ export const StudentTable = () => {
           Showing {table.getFilteredRowModel().rows.length} students •{" "}
           {table.getFilteredSelectedRowModel().rows.length} selected
         </div>
-        
+
         <div className="flex gap-2">
           <Button
             variant="outline"

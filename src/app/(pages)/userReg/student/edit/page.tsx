@@ -1,12 +1,12 @@
-import EmployeeCredDetails from "~/app/_components/cards/CredentialCard";
+import StudentCredDetails from "~/app/_components/cards/StudentCredCard";
 import { PageHeader } from "~/app/_components/shared/nav/PageHeader";
 import { Separator } from "~/components/ui/separator";
 
-export default function EmployeeCards() {
+export default function StudentCards() {
     const breadcrumbs = [
         { href: "/dashboard", label: "Dashboard", },
         { href: "/academics", label: "Academics", },
-        { href: "/userReg/faculty/edit", label: "Registered Employees", current: true },
+        { href: "/userReg/student/edit", label: "Registered Students", current: true },
       ]
       
       return (
@@ -14,9 +14,9 @@ export default function EmployeeCards() {
             <PageHeader breadcrumbs={breadcrumbs}/>
             <div className="pt-16">
             <div className="flex-1 p-4">
-            <h1 className="text-center text-5xl p-4 font-serif font-semibold text-green-800">Employees Credentials Detail</h1>
+            <h1 className="text-center text-5xl p-4 font-serif font-semibold text-green-800">Students Credentials Detail</h1>
             <Separator className="bg-green-900" />
-                <EmployeeCredDetails />
+                <StudentCredDetails />
                 <Separator className="bg-green-900" />
             </div>
             </div>

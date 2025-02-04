@@ -23,8 +23,8 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <TRPCReactProvider>
           <UserProvider>
-            <Header />
             <SidebarProvider>
+            <Header />
               <main className="flex-1">{children}
               </main>
             </SidebarProvider>

@@ -7,33 +7,24 @@ export const AlotmentRouter = createTRPCRouter({
       z.object({
         classId: z.string(),
         studentId: z.string(),
-        employeeId: z.string(),
         sessionId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       await ctx.db.classes.findUniqueOrThrow({ where: { classId: input.classId }});
       await ctx.db.students.findUniqueOrThrow({ where: { studentId: input.studentId }});
-      await ctx.db.employees.findUniqueOrThrow({ where: { employeeId: input.employeeId }});
       await ctx.db.sessions.findUniqueOrThrow({ where: { sessionId: input.sessionId }});
+
       try {
         await ctx.db.students.update({
           where: { studentId: input.studentId },
-          data: {
-            isAssign: true,
-          },
+          data: { isAssign: true },
         });
-        await ctx.db.employees.update({
-          where: { employeeId: input.employeeId },
-          data: {
-            isAssign: true,
-          },
-        });
+
         await ctx.db.studentClass.create({
           data: {
             classId: input.classId,
             studentId: input.studentId,
-            employeeId: input.employeeId,
             sessionId: input.sessionId,
           },
         });
@@ -52,7 +43,6 @@ export const AlotmentRouter = createTRPCRouter({
           include: {
             class: true,
             student: true,
-            employee: true,
             session: true,
           },
         });
@@ -84,38 +74,56 @@ export const AlotmentRouter = createTRPCRouter({
     
 
     deleteStudentsFromClass: publicProcedure
-    .input(z.object({
-      studentIds: z.array(z.string()),
-      classId: z.string(),
-      sessionId: z.string(),
-    }))
-    .mutation(async ({ ctx, input }) => {
-      try {
-        return ctx.db.$transaction(async (tx) => {
-          // Remove student-class associations
-          await tx.studentClass.deleteMany({
-            where: {
-              studentId: { in: input.studentIds },
-              classId: input.classId,
-              sessionId: input.sessionId,
-            },
-          });
-
-          // Update student assignment status
-          await tx.students.updateMany({
-            where: { studentId: { in: input.studentIds } },
-            data: { isAssign: false },
-          });
-
-          return { 
-            success: true, 
-            message: `Successfully removed ${input.studentIds.length} students from class` 
-          };
+  .input(z.object({
+    studentIds: z.array(z.string()),
+    classId: z.string(),
+    sessionId: z.string(),
+  }))
+  .mutation(async ({ ctx, input }) => {
+    try {
+      return ctx.db.$transaction(async (tx) => {
+        // First find the studentClass IDs to delete
+        const studentClasses = await tx.studentClass.findMany({
+          where: {
+            studentId: { in: input.studentIds },
+            classId: input.classId,
+            sessionId: input.sessionId,
+          },
+          select: { scId: true }
         });
-        
-      } catch (error) {
-        console.error("Error removing students:", error);
-        throw new Error("Failed to remove students from class. Please verify the provided information.");
-      }
-    }),
+
+        const studentClassIds = studentClasses.map(studentClasses => studentClasses.scId);
+
+        // Delete dependent FeeStudentClass records first
+        await tx.feeStudentClass.deleteMany({
+          where: {
+            studentClassId: { in: studentClassIds }
+          }
+        });
+
+        // Then remove student-class associations
+        await tx.studentClass.deleteMany({
+          where: {
+            studentId: { in: input.studentIds },
+            classId: input.classId,
+            sessionId: input.sessionId,
+          },
+        });
+
+        // Update student assignment status
+        await tx.students.updateMany({
+          where: { studentId: { in: input.studentIds } },
+          data: { isAssign: false },
+        });
+
+        return { 
+          success: true, 
+          message: `Successfully removed ${input.studentIds.length} students from class` 
+        };
+      });
+    } catch (error) {
+      console.error("Error removing students:", error);
+      throw new Error("Failed to remove students from class. Please verify the provided information.");
+    }
+  }),
 });

@@ -134,6 +134,55 @@
   }
 }
 
+/* In your global CSS */
+[data-sidebar="sidebar"] {
+  @apply bg-sidebar backdrop-blur-lg;
+}
+
+[data-sidebar="footer"] {
+  @apply sticky bottom-0 bg-background;
+}
+
+[data-sidebar="content"] {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--sidebar-border)) transparent;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar {
+  @apply w-2;
+}
+
+[data-sidebar="content"]::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-sidebar-border;
+}
+
+[data-collapsible="icon"] [data-sidebar="group-label"] {
+  @apply opacity-0 pointer-events-none;
+}
+
+[data-collapsible="icon"] [data-sidebar="menu-button"] > span:last-child {
+  @apply opacity-0 transition-opacity;
+}
+
+[data-collapsible="icon"] [data-sidebar="menu-button"]:hover > span:last-child {
+  @apply opacity-100 absolute left-full ml-4 px-2 py-1 bg-sidebar text-sidebar-foreground rounded-md shadow-lg;
+}
+
+footer {
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  footer {
+    margin-left: 0;
+  }
+}
+
+.sidebar-collapsed footer {
+  margin-left: var(--sidebar-width-icon);
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -5,9 +5,12 @@ import { api } from "~/trpc/react"
 import { useState } from "react"
 import { Loader2 } from "lucide-react"
 
-type ReportType = "students" | "employees" | "classes" | "subjects"
-
-export function DownloadPdfButton({ reportType }: { reportType: ReportType }) {
+interface DownloadPdfButtonProps {
+  reportType: 'students' | 'employees' | 'classes' | 'subjects';
+  data: Array<Record<string, unknown>>;
+  headers: string[];
+}
+export function DownloadPdfButton({ reportType }: DownloadPdfButtonProps) {
   const { mutateAsync: generateReport, isPending } = api.report.generateReport.useMutation()
   const [downloading, setDownloading] = useState(false)
 

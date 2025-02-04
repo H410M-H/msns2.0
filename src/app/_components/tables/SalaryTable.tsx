@@ -1,5 +1,3 @@
-// src/app/_components/shared/tables/SalaryTable.tsx
-
 'use client'
 
 import { useState } from 'react'
@@ -12,7 +10,6 @@ import {
   TableRow 
 } from "~/components/ui/table"
 import { Button } from "~/components/ui/button"
-import { Input } from "~/components/ui/input"
 import { 
   Select, 
   SelectContent, 
@@ -48,10 +45,21 @@ type SalaryData = {
   }
 }
 
-export function SalaryTable() {
-  const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-  const [searchTerm, setSearchTerm] = useState('')
+type SalaryTableProps = {
+  page: number
+  pageSize: number
+  setPage: React.Dispatch<React.SetStateAction<number>>
+  setPageSize: React.Dispatch<React.SetStateAction<number>>
+  searchTerm: string
+}
+
+export function SalaryTable({ 
+  page,
+  pageSize,
+  setPage,
+  setPageSize,
+  searchTerm
+}: SalaryTableProps) {
   const [sortField, setSortField] = useState<SortField>('assignedDate')
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc')
 
@@ -75,16 +83,15 @@ export function SalaryTable() {
   if (isLoading) return <div>Loading...</div>
   if (error) return <div>Error: {error.message}</div>
 
+  const totalPages = Math.ceil((data?.totalCount ?? 0) / pageSize)
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <Input
-          placeholder="Search employees..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+        <Select 
+          value={pageSize.toString()} 
+          onValueChange={(value) => setPageSize(Number(value))}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Rows per page" />
           </SelectTrigger>
@@ -163,21 +170,21 @@ export function SalaryTable() {
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <div className="text-sm text-gray-500">
-            Page {page} of {Math.ceil((data?.totalCount ?? 0) / pageSize)}
+            Page {page} of {totalPages}
           </div>
           <Button
             variant="outline"
             size="sm"
             onClick={() => setPage(page + 1)}
-            disabled={page === Math.ceil((data?.totalCount ?? 0) / pageSize)}
+            disabled={page === totalPages}
           >
             <ChevronRight className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setPage(Math.ceil((data?.totalCount ?? 0) / pageSize))}
-            disabled={page === Math.ceil((data?.totalCount ?? 0) / pageSize)}
+            onClick={() => setPage(totalPages)}
+            disabled={page === totalPages}
           >
             <ChevronsRight className="h-4 w-4" />
           </Button>

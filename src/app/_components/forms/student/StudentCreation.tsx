@@ -92,11 +92,7 @@ export default function StudentRegistrationForm() {
       })
 
       if (uploadedImageUrl) {
-        formData.append("profilePic", uploadedImageUrl as unknown as Blob)
-      }
-      const cv = formData.get("cv");
-      if (cv) {
-        formData.append("cv", cv)
+        formData.append("profilePic", uploadedImageUrl)
       }
 
       await createStudent.mutateAsync({

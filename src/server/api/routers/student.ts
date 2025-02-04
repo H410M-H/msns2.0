@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server"
 import { createTRPCRouter, publicProcedure } from "../trpc"
 import { z } from "zod"
 import { generatePdf } from "~/lib/utils/pdf-reports"
+import { type Prisma } from "@prisma/client"
 
 const studentSchema = z.object({
   studentMobile: z.string(),
@@ -36,19 +37,45 @@ export const StudentRouter = createTRPCRouter({
     }
   }),
 
-  getUnAllocateStudents: publicProcedure.query(async ({ ctx }) => {
+  getUnAllocateStudents: publicProcedure
+  .input(z.object({
+    searchTerm: z.string().optional(),
+    page: z.number().min(1).default(1),
+    pageSize: z.number().min(1).max(100).default(20)
+  }))
+  .query(async ({ ctx, input }) => {
     try {
-      const students = await ctx.db.students.findMany({
-        where: {
-          isAssign: false
+      const where: Prisma.studentsWhereInput = { 
+        isAssign: false,
+        OR: input.searchTerm ? [
+          { studentName: { contains: input.searchTerm, mode: 'insensitive' } },
+          { fatherName: { contains: input.searchTerm, mode: 'insensitive' } }
+        ] : undefined
+      }
+
+      const [students, total] = await Promise.all([
+        ctx.db.students.findMany({
+          where,
+          skip: (input.page - 1) * input.pageSize,
+          take: input.pageSize
+        }),
+        ctx.db.students.count({ where })
+      ])
+
+      return {
+        data: students,
+        meta: {
+          total,
+          page: input.page,
+          pageSize: input.pageSize,
+          totalPages: Math.ceil(total / input.pageSize)
         }
-      })
-      return students
+      }
     } catch (error) {
-      console.error(error)
+      console.error("Error fetching unallocated students:", String(error))
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
-        message: "Something went wrong.",
+        message: "Failed to fetch unassigned students"
       })
     }
   }),

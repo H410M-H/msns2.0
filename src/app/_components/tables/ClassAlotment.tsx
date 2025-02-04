@@ -2,44 +2,29 @@
 
 import {
   type ColumnDef,
-  type SortingState,
   getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { api } from "~/trpc/react";
-import Link from "next/link";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { SubjectCreationDialog } from "../forms/class/SubjectCreation";
 import { SubjectAssignmentDialog } from "../forms/class/SubjectAssignment";
 import { SubjectDeletionDialog } from "../forms/class/SubjectDeletion";
 import { AllotmentDialog } from "../forms/class/StudentAlotment";
-import FeeAllotmentDialog from "../forms/fee/FeeAllot";
 import { toast } from "~/hooks/use-toast";
 import { Badge } from "~/components/ui/badge";
 import { Skeleton } from "~/components/ui/skeleton";
+import Link from "next/link";
 
-interface ClassStudentProps {
+interface ClassStudent {
   student: {
     studentId: string;
-    registrationNumber: string;
-    studentMobile: string;
-    fatherMobile: string;
-    guardianName?: string | null;
     studentName: string;
     fatherName: string;
-  };
-  employee: {
-    employeeId: string;
-    registrationNumber: string;
-    designation: string;
-    cnic: string;
-    employeeName?: string | null;
+    guardianName?: string | null;
   };
   class: {
     grade: string;
@@ -59,7 +44,7 @@ const classColors: Record<string, string> = {
   "3": "bg-purple-100 text-purple-800",
 };
 
-const columns: ColumnDef<ClassStudentProps>[] = [
+const columns: ColumnDef<ClassStudent>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -82,47 +67,31 @@ const columns: ColumnDef<ClassStudentProps>[] = [
   {
     accessorKey: "student.studentName",
     header: "Student Name",
-    cell: ({ row }) => (
-      <div className="font-medium">
-        {row.original.student.studentName}
-      </div>
-    ),
+    cell: ({ row }) => row.original.student.studentName,
   },
   {
     accessorKey: "student.fatherName",
     header: "Father Name",
-    cell: ({ row }) => (
-      <div className="text-gray-600">
-        {row.original.student.fatherName}
-      </div>
-    ),
+    cell: ({ row }) => row.original.student.fatherName,
   },
   {
     accessorKey: "class.grade",
     header: "Class",
     cell: ({ row }) => (
-      <span className="rounded bg-blue-100 px-2 py-1 text-blue-800">
-        {row.original.class.grade}
-      </span>
+      <Badge className={classColors[row.original.class.grade]}>
+        Grade {row.original.class.grade}
+      </Badge>
     ),
   },
   {
     accessorKey: "session.sessionName",
     header: "Session",
-    cell: ({ row }) => (
-      <div className="text-gray-600">
-        {row.original.session.sessionName}
-      </div>
-    ),
+    cell: ({ row }) => row.original.session.sessionName,
   },
   {
     accessorKey: "class.fee",
     header: "Monthly Fee",
-    cell: ({ row }) => (
-      <div className="font-medium">
-        Rs. {row.original.class.fee.toLocaleString()}
-      </div>
-    ),
+    cell: ({ row }) => `Rs. ${row.original.class.fee.toLocaleString()}`,
   },
 ];
 
@@ -133,69 +102,47 @@ export const ClassAllotmentTable = ({
   classId: string;
   sessionId: string;
 }) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const [data, setData] = useState<ClassStudentProps[]>([]);
+  const utils = api.useUtils();
 
   const { data: students, isLoading: studentsLoading } =
-    api.alotment.getStudentsInClass.useQuery({ classId });
+    api.alotment.getStudentsByClassAndSession.useQuery({ classId, sessionId });
+    
   const { data: subjects, isLoading: subjectsLoading } =
     api.subject.getSubjectsByClass.useQuery({ classId, sessionId });
+
   const deleteStudents = api.alotment.deleteStudentsFromClass.useMutation({
     onSuccess: async () => {
-      toast({
-        title: "Success",
-        description: "Students removed successfully",
-      });
-      await refreshData();
-      table.resetRowSelection();
+      toast({ title: "Students removed successfully" });
+      await utils.alotment.invalidate();
+      setRowSelection({});
     },
     onError: (error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 
-  const utils = api.useUtils();
+  const table = useReactTable({
+    data: students ?? [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    onRowSelectionChange: setRowSelection,
+    state: { rowSelection },
+  });
+
   const refreshData = async () => {
     await Promise.all([utils.alotment.invalidate(), utils.subject.invalidate()]);
   };
 
-  const transformedData = useMemo(() => {
-    return students?.map(item => ({
-      ...item,
-      student: { ...item.student, guardianName: item.student.guardianName ?? "" },
-      employee: { ...item.employee, employeeName: item.employee.employeeName ?? "" },
-    })) ?? [];
-  }, [students]);
-
-  useEffect(() => {
-    setData(transformedData as ClassStudentProps[]);
-  }, [transformedData]);
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
-    state: { sorting, rowSelection },
-  });
-
   return (
     <div className="w-full space-y-6 p-4">
-      {/* Enhanced Header Section */}
-      <div className="rounded-xl bg-gradient-to-r from-yellow-500 to-purple-600 p-8 text-white shadow-lg">
+      {/* Header Section */}
+      <div className="rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 p-8 text-white shadow-lg">
         <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold tracking-tight">
-              {students?.[0]?.class.grade}</h1>
+              {students?.[0]?.class.grade}
+            </h1>
             <div className="flex gap-3">
               <Badge className="bg-white/10 backdrop-blur-sm">
                 📚 {subjects?.length ?? 0} Subjects
@@ -212,7 +159,7 @@ export const ClassAllotmentTable = ({
               variant="ghost"
               className="gap-2 bg-white/10 hover:bg-white/20"
             >
-              <ReloadIcon className={`h-4 w-4 ${studentsLoading ? 'animate-spin' : ''}`} />
+              <ReloadIcon className={studentsLoading ? 'animate-spin' : ''} />
               Refresh
             </Button>
           </div>
@@ -257,51 +204,47 @@ export const ClassAllotmentTable = ({
                     sessionId={subject.sessionId}
                   />
                 </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <Badge variant="outline" className="bg-blue-50 text-blue-700">
-                    👨🏫 {subject.employee.employeeName}
-                  </Badge>
-                </div>
+                {subject.employee && (
+                  <div className="mt-4 flex items-center justify-between">
+                    <Badge variant="outline" className="bg-blue-50 text-blue-700">
+                      👨🏫 {subject.employee.employeeName}
+                    </Badge>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center space-y-4 rounded-xl border-2 border-dashed border-gray-200 p-8">
-            <div className="rounded-full bg-gray-100 p-4">
-              📚
-            </div>
+            <div className="rounded-full bg-gray-100 p-4">📚</div>
             <p className="text-gray-500">No subjects assigned yet</p>
           </div>
         )}
       </section>
 
-      {/* Enhanced Students Section */}
+      {/* Students Section */}
       <section className="rounded-xl border bg-white p-6 shadow-sm">
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <h2 className="text-2xl font-semibold text-gray-800">Enrolled Students</h2>
-          <div className="flex flex-wrap gap-2">
-            <Button
-              variant="destructive"
-              disabled={!table.getFilteredSelectedRowModel().rows.length || deleteStudents.isPending}
-              onClick={() => {
-                const selectedStudents = table.getFilteredSelectedRowModel().rows.map(
+          <Button
+            variant="destructive"
+            disabled={!table.getSelectedRowModel().rows.length || deleteStudents.isPending}
+            onClick={() => {
+              deleteStudents.mutate({
+                studentIds: table.getSelectedRowModel().rows.map(
                   row => row.original.student.studentId
-                );
-                deleteStudents.mutate({
-                  studentIds: selectedStudents,
-                  classId: classId,
-                  sessionId: sessionId
-                });
-              }}
-              className="gap-2"
-            >
-              {deleteStudents.isPending ? (
-                <ReloadIcon className="h-4 w-4 animate-spin" />
-              ) : (
-                '🗑️ Remove Selected'
-              )}
-            </Button>
-          </div>
+                ),
+                classId,
+                sessionId
+              });
+            }}
+          >
+            {deleteStudents.isPending ? (
+              <ReloadIcon className="h-4 w-4 animate-spin" />
+            ) : (
+              'Remove Selected'
+            )}
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -330,72 +273,26 @@ export const ClassAllotmentTable = ({
                       </p>
                     </div>
                   </div>
-                  <Badge
-                    className={classColors[row.original.class.grade]}
-                  >
+                  <Badge className={classColors[row.original.class.grade]}>
                     Grade {row.original.class.grade}
                   </Badge>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="w-full gap-2 text-sm hover:bg-gray-50"
-                  >
+                  <Button asChild variant="outline" className="text-sm">
                     <Link href={`/students/${row.original.student.studentId}`}>
-                      👤 View Profile
+                      View Profile
                     </Link>
                   </Button>
-                  <FeeAllotmentDialog
-                    studentClassId={classId}
-                    feeId={classId}
-                    sfcId=""
-                    initialDiscount={0}
-                    initialDiscountPercent={0}
-                    initialDiscountDescription=""
-                    onUpdate={refreshData}
-                    onRemove={refreshData}
-                  />
                 </div>
               </div>
             ))
           ) : (
             <div className="col-span-full flex flex-col items-center justify-center space-y-4 rounded-xl border-2 border-dashed border-gray-200 p-8">
-              <div className="rounded-full bg-gray-100 p-4">
-                👥
-              </div>
+              <div className="rounded-full bg-gray-100 p-4">👥</div>
               <p className="text-gray-500">No students enrolled yet</p>
             </div>
           )}
-        </div>
-
-        {/* Enhanced Pagination */}
-        <div className="mt-6 flex flex-col items-center justify-between gap-4 md:flex-row">
-          <div className="text-sm text-gray-600">
-            Selected {table.getFilteredSelectedRowModel().rows.length} of{" "}
-            <span className="font-medium">{table.getFilteredRowModel().rows.length}</span> students
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              className="gap-1.5"
-            >
-              ← Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              className="gap-1.5"
-            >
-              Next →
-            </Button>
-          </div>
         </div>
       </section>
     </div>

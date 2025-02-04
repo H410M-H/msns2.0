@@ -1,3 +1,4 @@
+// RegistrationPage.tsx
 "use client"
 import { motion } from "framer-motion";
 import { GraduationCap, ArrowRight, Sparkles } from "lucide-react";
@@ -20,24 +21,25 @@ export default function RegistrationPage() {
     >
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-      {Array.from({ length: 12 }).map((_, i) => (
-  <motion.div
-    key={i}
-    className="absolute w-8 h-8 bg-green-200/30 rounded-full"
-    initial={{ scale: 0, opacity: 0 }}
-    animate={{
-      scale: [0, 1, 0],
-      opacity: [0, 0.3, 0],
-      x: Math.random() * 1000 - 500,
-      y: Math.random() * 1000 - 500,
-    }}
-    transition={{
-      duration: 4 + Math.random() * 4,
-      repeat: Infinity,
-      delay: Math.random() * 2,
-    }}
-  />
-))}
+        {Array.from({ length: 15 }).map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-8 h-8 bg-green-200/20 rounded-full"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{
+              scale: [0, 1, 0],
+              opacity: [0, 0.2, 0],
+              x: Math.random() * 1000 - 500,
+              y: Math.random() * 1000 - 500,
+            }}
+            transition={{
+              duration: 6 + Math.random() * 4,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+              ease: "easeInOut"
+            }}
+          />
+        ))}
       </div>
 
       <div className="relative z-10">
@@ -57,9 +59,14 @@ export default function RegistrationPage() {
                 className="inline-block relative"
               >
                 <h1 className="relative font-serif text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter">
-                  <span className="block bg-gradient-to-r from-green-600 via-emerald-500 to-cyan-600 bg-clip-text text-transparent">
+                  <motion.span
+                    initial={{ backgroundPosition: "0% 50%" }}
+                    animate={{ backgroundPosition: "100% 50%" }}
+                    transition={{ duration: 8, repeat: Infinity }}
+                    className="block bg-gradient-to-r from-green-600 via-emerald-500 to-cyan-600 bg-clip-text text-transparent bg-[length:300%_100%]"
+                  >
                     Online Registration Portal
-                  </span>
+                  </motion.span>
                   <motion.div
                     whileHover={{ rotate: 15, scale: 1.1 }}
                     className="absolute -right-6 top-1/2 -translate-y-1/2"
@@ -73,7 +80,7 @@ export default function RegistrationPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="flex justify-center items-center gap-3 text-lg font-medium text-emerald-700"
+                className="flex flex-wrap justify-center items-center gap-3 text-lg font-medium text-emerald-700"
               >
                 <Sparkles className="w-5 h-5 text-amber-500 animate-pulse" />
                 <span>Begin Your Academic Journey</span>

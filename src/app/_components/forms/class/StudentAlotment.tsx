@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-
 import {
   Dialog,
   DialogContent,
@@ -33,9 +32,8 @@ import {
 } from "~/components/ui/select";
 
 const formSchema = z.object({
-  studentId: z.string({ required_error: "Student is required." }),
-  employeeId: z.string({ required_error: "Student is required." }),
-  sessionId: z.string({ required_error: "Session is required." }),
+  studentId: z.string({ required_error: "Student is required" }),
+  sessionId: z.string({ required_error: "Session is required" }),
 });
 
 export const AllotmentDialog = ({ classId }: { classId: string }) => {
@@ -44,141 +42,100 @@ export const AllotmentDialog = ({ classId }: { classId: string }) => {
     resolver: zodResolver(formSchema),
   });
 
-  const sessionYears = api.session.getSessions.useQuery();
-  const students = api.student.getUnAllocateStudents.useQuery();
-  const employees = api.employee.getUnAllocateEmployees.useQuery();
-
-  const allotStudent = api.alotment.addToClass.useMutation({
-    onSuccess:()=>{
-      form.reset()
-    }
+  const utils = api.useUtils();
+  const { data: sessions } = api.session.getSessions.useQuery();
+  const { data: students } = api.student.getUnAllocateStudents.useQuery({
+    searchTerm,
   });
-  const formSubmitted = (values: z.infer<typeof formSchema>) => {
-    allotStudent.mutate({
-        classId:classId,
-        sessionId:values.sessionId,
-        studentId:values.studentId,
-        employeeId:values.employeeId
-    })
+
+  const allotment = api.alotment.addToClass.useMutation({
+    onSuccess: async () => {
+      form.reset();
+      await utils.student.getUnAllocateStudents.invalidate();
+    },
+  });
+
+  const handleSubmit = (values: z.infer<typeof formSchema>) => {
+    allotment.mutate({
+      classId,
+      sessionId: values.sessionId,
+      studentId: values.studentId,
+    });
   };
 
-  const filteredStudents = students.data?.filter(
-    (student) =>
-      student.studentName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.fatherName.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
-  const filteredEmployees = employees.data?.filter(
-    (employee) =>
-      employee.employeeName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      employee.fatherName.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add to Class</Button>
+        <Button>Add Student to Class</Button>
       </DialogTrigger>
       <DialogContent className="w-full sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Allot student to class</DialogTitle>
+          <DialogTitle>Allot Student to Class</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(formSubmitted)}
-            className="flex flex-col gap-4 p-4"
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
           >
             <FormField
               control={form.control}
               name="studentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select student</FormLabel>
-                  <FormControl>
-                    <div>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a student" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <Input
-                            type="text"
-                            placeholder="Search students..."
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="mb-2"
-                          />
-                          {filteredStudents?.map((student) => (
-                            <SelectItem
-                              key={student.studentId}
-                              value={student.studentId}
-                            >
-                              {student.studentName} | {student.fatherName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </FormControl>
+                  <FormLabel>Select Student</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={allotment.isPending}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select student" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <Input
+                        placeholder="Search students..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="mb-2"
+                      />
+                      {students?.data.map((student) => (
+                        <SelectItem
+                          key={student.studentId}
+                          value={student.studentId}
+                        >
+                          {student.studentName} ({student.fatherName})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="employeeId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Select Teacher</FormLabel>
-                  <FormControl>
-                    <div>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a Teacher" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <Input
-                            type="text"
-                            placeholder="Search employees..."
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="mb-2"
-                          />
-                          {filteredEmployees?.map((employee) => (
-                            <SelectItem
-                              key={employee.employeeId}
-                              value={employee.employeeId}
-                            >
-                              {employee.employeeName} | {employee.fatherName}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+
             <FormField
               control={form.control}
               name="sessionId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select the session</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <FormLabel>Select Session</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    disabled={allotment.isPending}
+                  >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a session" />
+                        <SelectValue placeholder="Select session" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {sessionYears.data?.map((session) => (
+                      {sessions?.map((session) => (
                         <SelectItem
-                          value={session.sessionId}
                           key={session.sessionId}
+                          value={session.sessionId}
                         >
                           {session.sessionName}
                         </SelectItem>
@@ -189,18 +146,19 @@ export const AllotmentDialog = ({ classId }: { classId: string }) => {
                 </FormItem>
               )}
             />
+
             <Button
               type="submit"
-              disabled={allotStudent.isPending}
+              disabled={allotment.isPending}
               className="w-full"
             >
-              {allotStudent.isPending ? (
+              {allotment.isPending ? (
                 <>
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
+                  Processing...
                 </>
               ) : (
-                "Allot student"
+                "Allot Student"
               )}
             </Button>
           </form>
