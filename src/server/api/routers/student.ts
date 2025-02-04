@@ -184,8 +184,8 @@ generateStudentReport: publicProcedure.query(async ({ ctx }) => {
 
     // Define headers and map data accordingly
     const headers = [
-      'studentId', 'studentName', 'registrationNumber', 'admissionNumber', 'Date of Birth', 
-      'Gender', 'Father Name', 'Student CNIC', 'Father CNIC'
+      'studentId', 'studentName', 'registrationNumber', 'admissionNumber', 'dateOfBirth', 
+      'gender', 'fatherName', 'studentCNIC', 'fatherCNIC'
     ];
     const studentData = students.map(s => ({
       studentId: s.studentId,

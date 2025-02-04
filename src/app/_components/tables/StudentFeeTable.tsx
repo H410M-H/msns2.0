@@ -22,7 +22,7 @@ export function FeeAssignmentTable() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 p-4">
       <div className="flex space-x-4">
         <Select value={selectedSession} onValueChange={setSelectedSession}>
           <SelectTrigger className="w-[200px]">

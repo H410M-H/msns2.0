@@ -1,4 +1,3 @@
-// src/server/api/routers/report.router.ts
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 import { generatePdf } from "~/lib/utils/pdf-reports";
@@ -13,17 +12,19 @@ const reportTypeSchema = z.enum([
 export const ReportRouter = createTRPCRouter({
   generateReport: publicProcedure
     .input(z.object({ reportType: reportTypeSchema }))
+    .output(z.object({ 
+      pdf: z.custom<Uint8Array>(data => data instanceof Uint8Array) 
+    }))
     .mutation(async ({ ctx, input }) => {
       try {
         const { reportType } = input;
         const title = `${reportType} Report`;
 
-        let data: Array<Record<string, unknown>> = [];
         const headers: string[] = [];
 
         switch (reportType) {
-          case 'students':
-            data = await ctx.db.students.findMany({
+          case 'students': {
+            const dbData = await ctx.db.students.findMany({
               select: {
                 studentId: true,
                 studentName: true,
@@ -36,27 +37,37 @@ export const ReportRouter = createTRPCRouter({
                 isAssign: true
               }
             });
+
+            const studentData = dbData.map(student => ({
+              ...student,
+              status: student.isAssign ? 'Assigned' : 'Unassigned'
+            }));
+
             headers.push(
-              'studentId',
-              'studentName',
-              'registrationNumber',
-              'admissionNumber',
-              'Date of Birth',
+              'ID',
+              'Student Name',
+              'Reg Number',
+              'Adm Number',
+              'Birth Date',
               'Gender',
               'Father Name',
               'Contact',
               'Status'
             );
-            break;
 
-          case 'employees':
-            data = await ctx.db.employees.findMany({
+            const pdf = await generatePdf(studentData, headers, title);
+            return { pdf };
+          }
+
+          case 'employees': {
+            const dbData = await ctx.db.employees.findMany({
               select: {
                 employeeId: true,
                 employeeName: true,
                 designation: true,
               }
             });
+
             headers.push(
               'Employee ID',
               'Name',
@@ -65,14 +76,14 @@ export const ReportRouter = createTRPCRouter({
               'Contact',
               'Join Date'
             );
-            break;
+
+            const pdf = await generatePdf(dbData, headers, title);
+            return { pdf };
+          }
 
           default:
             throw new Error('Invalid report type');
         }
-
-        const pdfData = await generatePdf(data, headers, title);
-        return { pdf: pdfData };
       } catch (error) {
         console.error('Report generation failed:', error);
         throw new Error('Failed to generate report');

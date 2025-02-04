@@ -8,7 +8,7 @@ export default function RevenuePage() {
         { href: "/revenue", label: "Revenue", current: true },
       ];
   return (
-      <ScrollArea className="flex flex-1 flex-col gap-4">
+      <ScrollArea className="flex flex-col gap-4">
                 <PageHeader breadcrumbs={breadcrumbs} />
         <RevenueCards />
       </ScrollArea>

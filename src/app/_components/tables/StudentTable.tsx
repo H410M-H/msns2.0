@@ -35,8 +35,9 @@ import {
 } from "@tanstack/react-table";
 import { CSVUploadDialog } from "../forms/student/FileInput";
 import { StudentDeletionDialog } from "../forms/student/StudentDeletion";
-import { RefreshCcw } from "lucide-react";
+import { PlusCircle, RefreshCw, Search } from "lucide-react";
 import { DownloadPdfButton } from "../(blocks)/DownloadPdfButton";
+import { Skeleton } from "~/components/ui/skeleton";
 
 type StudentProps = {
   studentId: string;
@@ -113,7 +114,11 @@ const columns: ColumnDef<StudentProps>[] = [
     header: "Gender",
     cell: ({ row }) => <span>{row.getValue("gender")}</span>,
   },
-
+  {
+    accessorKey: "studentCNIC",
+    header: "B-Form #",
+    cell: ({ row }) => <span>{row.getValue("studentCNIC")}</span>,
+  },
   {
     accessorKey: "createdAt",
     header: "Admission Date",
@@ -150,7 +155,7 @@ const columns: ColumnDef<StudentProps>[] = [
 export const StudentTable = () => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [rowSelection, setRowSelection] = useState({});
-  const { data: students, refetch } = api.student.getStudents.useQuery();
+  const { data: students, refetch, isLoading } = api.student.getStudents.useQuery();
 
   const table = useReactTable({
     data: students ?? [],
@@ -165,45 +170,71 @@ export const StudentTable = () => {
   });
 
   return (
-    <div className="w-full">
-      <div className="flex items-center justify-between py-4">
-        <Input
-          placeholder="Search name"
-          value={(table.getColumn("studentName")?.getFilterValue() as string) ?? ""}
-          onChange={(e) =>
-            table.getColumn("studentName")?.setFilterValue(e.target.value)
-          }
-          className="max-w-sm"
-        />
-        <div className="flex items-center gap-2">
-        <Button
-            variant="outline"
-            size="sm"
-            onClick={() => refetch()}
-            className="shrink-0"
-          >
-            <RefreshCcw className="h-4 w-4" />
-          </Button>
-          <StudentDeletionDialog
-            studentIds={table
-              .getSelectedRowModel()
-              .rows.map((row) => row.original.studentId)
-              .filter(Boolean)}
-          />
-          <CSVUploadDialog />
-          <DownloadPdfButton reportType={'students'} />
-          <Button asChild>
-            <Link href="/userReg/student/create">Create</Link>
-          </Button>
+    <div className="w-full space-y-4">
+      {/* Enhanced Header */}
+      <div className="rounded-lg bg-white p-4 shadow-sm border">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="relative w-full max-w-md">
+            <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+            <Input
+              placeholder="Search students..."
+              value={(table.getColumn("studentName")?.getFilterValue() as string) ?? ""}
+              onChange={(e) =>
+                table.getColumn("studentName")?.setFilterValue(e.target.value)
+              }
+              className="pl-8"
+            />
+          </div>
+          
+          <div className="flex items-center gap-2 flex-wrap">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => refetch()}
+              className="shrink-0"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
+            <StudentDeletionDialog
+              studentIds={table
+                .getSelectedRowModel()
+                .rows.map((row) => row.original.studentId)
+                .filter(Boolean)}
+            />
+            <CSVUploadDialog />
+            <DownloadPdfButton 
+  reportType={'students'}
+  data={students || []}
+  headers={[
+    'ID',
+    'Student Name',
+    'Reg Number',
+    'Adm Number',
+    'Birth Date',
+    'Gender',
+    'Father Name',
+    'Contact',
+    'Status'
+  ]}
+/>            <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Link href="/userReg/student/create" className="flex items-center gap-2">
+                <PlusCircle className="h-4 w-4" />
+                New Student
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
-      <div className="p-4 border rounded-md">
-      <Table>
-          <TableHeader>
+
+      {/* Enhanced Table */}
+      <div className="rounded-lg border bg-white shadow-sm">
+        <Table>
+          <TableHeader className="bg-gray-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
+                  <TableHead key={header.id} className="font-semibold text-gray-700">
                     {header.isPlaceholder
                       ? null
                       : flexRender(header.column.columnDef.header, header.getContext())}
@@ -213,11 +244,25 @@ export const StudentTable = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows.length ? (
+            {isLoading ? (
+              Array(5).fill(0).map((_, i) => (
+                <TableRow key={i}>
+                  {columns.map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-6 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow 
+                  key={row.id} 
+                  className="hover:bg-gray-50 transition-colors"
+                  data-state={row.getIsSelected() ? "selected" : ""}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell key={cell.id} className="py-3">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </TableCell>
                   ))}
@@ -225,25 +270,33 @@ export const StudentTable = () => {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="text-center">
-                  No results.
+                <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <div className="flex flex-col items-center justify-center py-8 gap-2">
+                    <Search className="h-8 w-8 text-gray-400" />
+                    <p className="text-gray-600">No students found</p>
+                    <p className="text-sm text-gray-500">Try adjusting your search or create a new student</p>
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-between py-4">
-        <span className="text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </span>
+
+      {/* Enhanced Footer */}
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between px-4">
+        <div className="text-sm text-gray-600">
+          Showing {table.getFilteredRowModel().rows.length} students •{" "}
+          {table.getFilteredSelectedRowModel().rows.length} selected
+        </div>
+        
         <div className="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="border-gray-300"
           >
             Previous
           </Button>
@@ -252,6 +305,7 @@ export const StudentTable = () => {
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="border-gray-300"
           >
             Next
           </Button>

@@ -1,5 +1,5 @@
 // src/lib/utils/pdf-reports.ts
-import { PDFDocument, StandardFonts, rgb, type PDFPage, type PDFFont } from 'pdf-lib';
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 export async function generatePdf(
   data: Array<Record<string, unknown>>,
@@ -7,154 +7,92 @@ export async function generatePdf(
   title: string
 ): Promise<Uint8Array> {
   const pdfDoc = await PDFDocument.create();
-  let page = pdfDoc.addPage([595.28, 841.89]); // A4 size
+  const page = pdfDoc.addPage([595.28, 841.89]); // A4 size
   const { width, height } = page.getSize();
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const boldFont = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  function formatValue(value: unknown): string {
+    if (value === null || value === undefined) return '';
+    if (value instanceof Date) return value.toLocaleDateString();
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    
+    if (typeof value === 'object') {
+      // Handle arrays first
+      if (Array.isArray(value)) {
+        return value.map(item => formatValue(item)).join(', ');
+      }
   
+      // Handle plain objects
+      const obj = value as Record<string, unknown>;
+      const entries = Object.entries(obj)
+        .map(([key, val]) => `${key}: ${formatValue(val)}`)
+        .join(', ');
+  
+      return `{ ${entries} }`;
+    }
+  
+    // Handle other types safely
+    return String([value]);
+  }
   // Add header
-  const headerHeight = 60;
-  page.drawRectangle({
-    x: 0,
-    y: height - headerHeight,
-    width,
-    height: headerHeight,
-    color: rgb(0.2, 0.4, 0.6),
-  });
-  
   page.drawText('ACADEMIC INSTITUTE', {
     x: 50,
     y: height - 40,
     size: 18,
     font: boldFont,
-    color: rgb(1, 1, 1),
+    color: rgb(0, 0, 0),
   });
-  
-  page.drawText(new Date().toLocaleDateString(), {
-    x: width - 100,
-    y: height - 40,
-    size: 12,
-    font,
-    color: rgb(1, 1, 1),
-  });
-
-  // Add title
   page.drawText(title, {
     x: 50,
-    y: height - 90,
-    size: 16,
+    y: height - 70,
+    size: 14,
     font: boldFont,
-    color: rgb(0.2, 0.2, 0.2),
+    color: rgb(0, 0, 0),
   });
 
   // Table setup
   const margin = 50;
+  let y = height - 100;
   const rowHeight = 20;
-  const columnWidths = new Array(headers.length).fill(120); // Fixed column width initialization
-  let y = height - 120;
-  let currentPage = 1;
+  const columnWidths = [60, 100, 80, 80, 80, 60, 100, 80]; // Adjust based on your needs
 
-  // Add table headers
-  page.drawRectangle({
-    x: margin,
-    y: y - rowHeight,
-    width: width - 2 * margin,
-    height: rowHeight,
-    color: rgb(0.9, 0.9, 0.9),
-  });
-
-  headers.forEach((header, index) => {
-    const safeIndex = Math.min(index, columnWidths.length - 1);
+  // Draw headers
+  headers.forEach((header, colIndex) => {
     page.drawText(header, {
-      x: margin + (safeIndex * columnWidths[safeIndex]) + 5,
-      y: y - 15,
-      size: 12,
+      x: margin + columnWidths.slice(0, colIndex).reduce((a, b) => a + b, 0),
+      y,
+      size: 10,
       font: boldFont,
-      color: rgb(0.2, 0.2, 0.2),
+      color: rgb(0, 0, 0),
     });
   });
 
-  y -= 40;
+  y -= rowHeight;
 
-  // Add data rows
-  for (const [rowIndex, item] of data.entries()) {
-    if (y < margin + rowHeight) {
-      // Add new page
-      const newPage = pdfDoc.addPage([595.28, 841.89]);
-      page = newPage;
-      y = height - margin;
-      currentPage++;
-      addFooter(newPage, currentPage, font, width);
-    }
-
-    // Alternate row colors
-    const rowColor = rowIndex % 2 === 0 ? rgb(1, 1, 1) : rgb(0.95, 0.95, 0.95);
-    page.drawRectangle({
-      x: margin,
-      y: y - rowHeight,
-      width: width - 2 * margin,
-      height: rowHeight,
-      color: rowColor,
-    });
-
+  // Draw rows
+  data.forEach((row, rowIndex) => {
     headers.forEach((header, colIndex) => {
-      const value = formatValue(item[header.toLowerCase()]);
-      const safeColIndex = Math.min(colIndex, columnWidths.length - 1);
-      page.drawText(value, {
-        x: margin + (safeColIndex * columnWidths[safeColIndex]) + 5,
-        y: y - 15,
+      const value = formatValue(row[header.toLowerCase()]);            page.drawText(value, {
+        x: margin + columnWidths.slice(0, colIndex).reduce((a, b) => a + b, 0),
+        y: y - (rowIndex * rowHeight),
         size: 10,
         font,
-        color: rgb(0.2, 0.2, 0.2),
+        color: rgb(0, 0, 0),
       });
     });
 
-    // Add grid lines
+    // Add horizontal line
     page.drawLine({
-      start: { x: margin, y: y - rowHeight },
-      end: { x: width - margin, y: y - rowHeight },
+      start: { x: margin, y: y - (rowIndex * rowHeight) - 15 },
+      end: { x: width - margin, y: y - (rowIndex * rowHeight) - 15 },
       thickness: 0.5,
-      color: rgb(0.8, 0.8, 0.8),
+      color: rgb(0, 0, 0),
     });
-
-    y -= rowHeight;
-  }
-
-  // Add footer to all pages
-  const pages = pdfDoc.getPages();
-  pages.forEach((page, index) => addFooter(page, index + 1, font, width));
-
+  });
   return pdfDoc.save();
 }
 
-function addFooter(page: PDFPage, pageNumber: number, font: PDFFont, width: number) {
-  page.drawText(`Page ${pageNumber}`, {
-    x: width / 2 - 25,
-    y: 30,
-    size: 10,
-    font,
-    color: rgb(0.4, 0.4, 0.4),
-  });
 
-  page.drawText('Confidential - © 2024 Academic Institute', {
-    x: 50,
-    y: 30,
-    size: 10,
-    font,
-    color: rgb(0.4, 0.4, 0.4),
-  });
-}
 
-function formatValue(value: unknown): string {
-  if (value === null || value === undefined) return '';
-  if (value instanceof Date) {
-    return value.toLocaleDateString();
-  }
-  if (typeof value === 'number') {
-    return Number(value.toFixed(2)).toLocaleString();
-  }
-  if (typeof value === 'object') {
-    return '[Object]'; // Prevent raw object stringification
-  }
-  return String().slice(0, 50); // Truncate long text
-}
+

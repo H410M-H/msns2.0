@@ -45,6 +45,8 @@ type ClassFeeProps = {
     studentIdCardFee: number;
     infoAndCallsFee: number;
     admissionFee: number;
+    type?: string;
+    level?: string;
   };
   studentClass: {
     student: {
@@ -148,7 +150,7 @@ export function ClassFeeTable({ classId, sessionId }: ClassFeeTableProps) {
       header: "Total Fee",
       cell: ({ row }) => {
         const fee = row.original.fee;
-        const total = calculateTotalFee(fee);
+        const total = calculateTotalFee(fee as FeeProps);
         return (
           <div className="font-semibold">
             Rs. {total.toLocaleString()}

@@ -8,7 +8,7 @@ import { AlotmentRouter } from "./routers/allotment";
 import { SalaryRouter } from "./routers/salary";
 import { feeRouter } from "./routers/fee";
 import { SubjectRouter } from "./routers/subject";
-import { ReportRouter } from "./routers/report"; 
+import { ReportRouter } from "./routers/report.router"; 
 
 export const appRouter = createTRPCRouter({
     register: RegisterRouter,

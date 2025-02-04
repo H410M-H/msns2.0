@@ -24,7 +24,6 @@ export default async function ClassDetailsPage({ searchParams }: PageProps) {
         </CardHeader>
         <CardContent>
             <Suspense fallback={<LoadingSpinner />}>
-            {/* <StudentAllotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} /> */}
             <ClassAllotmentTable classId={searchProps.classId} sessionId={searchProps.sessionId} />
               </Suspense>
         </CardContent>
