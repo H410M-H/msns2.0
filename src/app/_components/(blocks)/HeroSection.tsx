@@ -1,7 +1,6 @@
-import { motion, type MotionValue } from 'framer-motion'
-import Link from 'next/link'
-import { Button } from "~/components/ui/button"
-import { ChevronRight } from 'lucide-react'
+import { motion, useScroll, useTransform, type MotionValue } from 'framer-motion'
+import { Link, ArrowRight } from 'lucide-react';
+import { Button } from '~/components/ui/button';
 
 interface HeroSectionProps {
     currentVideoIndex: number;
@@ -13,12 +12,13 @@ interface HeroSectionProps {
 export function HeroSection({ currentVideoIndex, videos, heroOpacity, heroScale }: HeroSectionProps) {
   return (
     <motion.section
-      className="relative h-[85vh] overflow-hidden"
+      className="relative h-screen overflow-hidden"
       style={{ opacity: heroOpacity, scale: heroScale }}
     >
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent" />
       <video
+        className="absolute inset-0 w-full h-full object-cover"
         key={currentVideoIndex}
-        className="absolute top-18 left-0 w-full h-full object-cover"
         autoPlay
         muted
         loop
@@ -27,48 +27,57 @@ export function HeroSection({ currentVideoIndex, videos, heroOpacity, heroScale 
         <source src={videos[currentVideoIndex]} type="video/mp4" />
         Your browser does not support the video tag.
       </video>
-      <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-        <div className="text-center text-green-100">
+      <div className="relative h-full flex items-center justify-center text-center">
+        <div className="max-w-6xl px-4">
           <motion.h1
-            className="font-serif text-white text-5xl md:text-7xl font-bold mb-10"
-            initial={{ opacity: 0, y: 20, scale: 0.5 }}
-            animate={{
-              opacity: [0, 1],
-              y: [20, 0],
-              scale: [0.5, 1.2],
-            }}
-            transition={{
-              duration: 0.8,
-              delay: 0.8,
-              ease: "easeOut",
-              type: "keyframes",
-              stiffness: 100,
-            }}
+            className="text-5xl md:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           >
-            M.S. NAZ HIGH SCHOOL
+            M.S. Naz High School
           </motion.h1>
-          <motion.p
-            className="font-serif text-2xl md:text-3xl mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            PURSUIT OF EXCELLENCE
-          </motion.p>
+          
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
+            className="flex flex-col gap-4 md:flex-row justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
           >
-            <Link href="/about">
-              <Button size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors duration-300">
-                Learn More <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
+            <Button asChild variant="secondary" size="lg" className="rounded-full">
+              <Link href="/admissions">
+                Admissions 2024
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
           </motion.div>
         </div>
       </div>
+      
+      <ScrollIndicator />
     </motion.section>
   )
 }
 
+function ScrollIndicator() {
+  const { scrollYProgress } = useScroll()
+  const pathLength = useTransform(scrollYProgress, [0, 0.8], [0, 1])
+
+  return (
+    <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
+      <motion.svg
+        width="40" 
+        height="40"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        strokeWidth="2"
+      >
+        <motion.path
+          d="M5 15.5L12 22.5L19 15.5"
+          style={{ pathLength }}
+        />
+      </motion.svg>
+    </div>
+  )
+}

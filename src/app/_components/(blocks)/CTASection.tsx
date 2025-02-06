@@ -32,9 +32,12 @@ export function CTASection() {
           transition={{ duration: 0.8, delay: 0.4 }}
         >
           <Link href="/signup">
-            <Button size="lg" className="bg-emerald-500 text-primary-foreground hover:bg-primary/90 transition-colors duration-300">
-              Apply Now <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
+          <Button 
+  size="lg" 
+  className="bg-emerald-500 hover:bg-emerald-600 text-white text-lg px-8 py-6 rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+>
+  Start Your Journey <ChevronRight className="ml-2 h-5 w-5" />
+</Button>
           </Link>
         </motion.div>
       </div>

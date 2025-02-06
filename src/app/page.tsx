@@ -1,11 +1,14 @@
 "use client"
 
-import { useEffect, useState } from 'react'
 import { useScroll, useTransform } from 'framer-motion'
 import { CTASection } from './_components/(blocks)/CTASection'
 import { FeaturesSection } from './_components/(blocks)/FeaturesSection'
 import { HeroSection } from './_components/(blocks)/HeroSection'
 import { QuickLinksSection } from './_components/(blocks)/QuickLinksSection'
+import { useEffect, useState } from 'react'
+import { AnnouncementsSection } from './_components/(blocks)/Announcements'
+import { AcademicPrograms } from './_components/(blocks)/AcademicPrograms'
+import { TestimonialsSection } from './_components/(blocks)/Testimonials'
 
 export default function Home() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
@@ -36,17 +39,28 @@ export default function Home() {
   }, [videos.length])
 
   return (
-    <div className="min-h-screen bg-emerald-100 font-serif">
+    <main className="min-h-screen bg-gradient-to-br from-slate-50 to-emerald-50 font-sans">
       <HeroSection 
         currentVideoIndex={currentVideoIndex} 
         videos={videos} 
         heroOpacity={heroOpacity} 
         heroScale={heroScale} 
       />
+      
+      <AnnouncementsSection />
+
       <QuickLinksSection linkCards={linkCards} />
+
+      <AcademicPrograms />
+
       <FeaturesSection />
+
+      <TestimonialsSection />
+
+      {/* <GallerySection /> */}
+
       <CTASection />
-    </div>
+    </main>
   )
 }
 
