@@ -44,12 +44,12 @@ export function TestimonialsSection() {
     <section className="py-16 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4">
         <h2 className="text-3xl font-bold text-center mb-12">What People Say</h2>
-        
+
         {/* Google Reviews */}
         <div className="grid md:grid-cols-2 gap-8 mb-16">
-        {loading ? (
-  Array.from({ length: 2 }).map((_, i) => (
-    <div key={i} className="bg-white p-6 rounded-xl shadow-md animate-pulse">
+          {loading ? (
+            Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="bg-white p-6 rounded-xl shadow-md animate-pulse">
                 <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
                 <div className="h-24 bg-gray-200 rounded mb-4" />
                 <div className="h-4 bg-gray-200 rounded w-1/4" />
@@ -64,14 +64,14 @@ export function TestimonialsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
               >
-<div className="flex items-center gap-2 mb-4">
-  {Array.from({ length: 5 }).map((_, i) => (
-    <StarIcon
-      key={i}
-      className={`w-5 h-5 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-    />
-  ))}
-</div>
+                <div className="flex items-center gap-2 mb-4">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <StarIcon
+                      key={i}
+                      className={`w-5 h-5 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                    />
+                  ))}
+                </div>
                 <p className="text-gray-600 mb-4">&quot;{review.text}&quot;</p>
                 <p className="font-semibold">{review.author_name}</p>
                 <p className="text-sm text-gray-500">
@@ -87,16 +87,16 @@ export function TestimonialsSection() {
         {/* Embedded Google Map */}
         <div className="rounded-xl overflow-hidden shadow-xl">
           <iframe
-  title="School Location Map"
-  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3371.371635373706!2d74.13877557608704!3d32.32873130675971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f27141ae512e1%3A0x4a728b0cac341ccf!2sM.S.%20NAZ%20HIGH%20SCHOOL%C2%AE%20%7C%20M.S.N.S%E2%84%A2!5e0!3m2!1sen!2s!4v1738881226323!5m2!1sen!2s"
-  width="100%"
-  height="450"
-  style={{ border: 0 }}
-  allowFullScreen
-  {...(supportsLazyLoading ? { loading: "lazy" } : {})}
-  referrerPolicy="no-referrer-when-downgrade"
-  className="rounded-xl"
-/>
+            title="School Location Map"
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3371.371635373706!2d74.13877557608704!3d32.32873130675971!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f27141ae512e1%3A0x4a728b0cac341ccf!2sM.S.%20NAZ%20HIGH%20SCHOOL%C2%AE%20%7C%20M.S.N.S%E2%84%A2!5e0!3m2!1sen!2s!4v1738881226323!5m2!1sen!2s"
+            width="100%"
+            height="450"
+            style={{ border: 0 }}
+            allowFullScreen
+            {...(supportsLazyLoading ? { loading: "lazy" } : {})}
+            referrerPolicy="no-referrer-when-downgrade"
+            className="rounded-xl"
+          />
         </div>
       </div>
     </section>
