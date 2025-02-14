@@ -1,8 +1,8 @@
-// src/app/_components/(blocks)/Testimonials.tsx
 'use client'
 
-import { motion } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface GoogleReview {
   author_name: string
@@ -19,72 +19,44 @@ export function TestimonialsSection() {
   const [reviews, setReviews] = useState<GoogleReview[]>([])
   const [supportsLazyLoading, setSupportsLazyLoading] = useState(true)
   const [loading, setLoading] = useState(true)
+  const [currentReviewIndex, setCurrentReviewIndex] = useState(0)
 
   useEffect(() => {
     setSupportsLazyLoading('loading' in HTMLIFrameElement.prototype)
-  }, []);
+  }, [])
 
   useEffect(() => {
     const fetchReviews = async () => {
       try {
         const response = await fetch('/api/google-reviews')
         const data = await response.json() as ApiResponse
-        setReviews(data.reviews)
+        setReviews(data.reviews || [])
       } catch (error) {
         console.error('Error fetching reviews:', error)
+        setReviews([])
       } finally {
         setLoading(false)
       }
     }
 
-    void fetchReviews() // Added void to handle floating promise
+    void fetchReviews()
   }, [])
+
+  const goNext = () => {
+    if (reviews.length === 0) return
+    setCurrentReviewIndex(prev => (prev + 1) % reviews.length)
+  }
+
+  const goPrev = () => {
+    if (reviews.length === 0) return
+    setCurrentReviewIndex(prev => (prev - 1 + reviews.length) % reviews.length)
+  }
+
+  const currentReview = reviews[currentReviewIndex]
 
   return (
     <section className="py-16 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">What People Say</h2>
-
-        {/* Google Reviews */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
-          {loading ? (
-            Array.from({ length: 2 }).map((_, i) => (
-              <div key={i} className="bg-white p-6 rounded-xl shadow-md animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
-                <div className="h-24 bg-gray-200 rounded mb-4" />
-                <div className="h-4 bg-gray-200 rounded w-1/4" />
-              </div>
-            ))
-          ) : reviews.length > 0 ? (
-            reviews.map((review, index) => (
-              <motion.div
-                key={index}
-                className="bg-white p-6 rounded-xl shadow-md"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <StarIcon
-                      key={i}
-                      className={`w-5 h-5 ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}
-                    />
-                  ))}
-                </div>
-                <p className="text-gray-600 mb-4">&quot;{review.text}&quot;</p>
-                <p className="font-semibold">{review.author_name}</p>
-                <p className="text-sm text-gray-500">
-                  {review.relative_time_description}
-                </p>
-              </motion.div>
-            ))
-          ) : (
-            <p className="text-gray-600 text-center">No reviews available</p>
-          )}
-        </div>
-
-        {/* Embedded Google Map */}
         <div className="rounded-xl overflow-hidden shadow-xl">
           <iframe
             title="School Location Map"
@@ -97,6 +69,67 @@ export function TestimonialsSection() {
             referrerPolicy="no-referrer-when-downgrade"
             className="rounded-xl"
           />
+        </div>
+
+        <h2 className="text-3xl font-bold text-center mb-12 mt-16">What People Say</h2>
+
+        <div className="flex items-center justify-center gap-4 md:gap-8 mb-16">
+          <button
+            onClick={goPrev}
+            disabled={loading || reviews.length === 0}
+            className="p-2 hover:bg-slate-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Previous review"
+          >
+            <ChevronLeft className="w-8 h-8 text-gray-600" />
+          </button>
+
+          <div className="flex-1 max-w-2xl min-h-[300px]">
+            {loading ? (
+              <SkeletonCard />
+            ) : reviews.length > 0 && currentReview ? (
+              <AnimatePresence mode='wait'>
+                <motion.div
+                  key={currentReviewIndex}
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.2 }}
+                  className="bg-white p-6 rounded-xl shadow-md"
+                >
+                  <div className="flex items-center gap-2 mb-4">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <StarIcon
+                        key={i}
+                        className={`w-5 h-5 ${
+                          i < currentReview.rating 
+                            ? 'text-yellow-400' 
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-600 mb-4 italic">
+                    &quot;{currentReview.text}&quot;
+                  </p>
+                  <p className="font-semibold">{currentReview.author_name}</p>
+                  <p className="text-sm text-gray-500">
+                    {currentReview.relative_time_description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            ) : (
+              <p className="text-gray-600 text-center">No reviews available</p>
+            )}
+          </div>
+
+          <button
+            onClick={goNext}
+            disabled={loading || reviews.length === 0}
+            className="p-2 hover:bg-slate-100 rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+            aria-label="Next review"
+          >
+            <ChevronRight className="w-8 h-8 text-gray-600" />
+          </button>
         </div>
       </div>
     </section>
@@ -119,3 +152,11 @@ function StarIcon({ className }: { className?: string }) {
     </svg>
   )
 }
+
+const SkeletonCard = () => (
+  <div className="bg-white p-6 rounded-xl shadow-md animate-pulse">
+    <div className="h-4 bg-gray-200 rounded w-1/3 mb-4" />
+    <div className="h-24 bg-gray-200 rounded mb-4" />
+    <div className="h-4 bg-gray-200 rounded w-1/4" />
+  </div>
+)

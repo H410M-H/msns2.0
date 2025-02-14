@@ -8,7 +8,7 @@ interface GoogleReview {
 }
 
 interface PlaceDetailsResponse {
-  result: {
+  result?: {
     reviews?: GoogleReview[]
   }
   status: string
@@ -20,7 +20,7 @@ export async function GET() {
 
   if (!API_KEY) {
     return NextResponse.json(
-      { error: 'Google Maps API key not configured' },
+      { error: 'Google Maps API key not configured', reviews: [] },
       { status: 500 }
     )
   }
@@ -30,7 +30,6 @@ export async function GET() {
       `https://maps.googleapis.com/maps/api/place/details/json?place_id=${PLACE_ID}&fields=review&key=${API_KEY}`
     )
     
-    // Add explicit type assertion here
     const data = await response.json() as PlaceDetailsResponse
 
     if (data.status !== 'OK' || !data.result?.reviews) {
@@ -45,7 +44,7 @@ export async function GET() {
   } catch (error) {
     console.error('Google Places API error:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch reviews' },
+      { error: 'Failed to fetch reviews', reviews: [] },
       { status: 500 }
     )
   }

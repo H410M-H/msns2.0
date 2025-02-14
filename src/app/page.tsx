@@ -6,7 +6,6 @@ import { FeaturesSection } from './_components/(blocks)/FeaturesSection'
 import { HeroSection } from './_components/(blocks)/HeroSection'
 import { QuickLinksSection } from './_components/(blocks)/QuickLinksSection'
 import { useEffect, useState } from 'react'
-import { AnnouncementsSection } from './_components/(blocks)/Announcements'
 import { AcademicPrograms } from './_components/(blocks)/AcademicPrograms'
 import { TestimonialsSection } from './_components/(blocks)/Testimonials'
 
@@ -47,7 +46,7 @@ export default function Home() {
         heroScale={heroScale} 
       />
       
-      <AnnouncementsSection />
+      {/* <AnnouncementsSection /> */}
 
       <QuickLinksSection linkCards={linkCards} />
 
