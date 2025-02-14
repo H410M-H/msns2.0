@@ -8,6 +8,7 @@ import { QuickLinksSection } from './_components/(blocks)/QuickLinksSection'
 import { useEffect, useState } from 'react'
 import { AcademicPrograms } from './_components/(blocks)/AcademicPrograms'
 import { TestimonialsSection } from './_components/(blocks)/Testimonials'
+import { GooglePhotos } from './_components/(blocks)/GooglePhotos'
 
 export default function Home() {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
@@ -49,7 +50,7 @@ export default function Home() {
       {/* <AnnouncementsSection /> */}
 
       <QuickLinksSection linkCards={linkCards} />
-
+      {/* <GooglePhotos /> */}
       <AcademicPrograms />
 
       <FeaturesSection />

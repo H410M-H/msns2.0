@@ -7,6 +7,13 @@ await import("./src/env.js");
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
+    domains: [
+      'lh3.googleusercontent.com',
+      'lh4.googleusercontent.com',
+      'lh5.googleusercontent.com',
+      'lh6.googleusercontent.com'
+    ],
+
     remotePatterns: [
       { hostname: "res.cloudinary.com" },
       { hostname: "via.placeholder.com" },
